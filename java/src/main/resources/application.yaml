@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: booking-admin
+  datasource:
+    url: jdbc:mysql://gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/BookingTour?sslMode=VERIFY_IDENTITY&tlsVersions=TLSv1.2,TLSv1.3
+    username: 4DVw32izV1v7FKS.root
+    password: ODpAJ6g7j6r8oSTp
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+server:
+  port: 8080
+app:
+  jwt:
+    issuer: tour-java
+    secret: tour-java-secret-key-12345678901234567890
+    access-token-ttl-minutes: 480
+    refresh-token-ttl-days: 7
