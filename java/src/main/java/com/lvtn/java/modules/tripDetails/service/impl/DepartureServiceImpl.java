@@ -94,28 +94,33 @@ public class DepartureServiceImpl implements DepartureService {
 
     @Override
     public List<Map<String, Object>> getAvailableGuides(String startDate, String endDate, Integer excludeDepartureId) {
-        List<Account> guideAccounts = accountRepository.findAll().stream()
+        List<Account> guideAccounts = accountRepository.findByDeletedFalse().stream()
                 .filter(acc -> acc.getRole() != null &&
                         "Guide".equalsIgnoreCase(acc.getRole().getName()) &&
-                        "active".equalsIgnoreCase(acc.getStatus()) &&
-                        !Boolean.TRUE.equals(acc.getDeleted()))
+                        "active".equalsIgnoreCase(acc.getStatus()))
                 .collect(Collectors.toList());
 
         LocalDateTime start = parseDateTime(startDate);
         LocalDateTime end = parseDateTime(endDate);
+
+        java.util.Set<Integer> conflictingGuideIds = new java.util.HashSet<>();
+        if (start != null && end != null && !guideAccounts.isEmpty()) {
+            List<Integer> guideIds = guideAccounts.stream().map(Account::getId).toList();
+            List<Departure> conflicts = departureRepository.findConflictingByGuideIds(
+                    guideIds, start, end, excludeDepartureId);
+            for (Departure d : conflicts) {
+                if (d.getGuide() != null) {
+                    conflictingGuideIds.add(d.getGuide().getId());
+                }
+            }
+        }
 
         return guideAccounts.stream()
                 .map(acc -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", acc.getId());
                     map.put("fullName", acc.getFullName());
-
-                    boolean available = true;
-                    if (start != null && end != null) {
-                        List<Departure> conflicts = departureRepository.findConflictingByGuide(
-                                acc.getId(), start, end, excludeDepartureId);
-                        available = conflicts.isEmpty();
-                    }
+                    boolean available = (start == null || end == null) || !conflictingGuideIds.contains(acc.getId());
                     map.put("available", available);
                     return map;
                 })

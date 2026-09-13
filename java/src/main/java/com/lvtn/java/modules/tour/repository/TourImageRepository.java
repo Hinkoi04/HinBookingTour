@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface TourImageRepository extends JpaRepository<TourImage, Integer> {
     List<TourImage> findByTourIdAndDeletedFalse(Integer tourId);
+    List<TourImage> findByTourIdInAndDeletedFalse(java.util.Collection<Integer> tourIds);
 
     @Transactional
     @Modifying

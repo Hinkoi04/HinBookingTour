@@ -4,6 +4,9 @@ import com.lvtn.java.modules.tour.entity.Tour;
 import com.lvtn.java.modules.tour.entity.TourImage;
 import com.lvtn.java.dto.tour.TourCreateRequest;
 import com.lvtn.java.dto.tour.TourResponse;
+import com.lvtn.java.dto.schedule.ScheduleResponse;
+import com.lvtn.java.modules.tripDetails.entity.Schedule;
+import com.lvtn.java.modules.tripDetails.repository.ScheduleRepository;
 import com.lvtn.java.modules.tripDetails.repository.DepartureRepository;
 import com.lvtn.java.modules.tour.repository.TourImageRepository;
 import com.lvtn.java.modules.tour.repository.TourRepository;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
@@ -26,6 +30,7 @@ public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
     private final DepartureRepository departureRepository;
+    private final ScheduleRepository scheduleRepository;
     private final ScheduleService scheduleService;
     private final TourImageRepository tourImageRepository;
     private final ModelMapper mapper;
@@ -55,6 +60,37 @@ public class TourServiceImpl implements TourService {
         response.setImages(galleryUrls);
 
         return response;
+    }
+
+    private List<TourResponse> mapToResponseList(List<Tour> tours) {
+        if (tours == null || tours.isEmpty()) {
+            return List.of();
+        }
+
+        List<Integer> tourIds = tours.stream().map(Tour::getId).toList();
+
+        Map<Integer, List<ScheduleResponse>> schedulesByTourId = scheduleRepository
+                .findByTourIdInAndDeletedFalseOrderByDayNumberAsc(tourIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        s -> s.getTour() != null ? s.getTour().getId() : 0,
+                        Collectors.mapping(s -> mapper.map(s, ScheduleResponse.class), Collectors.toList())
+                ));
+
+        Map<Integer, List<String>> imagesByTourId = tourImageRepository
+                .findByTourIdInAndDeletedFalse(tourIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        TourImage::getTourId,
+                        Collectors.mapping(TourImage::getImageUrl, Collectors.toList())
+                ));
+
+        return tours.stream().map(tour -> {
+            TourResponse response = mapper.map(tour, TourResponse.class);
+            response.setSchedules(schedulesByTourId.getOrDefault(tour.getId(), List.of()));
+            response.setImages(imagesByTourId.getOrDefault(tour.getId(), List.of()));
+            return response;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -109,9 +145,7 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public List<TourResponse> getAllTours() {
-        return tourRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return mapToResponseList(tourRepository.findAll());
     }
 
     @Override
@@ -193,16 +227,12 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public List<TourResponse> findAllActive() {
-        return tourRepository.findAllActiveTours().stream()
-                .map(this::mapToResponse)
-                .toList();
+        return mapToResponseList(tourRepository.findAllActiveTours());
     }
 
     @Override
     public List<TourResponse> findAllTrash() {
-        return tourRepository.findAllTrashTours().stream()
-                .map(this::mapToResponse)
-                .toList();
+        return mapToResponseList(tourRepository.findAllTrashTours());
     }
 
     @Override

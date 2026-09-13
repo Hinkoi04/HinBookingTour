@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Table(name = "departures")
 public class Departure extends AuditableEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tourId;
 

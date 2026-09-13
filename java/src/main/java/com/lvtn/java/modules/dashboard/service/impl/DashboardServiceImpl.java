@@ -88,14 +88,25 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
 
 
+        YearMonth oldestMonth = currentMonth.minusMonths(5);
+        LocalDateTime sixMonthsAgo = oldestMonth.atDay(1).atStartOfDay();
+
+        java.util.Map<String, Long> monthlyRevenueMap = new java.util.HashMap<>();
+        List<Object[]> monthlyRevenues = bookingRepository.sumRevenueMonthlyFrom(sixMonthsAgo);
+        for (Object[] row : monthlyRevenues) {
+            if (row[0] != null && row[1] != null && row[2] != null) {
+                int year = ((Number) row[0]).intValue();
+                int month = ((Number) row[1]).intValue();
+                long amount = ((BigDecimal) row[2]).longValue();
+                monthlyRevenueMap.put(year + "-" + month, amount);
+            }
+        }
+
         List<DashboardResponse.RevenueData> revenueDataList = new ArrayList<>();
         for (int i = 5; i >= 0; i--) {
             YearMonth targetMonth = currentMonth.minusMonths(i);
-            LocalDateTime start = targetMonth.atDay(1).atStartOfDay();
-            LocalDateTime end = targetMonth.atEndOfMonth().atTime(23, 59, 59);
-
-            BigDecimal revBD = bookingRepository.sumRevenueBetween(start, end);
-            long rev = revBD != null ? revBD.longValue() : 0L;
+            String key = targetMonth.getYear() + "-" + targetMonth.getMonthValue();
+            long rev = monthlyRevenueMap.getOrDefault(key, 0L);
             String monthLabel = "T" + targetMonth.getMonthValue(); // Format ra chữ "T1", "T2"...
 
             revenueDataList.add(DashboardResponse.RevenueData.builder()

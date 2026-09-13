@@ -12,7 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
+    @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE b.deleted = false")
     List<Booking> findByDeletedFalse();
+
+    @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE b.id = :id")
+    Optional<Booking> findByIdWithDetails(@Param("id") Integer id);
+
     Optional<Booking> findByBookingCode(String bookingCode);
 
     long count();
@@ -20,6 +25,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("SELECT COALESCE(SUM(b.total), 0) FROM Booking b WHERE b.status = 'CONFIRMED' AND b.createdAt BETWEEN :startDate AND :endDate")
     BigDecimal sumRevenueBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT FUNCTION('YEAR', b.createdAt), FUNCTION('MONTH', b.createdAt), SUM(b.total) " +
+            "FROM Booking b WHERE b.status = 'CONFIRMED' AND b.createdAt >= :startDate " +
+            "GROUP BY FUNCTION('YEAR', b.createdAt), FUNCTION('MONTH', b.createdAt)")
+    List<Object[]> sumRevenueMonthlyFrom(@Param("startDate") LocalDateTime startDate);
 
     // Thống kê trạng thái đơn hàng
     @Query("SELECT b.status, COUNT(b.id) FROM Booking b GROUP BY b.status")

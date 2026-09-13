@@ -18,6 +18,9 @@ public interface TourRepository extends JpaRepository<Tour, Integer> {
     int countByCategoryIdAndDeletedFalse(Integer categoryId);
     boolean existsByCategoryIdAndDeletedFalse(Integer categoryId);
 
+    @Query("SELECT t.categoryId, COUNT(t.id) FROM Tour t WHERE t.deleted = false GROUP BY t.categoryId")
+    List<Object[]> countToursGroupedByCategory();
+
     @Query(value = "SELECT * FROM tours WHERE deleted = 0", nativeQuery = true)
     List<Tour> findAllActiveTours();
 

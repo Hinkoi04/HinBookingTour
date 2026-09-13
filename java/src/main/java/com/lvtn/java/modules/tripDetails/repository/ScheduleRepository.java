@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByTourIdAndDeletedFalseOrderByDayNumberAsc(Integer tourId);
+    List<Schedule> findByTourIdInAndDeletedFalseOrderByDayNumberAsc(java.util.Collection<Integer> tourIds);
     @Modifying
     @Query("UPDATE Schedule s SET s.deleted = true WHERE s.tour.id = :tourId")
     void softDeleteByTourId(Integer tourId);

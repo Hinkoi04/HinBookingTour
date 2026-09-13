@@ -11,6 +11,7 @@ import com.lvtn.java.modules.booking.repository.BookingRepository;
 import com.lvtn.java.modules.tour.entity.Tour;
 import com.lvtn.java.modules.tour.repository.TourRepository;
 import com.lvtn.java.modules.user.entity.User;
+import com.lvtn.java.modules.user.entity.Account;
 import com.lvtn.java.modules.user.repository.AccountRepository;
 import com.lvtn.java.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,18 +83,67 @@ public class ReviewServiceImpl implements ReviewService {
         return response;
     }
 
+    private List<ReviewResponse> mapToResponseList(List<Review> reviews) {
+        if (reviews == null || reviews.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Integer> accountIds = new HashSet<>();
+        for (Review r : reviews) {
+            if (r.getApprovedBy() != null) accountIds.add(r.getApprovedBy());
+            if (r.getDeletedBy() != null) accountIds.add(r.getDeletedBy());
+        }
+
+        Map<Integer, String> accountNameMap = accountRepository.findAllById(accountIds).stream()
+                .collect(Collectors.toMap(Account::getId, Account::getFullName, (a, b) -> a));
+
+        return reviews.stream().map(review -> {
+            ReviewResponse response = mapper.map(review, ReviewResponse.class);
+
+            if (review.getUser() != null) {
+                response.setUserId(review.getUser().getId());
+                response.setUserFullName(review.getUser().getFullName());
+            }
+
+            if (review.getTour() != null) {
+                response.setTourId(review.getTour().getId());
+                response.setTourTitle(review.getTour().getTitle());
+            }
+
+            if (review.getBooking() != null) {
+                response.setBookingId(review.getBooking().getId());
+            }
+
+            if (Boolean.TRUE.equals(review.getIsApproved())) {
+                if (review.getApprovedBy() != null) {
+                    response.setApprovedByName(accountNameMap.getOrDefault(review.getApprovedBy(), "Admin #" + review.getApprovedBy()));
+                } else {
+                    response.setApprovedByName("Tự động");
+                }
+            } else {
+                response.setApprovedByName("-");
+            }
+
+            if (Boolean.TRUE.equals(review.getDeleted())) {
+                if (review.getDeletedBy() != null) {
+                    response.setDeletedByName(accountNameMap.getOrDefault(review.getDeletedBy(), "Admin #" + review.getDeletedBy()));
+                } else {
+                    response.setDeletedByName("Hệ thống");
+                }
+            }
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+
     @Override
     public List<ReviewResponse> findAll() {
-        return reviewRepository.findByDeletedFalse().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return mapToResponseList(reviewRepository.findByDeletedFalse());
     }
 
     @Override
     public List<ReviewResponse> findApprovedByTour(Integer tourId) {
-        return reviewRepository.findByTourIdAndDeletedFalseAndIsApprovedTrue(tourId).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return mapToResponseList(reviewRepository.findByTourIdAndDeletedFalseAndIsApprovedTrue(tourId));
     }
 
     @Override
@@ -140,9 +193,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<ReviewResponse> getTrash() {
-        return reviewRepository.findByDeletedTrue().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return mapToResponseList(reviewRepository.findByDeletedTrue());
     }
 
     @Override

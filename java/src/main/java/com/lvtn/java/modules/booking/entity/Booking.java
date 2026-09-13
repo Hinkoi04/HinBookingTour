@@ -82,9 +82,11 @@ public class Booking extends BaseEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @org.hibernate.annotations.BatchSize(size = 100)
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Passenger> passengers;
 
+    @org.hibernate.annotations.BatchSize(size = 100)
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Payment> payments;
 
