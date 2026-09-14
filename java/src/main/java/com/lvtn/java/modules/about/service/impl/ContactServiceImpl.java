@@ -15,7 +15,16 @@ public class ContactServiceImpl implements ContactService {
         this.contactRepository = contactRepository;
     }
 
+    @Override
     public List<Contact> findAll() {
         return contactRepository.findAll();
+    }
+
+    @Override
+    public Contact create(String email) {
+        Contact contact = new Contact();
+        contact.setEmail(email);
+        contact.setDeleted(false);
+        return contactRepository.save(contact);
     }
 }

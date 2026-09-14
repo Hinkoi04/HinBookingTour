@@ -1,8 +1,11 @@
 spring:
   application:
     name: booking-admin
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    date-format: yyyy-MM-dd HH:mm:ss
   datasource:
-    url: jdbc:mysql://gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/BookingTour?sslMode=VERIFY_IDENTITY&tlsVersions=TLSv1.2,TLSv1.3
+    url: jdbc:mysql://gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com:4000/BookingTour?sslMode=VERIFY_IDENTITY&tlsVersions=TLSv1.2,TLSv1.3&serverTimezone=Asia/Ho_Chi_Minh
     username: 4DVw32izV1v7FKS.root
     password: ODpAJ6g7j6r8oSTp
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,6 +19,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: Asia/Ho_Chi_Minh
   sql:
     init:
       mode: never
