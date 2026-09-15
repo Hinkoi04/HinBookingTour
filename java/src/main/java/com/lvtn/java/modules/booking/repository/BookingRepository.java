@@ -12,11 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
-    @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE b.deleted = false")
+    @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE (b.deleted = false OR b.deleted IS NULL)")
     List<Booking> findByDeletedFalse();
 
     @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE b.id = :id")
     Optional<Booking> findByIdWithDetails(@Param("id") Integer id);
+
+    @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d WHERE d.id = :departureId AND (b.deleted = false OR b.deleted IS NULL) AND (LOWER(b.status) = 'confirmed' OR LOWER(b.status) = 'completed')")
+    List<Booking> findByDepartureIdWithDetails(@Param("departureId") Integer departureId);
 
     Optional<Booking> findByBookingCode(String bookingCode);
 

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Users } from 'lucide-react';
 
-export function DepartureDetailModal({ isOpen, onClose, departure, accountList = [] }) {
+export function DepartureDetailModal({ isOpen, onClose, departure, accountList = [], onViewPassengers }) {
   if (!isOpen || !departure) return null;
 
   const formatCurrency = (value) => {
@@ -71,8 +72,16 @@ export function DepartureDetailModal({ isOpen, onClose, departure, accountList =
           {/* Đã bổ sung trường Hướng dẫn viên */}
           <div className="grid grid-cols-3 gap-2 border-b pb-3">
             <span className="text-gray-500 font-medium">HDV phụ trách:</span>
-            <span className="col-span-2 font-medium text-gray-900">
-              {departure.guideName || <span className="text-gray-400 italic">Chưa phân công</span>}
+            <span className="col-span-2 space-y-1">
+              <div className="font-medium text-gray-900">
+                {departure.guideName || <span className="text-gray-400 italic">Chưa phân công</span>}
+              </div>
+              {departure.guidePhone && (
+                <div className="text-xs text-gray-500">SĐT: <span className="font-semibold text-gray-800">{departure.guidePhone}</span></div>
+              )}
+              {departure.guideEmail && (
+                <div className="text-xs text-gray-500">Email: <span className="text-gray-700">{departure.guideEmail}</span></div>
+              )}
             </span>
           </div>
 
@@ -118,8 +127,20 @@ export function DepartureDetailModal({ isOpen, onClose, departure, accountList =
 
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black transition-colors">
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+          {onViewPassengers && (
+            <button
+              onClick={() => {
+                onClose();
+                onViewPassengers(departure);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Danh sách đoàn khách</span>
+            </button>
+          )}
+          <button onClick={onClose} className="ml-auto px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black transition-colors">
             Đóng
           </button>
         </div>

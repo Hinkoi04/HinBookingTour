@@ -1,5 +1,6 @@
 package com.lvtn.java.modules.tripDetails.controller;
 
+import com.lvtn.java.dto.departure.DepartureManifestResponse;
 import com.lvtn.java.dto.departure.DepartureResponse;
 import com.lvtn.java.dto.departure.DepartureUpsertRequest;
 import com.lvtn.java.security.SecurityUtils;
@@ -37,6 +38,24 @@ public class DepartureController {
     @GetMapping("/{id}")
     public ResponseEntity<DepartureResponse> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(departureService.findById(id));
+    }
+
+    @GetMapping("/{id}/passengers")
+    public ResponseEntity<?> getPassengers(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(departureService.getDepartureManifest(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/manifest")
+    public ResponseEntity<?> getManifest(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(departureService.getDepartureManifest(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/trash")

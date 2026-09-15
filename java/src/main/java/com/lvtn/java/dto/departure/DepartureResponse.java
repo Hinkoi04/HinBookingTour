@@ -21,6 +21,8 @@ public class DepartureResponse {
     private VehicleType vehicleType;
     private Integer guideId;
     private String guideName;
+    private String guidePhone;
+    private String guideEmail;
     private String departureFrom;
     private LocalDateTime startTime;
     private LocalDateTime endDate;

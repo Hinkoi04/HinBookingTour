@@ -1,5 +1,6 @@
 package com.lvtn.java.modules.tripDetails.service;
 
+import com.lvtn.java.dto.departure.DepartureManifestResponse;
 import com.lvtn.java.dto.departure.DepartureResponse;
 import com.lvtn.java.dto.departure.DepartureUpsertRequest;
 
@@ -9,6 +10,7 @@ import java.util.Map;
 public interface DepartureService {
     List<DepartureResponse> findAll();
     DepartureResponse findById(Integer id);
+    DepartureManifestResponse getDepartureManifest(Integer departureId);
     DepartureResponse create(DepartureUpsertRequest request, Integer creatorId);
     DepartureResponse update(Integer id, DepartureUpsertRequest request, Integer updaterId);
     void delete(Integer id, Integer userId);

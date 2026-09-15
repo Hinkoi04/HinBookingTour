@@ -3,6 +3,7 @@ import { Plus, Lock, Loader2, Trash2 } from "lucide-react";
 import { DepartureTable, DepartureTrashTable } from "../components/DepartureTable";
 import { DepartureModal } from "../components/DepartureModal";
 import { DepartureDetailModal } from "../components/DepartureDetailModal"; 
+import { DeparturePassengersModal } from "../components/DeparturePassengersModal";
 import { departureService } from "../services/departureService";
 import { vehicleService } from "../../vehicles/services/vehicleService"; 
 import { tourService } from "../../tours/services/tourService";
@@ -40,6 +41,8 @@ export default function DepartureList() {
   const [formData, setFormData] = useState(initialFormState);
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isPassengersModalOpen, setIsPassengersModalOpen] = useState(false);
+  const [selectedDepartureForPassengers, setSelectedDepartureForPassengers] = useState(null);
   const [accountList, setAccountList] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,6 +63,11 @@ export default function DepartureList() {
   const handleViewDetail = (departureData) => {
     setSelectedDeparture(departureData);
     setIsDetailModalOpen(true);
+  };
+
+  const handleViewPassengers = (departureData) => {
+    setSelectedDepartureForPassengers(departureData);
+    setIsPassengersModalOpen(true);
   };
   
   const fetchData = async () => {
@@ -288,6 +296,7 @@ export default function DepartureList() {
                 <DepartureTable 
                   departures={paginatedList} 
                   onView={handleViewDetail} 
+                  onViewPassengers={handleViewPassengers}
                   onEdit={handleEdit} 
                   onDelete={handleDelete} 
                 />
@@ -328,6 +337,12 @@ export default function DepartureList() {
         onClose={() => setIsDetailModalOpen(false)} 
         departure={selectedDeparture} 
         accountList={accountList}
+        onViewPassengers={handleViewPassengers}
+      />
+      <DeparturePassengersModal
+        isOpen={isPassengersModalOpen}
+        onClose={() => setIsPassengersModalOpen(false)}
+        departure={selectedDepartureForPassengers}
       />
       <ConfirmModal
         isOpen={confirmConfig.isOpen}

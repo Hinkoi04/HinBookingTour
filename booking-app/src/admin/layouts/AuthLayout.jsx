@@ -18,11 +18,8 @@ function AuthLayout() {
           onClick={() => navigate("/")}
           className="flex items-center gap-3 hover:opacity-70 transition-opacity"
         >
-          <span className="text-base font-bold text-blue-600">Về trang chủ</span>
+          <img className="logo__img max-w-xs" src={logoTravelGo} alt="TRAVELGO" />
         </button>
-        <div className="flex items-center justify-center w-full  max-w-6xl">
-          <img className="logo__img " src={logoTravelGo} alt="TRAVELGO" />
-        </div>
       </header>
 
       {/* Main */}

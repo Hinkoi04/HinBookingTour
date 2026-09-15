@@ -41,8 +41,12 @@ export default function MainLayout() {
   const fetchUser = async () => {
     try {
       const me = await getMeService(); 
-    const fullUser = await accountService.getById(me.id);
-    setUser(fullUser);
+      if (me?.id) {
+        const fullUser = await accountService.getById(me.id).catch(() => me);
+        setUser(fullUser || me);
+      } else if (me) {
+        setUser(me);
+      }
     } catch (error) {
       console.error("Không thể lấy thông tin người dùng", error);
     }

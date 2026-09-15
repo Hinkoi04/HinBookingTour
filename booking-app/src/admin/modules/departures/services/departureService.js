@@ -23,6 +23,15 @@ export const departureService = {
     }
   },
 
+  getPassengers: async (id) => {
+    try {
+      const response = await apiClient.get(`/departure/${id}/passengers`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || "Lấy danh sách hành khách thất bại");
+    }
+  },
+
   create: async (data) => {
     try {
       const response = await apiClient.post('/departure', data);

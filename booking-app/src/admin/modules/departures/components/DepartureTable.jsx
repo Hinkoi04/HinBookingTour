@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { Edit, Trash2, Eye, Bus, Plane, Train, Ship, RotateCcw, ChevronUp, ChevronDown } from "lucide-react";
+import { Edit, Trash2, Eye, Bus, Plane, Train, Ship, RotateCcw, ChevronUp, ChevronDown, Users } from "lucide-react";
 import { usePermission } from "../../../hooks/usePermission";
 
-export function DepartureTable({ departures, onView, onEdit, onDelete }) {
+export function DepartureTable({ departures, onView, onViewPassengers, onEdit, onDelete }) {
   const { hasPermission } = usePermission();
 
   const [sortConfig, setSortConfig] = useState({ key: "tourTitle", direction: "asc" });
@@ -124,6 +124,14 @@ export function DepartureTable({ departures, onView, onEdit, onDelete }) {
                       title="Xem chi tiết"
                     >
                       <Eye className="w-4 h-4" />
+                    </button>
+
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onViewPassengers?.(departure); }} 
+                      className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors" 
+                      title="Xem danh sách khách hàng & Xuất Excel"
+                    >
+                      <Users className="w-4 h-4" />
                     </button>
                     
                     {hasPermission("UPDATE_OPERATIONS") && (
