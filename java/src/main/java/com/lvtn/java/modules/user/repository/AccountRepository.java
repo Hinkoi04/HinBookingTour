@@ -3,6 +3,7 @@ package com.lvtn.java.modules.user.repository;
 import com.lvtn.java.modules.user.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     List<Account> findByDeletedFalse();
     @Query("SELECT a FROM Account a JOIN FETCH a.role WHERE a.deleted = true")
     List<Account> findByDeletedTrue();
+    @Query("SELECT a FROM Account a JOIN FETCH a.role WHERE a.id = :id")
+    Optional<Account> findByIdWithRole(@Param("id") Integer id);
 
     long countByDeletedFalse();
     long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);

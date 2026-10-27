@@ -14,7 +14,7 @@ public class PermissionCheckService {
     public boolean hasPermission(Integer accountId, String permissionKey) {
         if (accountId == null || permissionKey == null) return false;
 
-        Account account = accountRepository.findById(accountId).orElse(null);
+        Account account = accountRepository.findByIdWithRole(accountId).orElse(null);
 
         if (account == null || account.getRole() == null) {
             return false;

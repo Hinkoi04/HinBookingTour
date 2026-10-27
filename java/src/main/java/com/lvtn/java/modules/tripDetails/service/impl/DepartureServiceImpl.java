@@ -382,4 +382,39 @@ public class DepartureServiceImpl implements DepartureService {
 
         departureRepository.delete(existing);
     }
+
+    @Override
+    public Map<String, Object> applyFlashSale(Integer updaterId) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Departure> upcomingDepartures = departureRepository.findAllActive().stream()
+                .filter(d -> d.getStartTime() != null && d.getStartTime().isAfter(now))
+                .collect(Collectors.toList());
+
+        int updated = 0;
+        for (Departure d : upcomingDepartures) {
+            long daysUntil = java.time.Duration.between(now, d.getStartTime()).toDays();
+            int discountPercent;
+            if (daysUntil < 3) {
+                discountPercent = 70;
+            } else if (daysUntil < 7) {
+                discountPercent = 55;
+            } else if (daysUntil < 15) {
+                discountPercent = 45;
+            } else if (daysUntil < 30) {
+                discountPercent = 30;
+            } else {
+                continue; // no flash sale for departures >= 30 days away
+            }
+            d.setDiscount(discountPercent);
+            d.setUpdatedBy(updaterId);
+            d.setUpdatedAt(now);
+            departureRepository.save(d);
+            updated++;
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updated", updated);
+        result.put("message", "Đã áp dụng Flash Sale cho " + updated + " lịch khởi hành sắp tới");
+        return result;
+    }
 }

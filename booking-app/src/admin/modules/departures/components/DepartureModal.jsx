@@ -114,11 +114,11 @@ export function DepartureModal({ isOpen, onClose, onSubmit, formData, setFormDat
     const sBaby = parseInt(formData.stockBaby || 0);
     const disc = parseInt(formData.discount || 0);
 
-    if (pAdult < 0 || pChild < 0 || pBaby < 0) { setAlertMessage("⚠️ Giá vé không được là số âm!"); return; }
-    if (sAdult < 0 || sChild < 0 || sBaby < 0) { setAlertMessage("⚠️ Số lượng chỗ không được là số âm!"); return; }
-    if (disc < 0 || disc > 100) { setAlertMessage("⚠️ Khuyến mãi phải từ 0 đến 100%!"); return; }
-    if (pChild > 0 && pAdult <= pChild) { setAlertMessage("⚠️ Giá vé NGƯỜI LỚN phải LỚN HƠN giá vé TRẺ EM!"); return; }
-    if (pBaby > 0 && pChild <= pBaby) { setAlertMessage("⚠️ Giá vé TRẺ EM phải LỚN HƠN giá vé EM BÉ!"); return; }
+    if (pAdult < 0 || pChild < 0 || pBaby < 0) { setAlertMessage("Giá vé không được là số âm!"); return; }
+    if (sAdult < 0 || sChild < 0 || sBaby < 0) { setAlertMessage("Số lượng chỗ không được là số âm!"); return; }
+    if (disc < 0 || disc > 100) { setAlertMessage("Khuyến mãi phải từ 0 đến 100%!"); return; }
+    if (pChild > 0 && pAdult <= pChild) { setAlertMessage("Giá vé NGƯỜI LỚN phải LỚN HƠN giá vé TRẺ EM!"); return; }
+    if (pBaby > 0 && pChild <= pBaby) { setAlertMessage("Giá vé TRẺ EM phải LỚN HƠN giá vé EM BÉ!"); return; }
 
     onSubmit();
   };
@@ -174,7 +174,7 @@ export function DepartureModal({ isOpen, onClose, onSubmit, formData, setFormDat
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
             </div>
             {!formData.tourId && searchTerm && (
-              <p className="text-xs text-red-500 font-medium animate-pulse mt-1">⚠️ Vui lòng nhấp chọn một Tour từ danh sách bên dưới!</p>
+              <p className="text-xs text-red-500 font-medium animate-pulse mt-1">Vui lòng nhấp chọn một Tour từ danh sách bên dưới!</p>
             )}
             {isDropdownOpen && (
               <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 shadow-lg rounded-lg max-h-48 overflow-y-auto">

@@ -104,4 +104,15 @@ public class DepartureController {
         departureService.hardDelete(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/flash-sale")
+    @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'UPDATE_OPERATIONS')")
+    public ResponseEntity<?> applyFlashSale() {
+        try {
+            Integer updaterId = securityUtils.getCurrentAccountId();
+            return ResponseEntity.ok(departureService.applyFlashSale(updaterId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

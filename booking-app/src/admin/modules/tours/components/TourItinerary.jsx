@@ -36,8 +36,8 @@ export function TourItinerary({ itinerary, onAddDay, onRemoveDay, onUpdateDay })
                   onChange={(e) => onUpdateDay(index, "status", e.target.value)}
                   className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
-                  <option value="active">🟢 Đang hoạt động</option>
-                  <option value="inactive">🔴 Ẩn</option>
+                  <option value="active">Đang hoạt động</option>
+                  <option value="inactive">Ẩn</option>
                 </select>
               </div>
               

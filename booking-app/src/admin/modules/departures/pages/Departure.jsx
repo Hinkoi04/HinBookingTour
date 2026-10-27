@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Lock, Loader2, Trash2 } from "lucide-react"; 
+import { Plus, Loader2, Trash2, Zap, Search } from "lucide-react"; 
 import { DepartureTable, DepartureTrashTable } from "../components/DepartureTable";
 import { DepartureModal } from "../components/DepartureModal";
 import { DepartureDetailModal } from "../components/DepartureDetailModal"; 
@@ -46,6 +46,8 @@ export default function DepartureList() {
   const [accountList, setAccountList] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isFlashSaleLoading, setIsFlashSaleLoading] = useState(false);
   const itemsPerPage = 9;
 
   const [confirmConfig, setConfirmConfig] = useState({
@@ -60,6 +62,10 @@ export default function DepartureList() {
     setCurrentPage(1);
   }, [activeTab]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   const handleViewDetail = (departureData) => {
     setSelectedDeparture(departureData);
     setIsDetailModalOpen(true);
@@ -68,6 +74,27 @@ export default function DepartureList() {
   const handleViewPassengers = (departureData) => {
     setSelectedDepartureForPassengers(departureData);
     setIsPassengersModalOpen(true);
+  };
+
+  const handleFlashSale = () => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Xác nhận Flash Sale",
+      message: "Áp dụng Flash Sale tự động cho các lịch khởi hành sắp tới?\n\n• Còn < 30 ngày → giảm 30%\n• Còn < 15 ngày → giảm 45%\n• Còn < 7 ngày → giảm 55%\n• Còn < 3 ngày → giảm 70%",
+      variant: "info",
+      action: async () => {
+        try {
+          setIsFlashSaleLoading(true);
+          const result = await departureService.applyFlashSale();
+          alert(result.message || "Flash Sale đã được áp dụng!");
+          fetchData();
+        } catch (error) {
+          alert("Lỗi: " + error.message);
+        } finally {
+          setIsFlashSaleLoading(false);
+        }
+      }
+    });
   };
   
   const fetchData = async () => {
@@ -239,9 +266,16 @@ export default function DepartureList() {
   };
 
   const currentList = activeTab === "active" ? departures : trashDepartures;
-  const totalPages = Math.ceil(currentList.length / itemsPerPage);
+  const filteredList = searchQuery.trim()
+    ? currentList.filter(d =>
+        (d.tourTitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.departureFrom || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.guideName || "").toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : currentList;
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedList = currentList.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedList = filteredList.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
@@ -249,7 +283,31 @@ export default function DepartureList() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Quản lý Lịch khởi hành</h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {/* Search box */}
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              id="departure-search"
+              type="text"
+              placeholder="Tìm tour, điểm đi, HDV..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
+            />
+          </div>
+          {/* Flash Sale button */}
+          {canCreate && (
+            <button
+              id="btn-flash-sale"
+              onClick={handleFlashSale}
+              disabled={isFlashSaleLoading}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all font-medium shadow-sm disabled:opacity-60"
+            >
+              {isFlashSaleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+              Flash Sale
+            </button>
+          )}
           {canCreate && (
             <button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition-colors font-medium shadow-sm">
               <Plus className="w-4 h-4" /> Thêm lịch

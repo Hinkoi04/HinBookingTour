@@ -84,5 +84,14 @@ export const departureService = {
     } catch (error) {
       throw new Error(error.response?.data?.message || error.response?.data || "Xóa vĩnh viễn thất bại");
     }
+  },
+
+  applyFlashSale: async () => {
+    try {
+      const response = await apiClient.post('/departure/flash-sale');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || "Áp dụng Flash Sale thất bại");
+    }
   }
 };

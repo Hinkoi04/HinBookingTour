@@ -341,8 +341,8 @@ export default function TourForm() {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none font-medium"
                 >
-                  <option value="active">🟢 Hoạt động</option>
-                  <option value="inactive">⚪ Tạm dừng</option>
+                  <option value="active">Hoạt động</option>
+                  <option value="inactive">Tạm dừng</option>
                 </select>
               </div>
             </div>
