@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Compass, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ShieldCheck, CreditCard, Award } from "lucide-react";
+import { Compass, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ShieldCheck, CreditCard, Award, Landmark, Wallet, Banknote } from "lucide-react";
 import logoImg from "../../assets/Client/images/logotravelgo.png";
 
 export function Footer() {
@@ -72,11 +72,11 @@ export function Footer() {
 
             <div className="mt-5">
               <p className="text-xs text-slate-500 mb-2">Chấp nhận thanh toán:</p>
-              <div className="flex items-center gap-2 text-xl">
-                <span>🏦</span>
-                <span>💳</span>
-                <span>💜</span>
-                <span>💙</span>
+              <div className="flex items-center gap-2">
+                <Landmark className="w-5 h-5" aria-hidden="true" />
+                <CreditCard className="w-5 h-5" aria-hidden="true" />
+                <Wallet className="w-5 h-5" aria-hidden="true" />
+                <Banknote className="w-5 h-5" aria-hidden="true" />
               </div>
             </div>
           </div>

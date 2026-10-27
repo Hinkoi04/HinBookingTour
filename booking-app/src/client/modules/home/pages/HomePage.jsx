@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Clock, MapPin, ArrowRight, Search, Calendar, ChevronRight,
-  Send, Phone, Mail, CheckCircle, Filter, X
+  Send, Phone, Mail, CheckCircle, Filter, X, Plane, Flame,
+  Trophy, CircleDollarSign, ShieldCheck, Star, LockKeyhole
 } from "lucide-react";
 import { homeService } from "../services/homeService";
 import { TourCard, FlashSaleCard, TourSkeleton } from "../components";
@@ -149,7 +150,7 @@ export function HomePage() {
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 w-full flex flex-col items-center justify-center text-center">
           <span className="inline-flex items-center gap-2 bg-blue-500/20 backdrop-blur-md text-blue-200 text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full border border-blue-400/30 mb-6 shadow-sm">
-            ✈️ Khám phá thế giới cùng TravelGo
+            <Plane className="w-4 h-4" aria-hidden="true" /> Khám phá thế giới cùng TravelGo
           </span>
 
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-tight mb-6 tracking-tight">
@@ -250,7 +251,7 @@ export function HomePage() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl p-12 text-center border border-gray-200 max-w-lg mx-auto">
-                <p className="text-4xl mb-3">🔍</p>
+                <Search className="w-10 h-10 mx-auto mb-3 text-gray-400" aria-hidden="true" />
                 <h3 className="text-lg font-bold text-gray-800 mb-2">Không tìm thấy tour phù hợp</h3>
                 <p className="text-sm text-gray-500 mb-6">Hãy thử tìm kiếm với từ khóa khác như "Hạ Long", "Đà Nẵng", "Nhật Bản"...</p>
                 <button
@@ -272,7 +273,9 @@ export function HomePage() {
             <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="p-2 bg-white/20 rounded-xl text-2xl">🔥</span>
+                  <span className="p-2 bg-white/20 rounded-xl">
+                    <Flame className="w-6 h-6" aria-hidden="true" />
+                  </span>
                   <h2 className="text-3xl font-black text-white">Flash Sale Giờ Vàng</h2>
                 </div>
                 <p className="text-red-100 text-sm sm:text-base">
@@ -403,13 +406,13 @@ export function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: "🏆", title: "10 Năm Kinh Nghiệm", desc: "Đội ngũ chuyên nghiệp với hàng nghìn hành trình hoàn hảo" },
-              { icon: "💰", title: "Giá Tốt Nhất", desc: "Cam kết giá cạnh tranh, chính sách hoàn tiền minh bạch" },
-              { icon: "🛡️", title: "An Toàn - Uy Tín", desc: "Bảo hiểm toàn diện, hỗ trợ 24/7 trong suốt chuyến đi" },
-              { icon: "⭐", title: "98% Hài Lòng", desc: "Khách hàng luôn tin tưởng và tiếp tục lựa chọn đồng hành" },
+              { icon: Trophy, title: "10 Năm Kinh Nghiệm", desc: "Đội ngũ chuyên nghiệp với hàng nghìn hành trình hoàn hảo" },
+              { icon: CircleDollarSign, title: "Giá Tốt Nhất", desc: "Cam kết giá cạnh tranh, chính sách hoàn tiền minh bạch" },
+              { icon: ShieldCheck, title: "An Toàn - Uy Tín", desc: "Bảo hiểm toàn diện, hỗ trợ 24/7 trong suốt chuyến đi" },
+              { icon: Star, title: "98% Hài Lòng", desc: "Khách hàng luôn tin tưởng và tiếp tục lựa chọn đồng hành" },
             ].map((item) => (
               <div key={item.title} className="text-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
-                <div className="text-5xl mb-4">{item.icon}</div>
+                <item.icon className="w-12 h-12 mx-auto mb-4" aria-hidden="true" />
                 <h3 className="text-white font-bold text-base mb-2">{item.title}</h3>
                 <p className="text-blue-200 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
               </div>
@@ -541,7 +544,8 @@ export function HomePage() {
                   </button>
 
                   <p className="text-[11px] text-gray-400 text-center">
-                    🔒 Chúng tôi tôn trọng quyền riêng tư và cam kết không gửi thư rác.
+                    <LockKeyhole className="inline w-3 h-3 mr-1" aria-hidden="true" />
+                    Chúng tôi tôn trọng quyền riêng tư và cam kết không gửi thư rác.
                   </p>
                 </form>
               )}

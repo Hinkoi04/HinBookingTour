@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, X, Star, Send, ThumbsUp, Image as ImageIcon } from "lucide-react";
+import { Check, X, Star, Send, ThumbsUp, Image as ImageIcon, Sunrise, Sun, Sunset, Moon, Clock, Search } from "lucide-react";
 import { StarRow } from "./StarRow";
 
 export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
@@ -153,34 +153,34 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
                             if (lower.includes("sáng")) {
                               return {
                                 label: tag,
-                                icon: "🌅",
+                                icon: Sunrise,
                                 bg: "bg-amber-100/80 text-amber-900 border-amber-200",
                               };
                             }
                             if (lower.includes("trưa")) {
                               return {
                                 label: tag,
-                                icon: "☀️",
+                                icon: Sun,
                                 bg: "bg-orange-100/80 text-orange-900 border-orange-200",
                               };
                             }
                             if (lower.includes("chiều")) {
                               return {
                                 label: tag,
-                                icon: "🌇",
+                                icon: Sunset,
                                 bg: "bg-sky-100/80 text-sky-900 border-sky-200",
                               };
                             }
                             if (lower.includes("tối") || lower.includes("đêm")) {
                               return {
                                 label: tag,
-                                icon: "🌙",
+                                icon: Moon,
                                 bg: "bg-indigo-100/80 text-indigo-900 border-indigo-200",
                               };
                             }
                             return {
                               label: tag,
-                              icon: "⏱️",
+                              icon: Clock,
                               bg: "bg-blue-100/80 text-blue-900 border-blue-200",
                             };
                           };
@@ -200,7 +200,7 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
                                 <div className="space-y-1">
                                   <div>
                                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border font-bold text-xs ${badge.bg}`}>
-                                      <span>{badge.icon}</span>
+                                      <badge.icon className="w-3.5 h-3.5" aria-hidden="true" />
                                       <span>{badge.label}</span>
                                     </span>
                                   </div>
@@ -251,7 +251,7 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
                     }}
                   />
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                    <span>🔍 Xem phóng to</span>
+                    <><Search className="w-3.5 h-3.5" aria-hidden="true" /> Xem phóng to</>
                   </div>
                 </div>
               ))}
@@ -298,7 +298,10 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
                   const pct = total ? (count / total) * 100 : 0;
                   return (
                     <div key={s} className="flex items-center gap-2 text-xs">
-                      <span className="text-gray-500 w-8">{s} ★</span>
+                      <span className="text-gray-500 w-8 flex items-center gap-1">
+                        {s}
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                      </span>
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
                         <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
                       </div>

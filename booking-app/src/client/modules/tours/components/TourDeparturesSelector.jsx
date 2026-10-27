@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Users, Check, Tag, Bus } from "lucide-react";
+import { Calendar, MapPin, Users, Check, Tag, Bus, Info } from "lucide-react";
 
 const fmt = (v) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v);
@@ -56,7 +56,7 @@ export function TourDeparturesSelector({
           Hiện tại chuyến đi này chưa có đợt khởi hành sắp tới hoặc các đợt trước đó đều đã khởi hành.
         </p>
         <div className="bg-blue-50/70 text-blue-800 rounded-xl p-3.5 text-xs flex items-center gap-2">
-          <span>ℹ️</span>
+          <Info className="w-4 h-4 shrink-0" aria-hidden="true" />
           <span>
             Quý khách vui lòng liên hệ hotline <strong className="font-semibold">1800 1234</strong> để được cập nhật lịch tour và tư vấn lịch khởi hành mới nhất.
           </span>

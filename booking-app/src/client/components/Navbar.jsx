@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronDown, Phone, Menu, X, Shield, Sparkles, User, LogIn, LogOut,
-  MapPin, Globe, Award
+  MapPin, Globe, Award, Flame
 } from "lucide-react";
 import logoImg from "../../assets/Client/images/logotravelgo.png";
 import { authService } from "../modules/auth/services/authService";
@@ -107,7 +107,7 @@ export function Navbar() {
             href="/home#flash-sale"
             className="px-3 py-2 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1"
           >
-            Flash Sale 🔥
+            <Flame className="w-4 h-4" aria-hidden="true" /> Flash Sale
           </a>
 
           {/* Tour Trong Nước Dropdown */}
@@ -292,9 +292,9 @@ export function Navbar() {
           <a
             href="/home#flash-sale"
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
           >
-            Flash Sale Giờ Vàng 🔥
+            <Flame className="w-4 h-4" aria-hidden="true" /> Flash Sale Giờ Vàng
           </a>
 
           {/* Domestic sub */}

@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useState } from "react";
-import { ChevronRight, Check, AlertCircle } from "lucide-react";
+import { ChevronRight, Check, AlertCircle, Banknote } from "lucide-react";
 import { paymentService } from "../services/paymentService";
 import {
   PaymentMethods,
@@ -130,7 +130,7 @@ export function PaymentPage() {
             {selectedMethod === "cod" && (
               <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-3xl">💵</span>
+                  <Banknote className="w-8 h-8 text-emerald-600" aria-hidden="true" />
                   <div>
                     <h3 className="font-bold text-gray-900 text-base">Thanh toán tiền mặt khi nhận vé (COD)</h3>
                     <p className="text-xs text-gray-500">Giao vé tận tay hoặc thanh toán trước giờ khởi hành</p>
@@ -169,7 +169,7 @@ export function PaymentPage() {
             {/* Card / ZaloPay placeholder */}
             {(selectedMethod === "zalopay" || selectedMethod === "card") && (
               <div className="bg-white rounded-2xl p-6 shadow-sm text-center py-12 border border-gray-100">
-                <p className="text-4xl mb-3">{currentMethod.icon}</p>
+                <currentMethod.icon className="w-10 h-10 mx-auto mb-3 text-blue-600" aria-hidden="true" />
                 <p className="text-gray-700 font-medium">
                   Bạn sẽ được chuyển đến cổng thanh toán bảo mật {currentMethod.label}
                 </p>

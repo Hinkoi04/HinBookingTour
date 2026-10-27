@@ -1,10 +1,11 @@
 import { apiClient } from "../../../services/apiClient";
+import { Building2, Wallet, CreditCard, Banknote } from "lucide-react";
 
 export const paymentMethodsList = [
   {
     id: "bank",
     label: "Chuyển khoản ngân hàng",
-    icon: "🏦",
+    icon: Building2,
     desc: "Vietcombank, Techcombank, BIDV, ACB...",
     detail: {
       bank: "Ngân hàng Vietcombank",
@@ -15,7 +16,7 @@ export const paymentMethodsList = [
   {
     id: "momo",
     label: "Ví MoMo",
-    icon: "💜",
+    icon: Wallet,
     desc: "Thanh toán nhanh qua ví điện tử MoMo",
     detail: {
       phone: "0901 234 567",
@@ -25,21 +26,21 @@ export const paymentMethodsList = [
   {
     id: "zalopay",
     label: "ZaloPay",
-    icon: "💙",
+    icon: Wallet,
     desc: "Thanh toán qua ví ZaloPay tiện lợi",
     detail: null,
   },
   {
     id: "card",
     label: "Thẻ tín dụng / ghi nợ",
-    icon: "💳",
+    icon: CreditCard,
     desc: "Visa, Mastercard, JCB",
     detail: null,
   },
   {
     id: "cod",
     label: "Thanh toán khi nhận vé (COD)",
-    icon: "💵",
+    icon: Banknote,
     desc: "Thanh toán tiền mặt cho nhân viên giao vé hoặc tại quầy trước giờ khởi hành",
     detail: {
       address: "Giao vé tận nhà hoặc tại quầy TravelGo",

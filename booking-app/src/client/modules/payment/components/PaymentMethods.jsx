@@ -20,7 +20,7 @@ export function PaymentMethods({ methods = [], selectedMethod, onSelect }) {
               onChange={() => onSelect(pm.id)}
               className="hidden"
             />
-            <span className="text-2xl">{pm.icon}</span>
+            <pm.icon className="w-6 h-6" aria-hidden="true" />
             <div className="flex-1">
               <p className="font-bold text-gray-800 text-sm">{pm.label}</p>
               <p className="text-xs text-gray-500 mt-0.5">{pm.desc}</p>

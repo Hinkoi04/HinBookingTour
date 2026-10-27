@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, LogIn, ArrowRight, CheckCircle } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, LogIn, ArrowRight, CheckCircle, Globe, Facebook } from "lucide-react";
 import { authService } from "../services/authService";
 import { toast } from "sonner";
 
@@ -134,7 +134,7 @@ export function LoginForm() {
           }}
           className="flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
         >
-          <span className="text-base">🌐</span> Google
+          <Globe className="w-4 h-4" aria-hidden="true" /> Google
         </button>
         <button
           type="button"
@@ -146,7 +146,7 @@ export function LoginForm() {
           }}
           className="flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
         >
-          <span className="text-base text-blue-600">📘</span> Facebook
+          <Facebook className="w-4 h-4 text-blue-600" aria-hidden="true" /> Facebook
         </button>
       </div>
 

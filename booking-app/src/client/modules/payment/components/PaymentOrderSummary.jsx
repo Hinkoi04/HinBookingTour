@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle2, Clock, MapPin, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { CheckCircle2, Clock, MapPin, Users, ChevronDown, ChevronUp, CalendarDays } from "lucide-react";
 import { useState } from "react";
 
 const fmt = (v) =>
@@ -158,7 +158,7 @@ export function PaymentOrderSummary({
           {tour.departure?.departureFrom || tour.departureFrom}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-gray-400 text-xs">📅</span>
+          <CalendarDays className="w-4 h-4 text-gray-400" aria-hidden="true" />
           <span>{date ? new Date(date).toLocaleDateString("vi-VN") : "Chưa chọn"}</span>
         </div>
         <div className="flex items-center gap-2">

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CalendarDays } from "lucide-react";
 
 const fmt = (v) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v);
@@ -47,7 +48,7 @@ export function FlashSaleCard({ tour, item }) {
         {/* Departure Date Badge */}
         {dateText && (
           <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-yellow-300 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
-            <span>📅</span> {dateText}
+            <CalendarDays className="w-3.5 h-3.5" aria-hidden="true" /> {dateText}
           </div>
         )}
 

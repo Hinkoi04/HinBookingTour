@@ -1,4 +1,4 @@
-import { Shield, Clock, MapPin, Users, CheckCircle2 } from "lucide-react";
+import { Shield, Clock, MapPin, Users, CheckCircle2, CalendarDays } from "lucide-react";
 
 const fmt = (v) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v);
@@ -122,7 +122,7 @@ export function BookingOrderSummary({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-gray-400 text-xs">📅</span>
+          <CalendarDays className="w-4 h-4 text-gray-400" aria-hidden="true" />
           <span className="font-medium text-gray-800">
             {date
               ? new Date(date).toLocaleDateString("vi-VN", {

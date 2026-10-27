@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Check, Clock } from "lucide-react";
+import { Copy, Check, Clock, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 const fmt = (v) =>
@@ -70,7 +70,7 @@ export function MoMoDetail({ deposit, orderId }) {
       <h3 className="font-bold text-gray-800 mb-4">Thanh toán qua MoMo</h3>
       <div className="flex flex-col items-center gap-4">
         <div className="w-40 h-40 bg-pink-50 rounded-2xl flex items-center justify-center text-6xl border-2 border-pink-200">
-          💜
+          <Wallet className="w-12 h-12 text-pink-600" aria-hidden="true" />
         </div>
         <div className="text-center">
           <p className="text-sm text-gray-500">Chuyển đến số:</p>
