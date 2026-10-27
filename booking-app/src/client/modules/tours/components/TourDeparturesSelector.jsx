@@ -25,25 +25,40 @@ function formatTileDate(dateStr) {
   return { dayMonth: `${day}/${month}`, year: String(year) };
 }
 
+function isUpcoming(dep) {
+  if (!dep || !dep.startTime) return false;
+  const start = new Date(dep.startTime);
+  if (isNaN(start.getTime())) return false;
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+  if (start < todayStart) return false;
+  const status = (dep.status || "").toLowerCase();
+  if (status === "cancelled" || status === "completed" || status === "departed") return false;
+  if (dep.deleted) return false;
+  return true;
+}
+
 export function TourDeparturesSelector({
   departures = [],
   selectedDeparture,
   onSelect,
   defaultTourPrice = 0,
 }) {
-  if (!departures || departures.length === 0) {
+  const upcomingDepartures = departures.filter(isUpcoming);
+
+  if (!upcomingDepartures || upcomingDepartures.length === 0) {
     return (
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-dashed border-gray-200">
         <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-base">
           <Calendar className="w-5 h-5 text-blue-600" /> Lịch khởi hành
         </h3>
         <p className="text-sm text-gray-500 mb-3">
-          Tour hiện đang mở bán theo yêu cầu hoặc lịch khởi hành định kỳ hàng tuần.
+          Hiện tại chuyến đi này chưa có đợt khởi hành sắp tới hoặc các đợt trước đó đều đã khởi hành.
         </p>
         <div className="bg-blue-50/70 text-blue-800 rounded-xl p-3.5 text-xs flex items-center gap-2">
           <span>ℹ️</span>
           <span>
-            Bạn có thể chọn ngày khởi hành mong muốn tại cột Đặt tour bên phải hoặc liên hệ hotline để nhận lịch tour mới nhất.
+            Quý khách vui lòng liên hệ hotline <strong className="font-semibold">1800 1234</strong> để được cập nhật lịch tour và tư vấn lịch khởi hành mới nhất.
           </span>
         </div>
       </div>
@@ -58,16 +73,16 @@ export function TourDeparturesSelector({
             <Calendar className="w-5 h-5 text-blue-600" /> Lịch khởi hành có sẵn
           </h3>
           <p className="text-xs text-gray-500 mt-1">
-            Chọn ngày khởi hành phù hợp với lịch trình của bạn:
+            Chỉ hiển thị các chuyến sắp khởi hành trong thời gian tới:
           </p>
         </div>
         <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full">
-          {departures.length} đợt mở bán
+          {upcomingDepartures.length} đợt mở bán
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {departures.map((dep) => {
+        {upcomingDepartures.map((dep) => {
           const isSelected = selectedDeparture?.id === dep.id;
           const { dayMonth, year } = formatTileDate(dep.startTime);
           const priceText = formatShortPrice(dep.priceAdult || defaultTourPrice);

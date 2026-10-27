@@ -108,28 +108,121 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
 
         {/* Itinerary Tab */}
         {activeTab === "itinerary" && (
-          <div className="space-y-1">
-            {tour.itinerary?.map((day, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-black shrink-0 shadow-sm">
-                    {day.day}
-                  </div>
-                  {i < tour.itinerary.length - 1 && <div className="w-0.5 bg-blue-100 flex-1 my-1" />}
-                </div>
-                <div className="pb-6 flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-800 mb-2 text-base">{day.title}</h4>
-                  <ul className="space-y-1.5">
-                    {day.activities?.map((act, j) => (
-                      <li key={j} className="text-sm text-gray-600 flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 shrink-0" />
-                        <span>{act}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          <div className="space-y-6">
+            {!tour.itinerary || tour.itinerary.length === 0 ? (
+              <div className="text-center py-12 text-gray-500 text-sm">
+                Lịch trình chi tiết đang được cập nhật. Quý khách vui lòng liên hệ hotline 1800 1234 để nhận thông tin đầy đủ.
               </div>
-            ))}
+            ) : (
+              tour.itinerary.map((day, i) => (
+                <div key={i} className="flex gap-4">
+                  {/* Timeline Day Circle & Connecting Line */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl flex items-center justify-center text-sm font-black shrink-0 shadow-md shadow-blue-500/20">
+                      {day.day}
+                    </div>
+                    {i < tour.itinerary.length - 1 && (
+                      <div className="w-0.5 bg-blue-100 flex-1 my-2" />
+                    )}
+                  </div>
+
+                  {/* Day Content Card */}
+                  <div className="pb-6 flex-1 min-w-0">
+                    <div className="bg-gray-50/80 rounded-2xl p-4 sm:p-5 border border-gray-100 hover:border-blue-100 transition-colors">
+                      <div className="flex items-center gap-2 mb-3.5 flex-wrap">
+                        <span className="text-xs font-black text-blue-700 bg-blue-100/80 px-2.5 py-1 rounded-lg">
+                          Ngày {day.day}
+                        </span>
+                        <h4 className="font-black text-gray-900 text-base">
+                          {day.title}
+                        </h4>
+                      </div>
+
+                      {/* Activities List */}
+                      <div className="space-y-2.5">
+                        {day.activities?.map((act, j) => {
+                          const isObj = typeof act === "object" && act !== null;
+                          const timeTag = isObj ? act.timeTag : null;
+                          let text = isObj ? act.text : String(act || "");
+
+                          // Clean any residual HTML tags
+                          text = text.replace(/<[^>]+>/g, "").trim();
+
+                          const getTimeBadge = (tag) => {
+                            const lower = (tag || "").toLowerCase();
+                            if (lower.includes("sáng")) {
+                              return {
+                                label: tag,
+                                icon: "🌅",
+                                bg: "bg-amber-100/80 text-amber-900 border-amber-200",
+                              };
+                            }
+                            if (lower.includes("trưa")) {
+                              return {
+                                label: tag,
+                                icon: "☀️",
+                                bg: "bg-orange-100/80 text-orange-900 border-orange-200",
+                              };
+                            }
+                            if (lower.includes("chiều")) {
+                              return {
+                                label: tag,
+                                icon: "🌇",
+                                bg: "bg-sky-100/80 text-sky-900 border-sky-200",
+                              };
+                            }
+                            if (lower.includes("tối") || lower.includes("đêm")) {
+                              return {
+                                label: tag,
+                                icon: "🌙",
+                                bg: "bg-indigo-100/80 text-indigo-900 border-indigo-200",
+                              };
+                            }
+                            return {
+                              label: tag,
+                              icon: "⏱️",
+                              bg: "bg-blue-100/80 text-blue-900 border-blue-200",
+                            };
+                          };
+
+                          const badge = timeTag ? getTimeBadge(timeTag) : null;
+
+                          return (
+                            <div
+                              key={j}
+                              className={`p-3.5 rounded-xl text-sm leading-relaxed ${
+                                badge
+                                  ? "bg-white border border-gray-200/70 shadow-xs"
+                                  : "flex items-start gap-2.5 text-gray-700 bg-white border border-gray-100"
+                              }`}
+                            >
+                              {badge ? (
+                                <div className="space-y-1">
+                                  <div>
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border font-bold text-xs ${badge.bg}`}>
+                                      <span>{badge.icon}</span>
+                                      <span>{badge.label}</span>
+                                    </span>
+                                  </div>
+                                  <p className="text-gray-700 text-sm leading-relaxed pl-0.5 pt-0.5">
+                                    {text}
+                                  </p>
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 shrink-0 shadow-xs" />
+                                  <span className="text-gray-700">{text}</span>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
 

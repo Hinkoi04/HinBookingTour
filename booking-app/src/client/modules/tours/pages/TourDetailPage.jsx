@@ -19,6 +19,7 @@ export function TourDetailPage() {
   const [loading, setLoading] = useState(true);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
+  const [babies, setBabies] = useState(0);
   const [date, setDate] = useState("");
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -88,11 +89,20 @@ export function TourDetailPage() {
 
   const unitPrice = selectedDeparture?.priceAdult
     ? Number(selectedDeparture.priceAdult)
-    : tour.price;
+    : (tour.price || 0);
   const childPrice = selectedDeparture?.priceChildren
     ? Number(selectedDeparture.priceChildren)
-    : tour.price * 0.5;
-  const totalPrice = adults * unitPrice + children * childPrice;
+    : Math.round(unitPrice * 0.5);
+  const babyPrice = selectedDeparture?.priceBaby !== undefined && selectedDeparture?.priceBaby !== null
+    ? Number(selectedDeparture.priceBaby)
+    : 0;
+
+  const totalPrice = adults * unitPrice + children * childPrice + babies * babyPrice;
+
+  const stockAdult = selectedDeparture?.stockAdult !== undefined ? Number(selectedDeparture.stockAdult) : (tour.maxPeople || 50);
+  const stockChildren = selectedDeparture?.stockChildren !== undefined ? Number(selectedDeparture.stockChildren) : 20;
+  const stockBaby = selectedDeparture?.stockBaby !== undefined ? Number(selectedDeparture.stockBaby) : 10;
+
   const avgRating =
     reviews.length > 0
       ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
@@ -106,10 +116,31 @@ export function TourDetailPage() {
   };
 
   const handleBook = () => {
-    if (!date) {
-      toast.error("Vui lòng chọn ngày khởi hành");
+    if (!tour.departures || tour.departures.length === 0) {
+      toast.error("Hiện tại tour chưa có lịch khởi hành sắp tới.");
       return;
     }
+    if (!selectedDeparture || !date) {
+      toast.error("Vui lòng chọn đợt khởi hành");
+      return;
+    }
+    if (adults < 1) {
+      toast.error("Chuyến đi cần ít nhất 1 người lớn đi cùng");
+      return;
+    }
+    if (adults > stockAdult) {
+      toast.error(`Số lượng người lớn (${adults}) vượt quá số chỗ còn lại (${stockAdult} chỗ)`);
+      return;
+    }
+    if (children > stockChildren) {
+      toast.error(`Số lượng trẻ em (${children}) vượt quá số chỗ còn lại (${stockChildren} chỗ)`);
+      return;
+    }
+    if (babies > stockBaby) {
+      toast.error(`Số lượng em bé (${babies}) vượt quá số chỗ còn lại (${stockBaby} chỗ)`);
+      return;
+    }
+
     navigate("/booking", {
       state: {
         tour: {
@@ -120,6 +151,10 @@ export function TourDetailPage() {
         date,
         adults,
         children,
+        babies,
+        unitPrice,
+        childPrice,
+        babyPrice,
         totalPrice,
       },
     });
@@ -202,8 +237,14 @@ export function TourDetailPage() {
             setAdults={setAdults}
             children={children}
             setChildren={setChildren}
+            babies={babies}
+            setBabies={setBabies}
             unitPrice={unitPrice}
             childPrice={childPrice}
+            babyPrice={babyPrice}
+            stockAdult={stockAdult}
+            stockChildren={stockChildren}
+            stockBaby={stockBaby}
             totalPrice={totalPrice}
             onBook={handleBook}
           />

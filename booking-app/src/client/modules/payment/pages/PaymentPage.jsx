@@ -12,11 +12,17 @@ import {
 import { BookingSteps } from "../../booking/components";
 import { toast } from "sonner";
 
+const fmt = (v) =>
+  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v);
+
 export function PaymentPage() {
   const location = useLocation();
   const state = location.state;
 
-  const [selectedMethod, setSelectedMethod] = useState("bank");
+  const paymentPlan = state?.paymentPlan || "half";
+  const [selectedMethod, setSelectedMethod] = useState(() => {
+    return paymentPlan === "cod" ? "cod" : "bank";
+  });
   const [agreed, setAgreed] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -32,7 +38,19 @@ export function PaymentPage() {
     );
   }
 
-  const { tour, date, adults, children, totalPrice, deposit, customer } = state;
+  const {
+    tour,
+    date,
+    adults = 1,
+    children = 0,
+    babies = 0,
+    totalPrice = 0,
+    deposit = 0,
+    remainingAmount = 0,
+    customer,
+    passengers = [],
+  } = state;
+
   const orderId = `TG${Date.now().toString().slice(-8)}`;
   const paymentMethods = paymentService.getPaymentMethods();
   const currentMethod = paymentMethods.find((m) => m.id === selectedMethod);
@@ -49,9 +67,13 @@ export function PaymentPage() {
       date,
       adults,
       children,
+      babies,
       totalPrice,
       deposit,
+      remainingAmount,
+      paymentPlan,
       customer,
+      passengers,
       paymentMethod: selectedMethod,
     });
 
@@ -66,6 +88,10 @@ export function PaymentPage() {
         date={date}
         customer={customer}
         deposit={deposit}
+        totalPrice={totalPrice}
+        paymentPlan={paymentPlan}
+        paymentMethod={selectedMethod}
+        passengers={passengers}
       />
     );
   }
@@ -83,7 +109,7 @@ export function PaymentPage() {
             {tour.name}
           </Link>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-800 font-medium">Thanh toán</span>
+          <span className="text-gray-800 font-medium">Thanh toán & Xác nhận</span>
         </div>
       </div>
 
@@ -99,6 +125,32 @@ export function PaymentPage() {
               selectedMethod={selectedMethod}
               onSelect={setSelectedMethod}
             />
+
+            {/* COD Detail */}
+            {selectedMethod === "cod" && (
+              <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-3xl">💵</span>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-base">Thanh toán tiền mặt khi nhận vé (COD)</h3>
+                    <p className="text-xs text-gray-500">Giao vé tận tay hoặc thanh toán trước giờ khởi hành</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-4 border border-emerald-100 text-xs sm:text-sm text-gray-700 space-y-2">
+                  <p className="flex justify-between">
+                    <span>Thanh toán trước trực tuyến:</span>
+                    <strong className="text-emerald-700 font-black">0đ</strong>
+                  </p>
+                  <p className="flex justify-between">
+                    <span>Số tiền thanh toán khi nhận vé/hợp đồng:</span>
+                    <strong className="text-orange-600 font-black text-base">{fmt(totalPrice)}</strong>
+                  </p>
+                  <p className="text-gray-500 pt-2 border-t border-gray-100 text-xs">
+                    * Nhân viên tư vấn của TravelGo sẽ gọi tới SĐT <strong>{customer?.phone}</strong> để xác nhận lịch khởi hành và địa chỉ giao vé tận nơi.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Bank detail */}
             {selectedMethod === "bank" && currentMethod?.detail && (
@@ -116,17 +168,17 @@ export function PaymentPage() {
 
             {/* Card / ZaloPay placeholder */}
             {(selectedMethod === "zalopay" || selectedMethod === "card") && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm text-center py-12">
+              <div className="bg-white rounded-2xl p-6 shadow-sm text-center py-12 border border-gray-100">
                 <p className="text-4xl mb-3">{currentMethod.icon}</p>
-                <p className="text-gray-600 font-medium">
-                  Bạn sẽ được chuyển đến cổng thanh toán {currentMethod.label}
+                <p className="text-gray-700 font-medium">
+                  Bạn sẽ được chuyển đến cổng thanh toán bảo mật {currentMethod.label}
                 </p>
-                <p className="text-sm text-gray-400 mt-1">Sau khi xác nhận đặt hàng</p>
+                <p className="text-sm text-gray-400 mt-1">Số tiền thanh toán: {fmt(deposit)}</p>
               </div>
             )}
 
             {/* Terms */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <label className="flex items-start gap-3 cursor-pointer">
                 <div
                   onClick={() => setAgreed((v) => !v)}
@@ -138,7 +190,7 @@ export function PaymentPage() {
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">
                   Tôi đã đọc và đồng ý với{" "}
-                  <span className="text-blue-600 font-semibold">điều khoản sử dụng</span> và{" "}
+                  <span className="text-blue-600 font-semibold">điều khoản dịch vụ</span> và{" "}
                   <span className="text-blue-600 font-semibold">chính sách hoàn hủy tour</span> của TravelGo.
                 </p>
               </label>
@@ -149,11 +201,11 @@ export function PaymentPage() {
               onClick={handleConfirm}
               className={`w-full font-black py-4 rounded-xl transition-all text-base ${
                 agreed
-                  ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-100 cursor-pointer active:scale-98"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 cursor-pointer active:scale-98"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
               }`}
             >
-              Xác nhận thanh toán
+              Xác nhận {selectedMethod === "cod" ? "đặt tour thanh toán COD" : `thanh toán ${fmt(deposit)}`}
             </button>
           </div>
 
@@ -165,6 +217,12 @@ export function PaymentPage() {
               customer={customer}
               totalPrice={totalPrice}
               deposit={deposit}
+              remaining={remainingAmount}
+              paymentPlan={paymentPlan}
+              adults={adults}
+              children={children}
+              babies={babies}
+              passengers={passengers}
               orderId={orderId}
             />
           </div>
