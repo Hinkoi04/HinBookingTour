@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users } from 'lucide-react';
 
-export function DepartureDetailModal({ isOpen, onClose, departure, accountList = [], onViewPassengers }) {
+export function DepartureDetailModal({ isOpen, onClose, departure, accountList = [], onViewPassengers, pageMode = false }) {
   if (!isOpen || !departure) return null;
 
   const formatCurrency = (value) => {
@@ -23,8 +23,8 @@ export function DepartureDetailModal({ isOpen, onClose, departure, accountList =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className={pageMode ? "w-full p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"}>
+      <div className={`bg-white rounded-xl shadow-lg w-full ${pageMode ? "max-w-3xl mx-auto border border-gray-200" : "max-w-md animate-in fade-in zoom-in duration-200"} overflow-hidden`}>
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -131,7 +131,6 @@ export function DepartureDetailModal({ isOpen, onClose, departure, accountList =
           {onViewPassengers && (
             <button
               onClick={() => {
-                onClose();
                 onViewPassengers(departure);
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
@@ -141,7 +140,7 @@ export function DepartureDetailModal({ isOpen, onClose, departure, accountList =
             </button>
           )}
           <button onClick={onClose} className="ml-auto px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black transition-colors">
-            Đóng
+            {pageMode ? "Quay lại lịch khởi hành" : "Đóng"}
           </button>
         </div>
 

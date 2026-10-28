@@ -2,6 +2,22 @@ import { apiClient } from "../../../services/apiClient";
 import { mapTour } from "../../home/services/homeService";
 
 export const tourService = {
+  getTourBySlug: async (slug) => {
+    if (/^\d+$/.test(slug)) {
+      return tourService.getTourById(slug);
+    }
+
+    try {
+      const toursRes = await apiClient.get("/tour");
+      const tours = Array.isArray(toursRes.data) ? toursRes.data : [];
+      const matchingTour = tours.find((tour) => tour.slug === slug);
+      return matchingTour ? tourService.getTourById(matchingTour.id) : null;
+    } catch (error) {
+      console.error(`Lỗi khi tìm tour theo slug ${slug}:`, error);
+      return null;
+    }
+  },
+
   getTourById: async (id) => {
     try {
       const [tourRes, catRes, depRes, revRes] = await Promise.allSettled([

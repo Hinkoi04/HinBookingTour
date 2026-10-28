@@ -144,6 +144,14 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    public TourResponse getTourBySlug(String slug) {
+        Tour tour = tourRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Tour với slug: " + slug));
+
+        return mapToResponse(tour);
+    }
+
+    @Override
     public List<TourResponse> getAllTours() {
         return mapToResponseList(tourRepository.findAll());
     }

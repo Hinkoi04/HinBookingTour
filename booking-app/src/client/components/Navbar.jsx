@@ -13,8 +13,48 @@ export function Navbar() {
   const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
   const [userDropdown, setUserDropdown] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [activeNavItem, setActiveNavItem] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const isHomePage = location.pathname === "/" || location.pathname === "/home";
+    if (!isHomePage) {
+      setActiveNavItem("");
+      return;
+    }
+
+    const updateActiveNavItem = () => {
+      const flashSaleSection = document.getElementById("flash-sale");
+      const header = document.querySelector("header");
+      if (!flashSaleSection || !header) {
+        setActiveNavItem("home");
+        return;
+      }
+
+      const sectionBounds = flashSaleSection.getBoundingClientRect();
+      const headerBottom = header.getBoundingClientRect().bottom;
+      setActiveNavItem(
+        sectionBounds.top <= headerBottom && sectionBounds.bottom > headerBottom
+          ? "flash-sale"
+          : "home"
+      );
+    };
+
+    updateActiveNavItem();
+    window.addEventListener("scroll", updateActiveNavItem, { passive: true });
+    window.addEventListener("resize", updateActiveNavItem);
+    const main = document.querySelector("main");
+    const sectionObserver = main
+      ? new MutationObserver(updateActiveNavItem)
+      : null;
+    sectionObserver?.observe(main, { childList: true, subtree: true });
+    return () => {
+      window.removeEventListener("scroll", updateActiveNavItem);
+      window.removeEventListener("resize", updateActiveNavItem);
+      sectionObserver?.disconnect();
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -94,8 +134,9 @@ export function Navbar() {
         <nav className="hidden lg:flex items-center gap-1">
           <Link
             to="/home"
+            aria-current={activeNavItem === "home" ? "page" : undefined}
             className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${
-              location.pathname === "/home" || location.pathname === "/"
+              activeNavItem === "home"
                 ? "text-blue-600 bg-blue-50"
                 : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
             }`}
@@ -105,7 +146,12 @@ export function Navbar() {
 
           <a
             href="/home#flash-sale"
-            className="px-3 py-2 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1"
+            aria-current={activeNavItem === "flash-sale" ? "location" : undefined}
+            className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1 ${
+              activeNavItem === "flash-sale"
+                ? "text-red-700 bg-red-50"
+                : "text-red-600 hover:bg-red-50"
+            }`}
           >
             <Flame className="w-4 h-4" aria-hidden="true" /> Flash Sale
           </a>
@@ -116,17 +162,18 @@ export function Navbar() {
             onMouseEnter={() => setActiveDropdown("domestic")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button
-              type="button"
-              className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
-                activeDropdown === "domestic"
+            <Link
+              to="/tours/domestic"
+              onClick={() => setActiveDropdown(null)}
+              className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1 ${
+                location.pathname === "/tours/domestic"
                   ? "text-blue-600 bg-blue-50"
                   : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
               }`}
             >
               Tour trong nước
               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === "domestic" ? "rotate-180 text-blue-600" : "text-gray-400"}`} />
-            </button>
+            </Link>
 
             {activeDropdown === "domestic" && (
               <div className="absolute top-full left-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 space-y-1 animate-fadeIn z-50">
@@ -158,17 +205,18 @@ export function Navbar() {
             onMouseEnter={() => setActiveDropdown("international")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button
-              type="button"
-              className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
-                activeDropdown === "international"
+            <Link
+              to="/tours/international"
+              onClick={() => setActiveDropdown(null)}
+              className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1 ${
+                location.pathname === "/tours/international"
                   ? "text-blue-600 bg-blue-50"
                   : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
               }`}
             >
               Tour quốc tế
               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === "international" ? "rotate-180 text-blue-600" : "text-gray-400"}`} />
-            </button>
+            </Link>
 
             {activeDropdown === "international" && (
               <div className="absolute top-full left-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 space-y-1 animate-fadeIn z-50">
@@ -194,12 +242,12 @@ export function Navbar() {
             )}
           </div>
 
-          <a
-            href="/home#blogs"
+          <Link
+            to="/cam-nang"
             className="px-3 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors"
           >
             Cẩm nang
-          </a>
+          </Link>
 
           <a
             href="/home#contact"
@@ -284,7 +332,12 @@ export function Navbar() {
           <Link
             to="/home"
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+            aria-current={activeNavItem === "home" ? "page" : undefined}
+            className={`block px-4 py-2.5 rounded-xl text-sm font-semibold ${
+              activeNavItem === "home"
+                ? "text-blue-600 bg-blue-50"
+                : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+            }`}
           >
             Trang chủ
           </Link>
@@ -292,16 +345,25 @@ export function Navbar() {
           <a
             href="/home#flash-sale"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50"
+            aria-current={activeNavItem === "flash-sale" ? "location" : undefined}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${
+              activeNavItem === "flash-sale"
+                ? "text-red-700 bg-red-50"
+                : "text-red-600 hover:bg-red-50"
+            }`}
           >
             <Flame className="w-4 h-4" aria-hidden="true" /> Flash Sale Giờ Vàng
           </a>
 
           {/* Domestic sub */}
           <div className="py-2 border-y border-gray-100">
-            <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+            <Link
+              to="/tours/domestic"
+              onClick={() => setIsOpen(false)}
+              className="block px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 hover:text-blue-600"
+            >
               Tour trong nước
-            </p>
+            </Link>
             {domesticSubmenu.map((sub) => (
               <button
                 key={sub.title}
@@ -317,9 +379,13 @@ export function Navbar() {
 
           {/* International sub */}
           <div className="py-2 border-b border-gray-100">
-            <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+            <Link
+              to="/tours/international"
+              onClick={() => setIsOpen(false)}
+              className="block px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 hover:text-purple-600"
+            >
               Tour quốc tế
-            </p>
+            </Link>
             {internationalSubmenu.map((sub) => (
               <button
                 key={sub.title}
@@ -333,13 +399,13 @@ export function Navbar() {
             ))}
           </div>
 
-          <a
-            href="/home#blogs"
+          <Link
+            to="/cam-nang"
             onClick={() => setIsOpen(false)}
             className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50"
           >
             Cẩm nang
-          </a>
+          </Link>
 
           <a
             href="/home#contact"

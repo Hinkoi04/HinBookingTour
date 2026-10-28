@@ -8,6 +8,7 @@ import java.util.List;
 public interface TourService {
     TourResponse createTour(TourCreateRequest request, String imageUrl, List<String> galleryUrls, Integer creatorId);
     TourResponse getTourById(Integer id);
+    TourResponse getTourBySlug(String slug);
     List<TourResponse> getAllTours();
     TourResponse updateTour(Integer id, TourCreateRequest request, String imageUrl, List<String> galleryUrls,List<String> existingImageUrls,Integer updaterId);
     void deleteTour(Integer id, Integer deleterId);

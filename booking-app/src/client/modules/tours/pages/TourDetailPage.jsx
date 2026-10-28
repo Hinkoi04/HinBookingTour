@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 
 export function TourDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
 
   const [tour, setTour] = useState(null);
@@ -29,13 +29,21 @@ export function TourDetailPage() {
     const fetchTour = async () => {
       setLoading(true);
       try {
-        const data = await tourService.getTourById(id);
+        const data = await tourService.getTourBySlug(slug);
+        if (!data) {
+          if (isMounted) {
+            setTour(null);
+            setReviews([]);
+          }
+          return;
+        }
+
         if (isMounted) {
           setTour(data);
           if (data?.apiReviews && data.apiReviews.length > 0) {
             setReviews(data.apiReviews);
           } else {
-            const revs = await tourService.getReviewsByTour(id);
+            const revs = await tourService.getReviewsByTour(data.id);
             if (isMounted) setReviews(revs || []);
           }
 
@@ -49,6 +57,10 @@ export function TourDetailPage() {
         }
       } catch (error) {
         console.error("Lỗi khi tải thông tin tour:", error);
+        if (isMounted) {
+          setTour(null);
+          setReviews([]);
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -58,7 +70,7 @@ export function TourDetailPage() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [slug]);
 
   if (loading) {
     return (

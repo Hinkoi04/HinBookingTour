@@ -1,9 +1,10 @@
 import { ClientLayout } from "../layouts";
 import { HomePage } from "../modules/home";
-import { TourDetailPage } from "../modules/tours";
+import { TourDetailPage, TourListPage } from "../modules/tours";
 import { BookingPage } from "../modules/booking";
 import { PaymentPage } from "../modules/payment";
 import { LoginPage, RegisterPage } from "../modules/auth";
+import { BlogDetailPage, BlogListPage } from "../modules/blogs";
 
 export const clientRoutes = [
   {
@@ -18,6 +19,14 @@ export const clientRoutes = [
         element: <HomePage />,
       },
       {
+        path: "/cam-nang",
+        element: <BlogListPage />,
+      },
+      {
+        path: "/cam-nang/:slug",
+        element: <BlogDetailPage />,
+      },
+      {
         path: "/login",
         element: <LoginPage />,
       },
@@ -26,8 +35,12 @@ export const clientRoutes = [
         element: <RegisterPage />,
       },
       {
-        path: "/tour/:id",
+        path: "/tour/:slug",
         element: <TourDetailPage />,
+      },
+      {
+        path: "/tours/:type",
+        element: <TourListPage />,
       },
       {
         path: "/booking",

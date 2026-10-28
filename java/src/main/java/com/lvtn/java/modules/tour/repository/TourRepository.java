@@ -8,9 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TourRepository extends JpaRepository<Tour, Integer> {
     boolean existsBySlug(String slug);
+    Optional<Tour> findBySlug(String slug);
 
     @Query(value = "SELECT EXISTS(SELECT 1 FROM tours WHERE slug = :slug)", nativeQuery = true)
     boolean existsBySlugIncludingDeleted(@Param("slug") String slug);

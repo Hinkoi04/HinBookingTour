@@ -59,6 +59,11 @@ public class TourController {
         return ResponseEntity.ok(tourService.getTourById(id));
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<TourResponse> getTourBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(tourService.getTourBySlug(slug));
+    }
+
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'UPDATE_TOUR')")
     public ResponseEntity<TourResponse> updateTour(

@@ -429,9 +429,9 @@ export function HomePage() {
               <p className="text-blue-600 font-bold text-sm uppercase tracking-wider mb-2">CẨM NANG DU LỊCH</p>
               <h2 className="text-3xl font-black text-gray-900">Bài Viết Mới Nhất</h2>
             </div>
-            <a href="#blogs" className="flex items-center gap-1.5 text-blue-600 font-bold text-sm hover:gap-3 transition-all">
+            <Link to="/cam-nang" className="flex items-center gap-1.5 text-blue-600 font-bold text-sm hover:gap-3 transition-all">
               Xem tất cả <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -442,7 +442,7 @@ export function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {blogsList.slice(0, 3).map((blog) => (
-                <div key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group block border border-gray-100">
+                <Link to={`/cam-nang/${encodeURIComponent(blog.slug || blog.id)}`} key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group block border border-gray-100">
                   <div className="relative h-48 overflow-hidden">
                     <img
                       src={blog.image}
@@ -473,7 +473,7 @@ export function HomePage() {
                       Đọc tiếp <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

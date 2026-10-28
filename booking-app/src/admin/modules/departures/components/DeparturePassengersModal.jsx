@@ -26,7 +26,7 @@ import { departureService } from '../services/departureService';
 import { exportDeparturePassengersToExcel } from '../utils/departureExportUtils';
 import { toast } from 'sonner';
 
-export function DeparturePassengersModal({ isOpen, onClose, departure }) {
+export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode = false }) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -136,8 +136,8 @@ export function DeparturePassengersModal({ isOpen, onClose, departure }) {
   const currentDep = data?.departure || departure;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200/80 w-full max-w-7xl max-h-[94vh] flex flex-col overflow-hidden transform transition-all">
+    <div className={pageMode ? "w-full p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200"}>
+      <div className={`bg-white rounded-2xl shadow-2xl border border-gray-200/80 w-full ${pageMode ? "max-w-7xl min-h-[calc(100vh-4rem)] mx-auto" : "max-w-7xl max-h-[94vh] transform transition-all"} flex flex-col overflow-hidden`}>
         {/* Header */}
         <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-950 text-white flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -583,7 +583,7 @@ export function DeparturePassengersModal({ isOpen, onClose, departure }) {
               onClick={onClose}
               className="px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-black transition-colors whitespace-nowrap"
             >
-              Đóng
+              {pageMode ? "Quay lại lịch khởi hành" : "Đóng"}
             </button>
           </div>
         </div>

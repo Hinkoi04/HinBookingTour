@@ -9,6 +9,14 @@ export const departureService = {
       throw new Error(error.response?.data?.message || error.response?.data || "Lấy danh sách lịch khởi hành thất bại");
     }
   },
+  getById: async (id) => {
+    try {
+      const response = await apiClient.get(`/departure/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || "Lấy thông tin lịch khởi hành thất bại");
+    }
+  },
   getAvailableGuides: async (startDate, endDate, excludeDepartureId = null) => {
     try {
       const params = {};

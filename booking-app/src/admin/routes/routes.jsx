@@ -4,7 +4,7 @@ import { TourList } from "../modules/tours";
 import { CategoryList } from "../modules/categories";
 import { UserList } from "../modules/users";
 import { Booking } from "../modules/bookings";
-import { Departure } from "../modules/departures";
+import { Departure, DepartureDetailPage, DeparturePassengersPage } from "../modules/departures";
 import { Discount } from "../modules/discounts";
 import { Login } from "../modules/login";
 import { BlogList } from "../modules/blogs";
@@ -68,6 +68,14 @@ export const adminRoutes = [
           {
             path: "/admin/departures",
             element: <Departure />,
+          },
+          {
+            path: "/admin/departures/:id/passengers",
+            element: <DeparturePassengersPage />,
+          },
+          {
+            path: "/admin/departures/:id",
+            element: <DepartureDetailPage />,
           },
           {
             path: "/admin/vehicles",

@@ -105,7 +105,7 @@ export function PaymentPage() {
             Trang chủ
           </Link>
           <ChevronRight className="w-4 h-4" />
-          <Link to={`/tour/${tour.id}`} className="hover:text-blue-600 line-clamp-1">
+          <Link to={`/tour/${encodeURIComponent(tour.slug || tour.id)}`} className="hover:text-blue-600 line-clamp-1">
             {tour.name}
           </Link>
           <ChevronRight className="w-4 h-4" />

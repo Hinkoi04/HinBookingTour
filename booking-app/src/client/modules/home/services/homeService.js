@@ -150,7 +150,9 @@ export function mapTour(tour, categories = [], departures = []) {
   const isInternational =
     catLower.includes("quốc tế") ||
     catLower.includes("châu") ||
-    catLower.includes("ngoài nước");
+    catLower.includes("ngoài nước") ||
+    catLower.includes("đông nam á") ||
+    catLower.includes("đông bắc á");
 
   const rawSchedules = Array.isArray(tour.schedules) ? [...tour.schedules] : [];
   rawSchedules.sort((a, b) => (Number(a.dayNumber) || 0) - (Number(b.dayNumber) || 0));
@@ -175,6 +177,7 @@ export function mapTour(tour, categories = [], departures = []) {
 
   return {
     id: tour.id,
+    slug: tour.slug,
     name: tour.title || tour.name || "Tour Du Lịch",
     category: categoryName,
     categoryId: tour.categoryId,
@@ -251,6 +254,7 @@ export function getFlashSaleItems(allTours = []) {
 
         flashItems.push({
           id: tour.id,
+          slug: tour.slug,
           departureId: dep.id,
           name: tour.name,
           image: tour.image,
@@ -263,6 +267,9 @@ export function getFlashSaleItems(allTours = []) {
           duration: tour.duration,
           location: tour.location,
           rating: tour.rating,
+          tourCode: tour.tourCode,
+          vehicle: dep.vehicleName || tour.vehicle,
+          type: tour.type,
         });
       }
     }
@@ -314,6 +321,7 @@ export const homeService = {
       if (Array.isArray(res.data)) {
         return res.data.map((b) => ({
           id: b.id,
+          slug: b.slug,
           title: b.title || "",
           image:
             b.thumbnail ||
@@ -323,6 +331,7 @@ export const homeService = {
           readTime: 5,
           author: "TravelGo Team",
           excerpt: b.description || b.content?.slice(0, 150) || "",
+          content: b.content || "",
         }));
       }
       return [];

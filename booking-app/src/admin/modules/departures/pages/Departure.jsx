@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Loader2, Trash2, Zap, Search } from "lucide-react"; 
 import { DepartureTable, DepartureTrashTable } from "../components/DepartureTable";
 import { DepartureModal } from "../components/DepartureModal";
-import { DepartureDetailModal } from "../components/DepartureDetailModal"; 
-import { DeparturePassengersModal } from "../components/DeparturePassengersModal";
 import { departureService } from "../services/departureService";
 import { vehicleService } from "../../vehicles/services/vehicleService"; 
 import { tourService } from "../../tours/services/tourService";
@@ -25,6 +24,7 @@ const getCurrentUserId = () => {
 };
 
 export default function DepartureList() {
+  const navigate = useNavigate();
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("CREATE_OPERATIONS");
   const canManageTrash = hasPermission("OPERATIONS_TRASH");
@@ -39,10 +39,6 @@ export default function DepartureList() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editDeparture, setEditDeparture] = useState(null);
   const [formData, setFormData] = useState(initialFormState);
-  const [selectedDeparture, setSelectedDeparture] = useState(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isPassengersModalOpen, setIsPassengersModalOpen] = useState(false);
-  const [selectedDepartureForPassengers, setSelectedDepartureForPassengers] = useState(null);
   const [accountList, setAccountList] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,13 +63,11 @@ export default function DepartureList() {
   }, [searchQuery]);
 
   const handleViewDetail = (departureData) => {
-    setSelectedDeparture(departureData);
-    setIsDetailModalOpen(true);
+    navigate(`/admin/departures/${departureData.id}`);
   };
 
   const handleViewPassengers = (departureData) => {
-    setSelectedDepartureForPassengers(departureData);
-    setIsPassengersModalOpen(true);
+    navigate(`/admin/departures/${departureData.id}/passengers`);
   };
 
   const handleFlashSale = () => {
@@ -389,18 +383,6 @@ export default function DepartureList() {
         editDepartureId={editDeparture ? editDeparture.id : null}
         vehicles={vehicles}
         tourList={tourList}
-      />
-      <DepartureDetailModal 
-        isOpen={isDetailModalOpen} 
-        onClose={() => setIsDetailModalOpen(false)} 
-        departure={selectedDeparture} 
-        accountList={accountList}
-        onViewPassengers={handleViewPassengers}
-      />
-      <DeparturePassengersModal
-        isOpen={isPassengersModalOpen}
-        onClose={() => setIsPassengersModalOpen(false)}
-        departure={selectedDepartureForPassengers}
       />
       <ConfirmModal
         isOpen={confirmConfig.isOpen}
