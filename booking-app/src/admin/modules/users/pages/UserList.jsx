@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, Search, Lock } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { Plus, Lock } from "lucide-react";
 import { CustomerTable } from "../components/UserTable";
 import { EmployeeTable } from "../components/AccountTable";
 import { TrashTable } from "../components/TrashTable";
@@ -15,6 +16,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
 
 export default function UserManagement() {
+  const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
   const canViewEmployee = hasPermission("VIEW_USER"); 
@@ -24,8 +26,6 @@ export default function UserManagement() {
   const [employees, setEmployees] = useState([]);
   const [trashItems, setTrashItems] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [customerSearch, setCustomerSearch] = useState("");
-  const [employeeSearch, setEmployeeSearch] = useState("");
   const [activeTab, setActiveTab] = useState("customers");
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -62,7 +62,7 @@ export default function UserManagement() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [customerSearch, employeeSearch, activeTab]);
+  }, [searchQuery, activeTab]);
 
   const loadCustomers = async () => {
     try {
@@ -131,22 +131,27 @@ export default function UserManagement() {
   }, [activeTab]);
 
   const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
-    customer.email.toLowerCase().includes(customerSearch.toLowerCase()) ||
-    (customer.phone && customer.phone.includes(customerSearch))
+    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (customer.phone && customer.phone.includes(searchQuery))
   );
 
   const filteredEmployees = employees.filter(employee =>
-    employee.fullName.toLowerCase().includes(employeeSearch.toLowerCase()) ||
-    employee.email.toLowerCase().includes(employeeSearch.toLowerCase()) ||
-    (employee.phone && employee.phone.includes(employeeSearch))
+    employee.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    employee.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (employee.phone && employee.phone.includes(searchQuery))
+  );
+
+  const filteredTrashItems = trashItems.filter(item =>
+    [item.fullName, item.name, item.email, item.phone]
+      .some(value => String(value || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const currentList = activeTab === "customers" 
     ? filteredCustomers 
     : activeTab === "employees" 
       ? filteredEmployees 
-      : trashItems;
+      : filteredTrashItems;
 
   const totalPages = Math.ceil(currentList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -326,12 +331,6 @@ export default function UserManagement() {
 
   return (
     <div className="p-8 w-full relative">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Người dùng</h1>
-        </div>
-      </div>
-
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden p-6 pb-2">
         <div className="inline-flex bg-gray-100 rounded-xl p-1 mb-6">
           <button
@@ -368,16 +367,6 @@ export default function UserManagement() {
 
         {activeTab === "customers" ? (
           <div className="animate-in fade-in duration-300">
-            <div className="relative max-w-sm mb-6">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Tìm tên, email hoặc SĐT..."
-                value={customerSearch}
-                onChange={(e) => setCustomerSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 text-sm transition-all"
-              />
-            </div>
             {loading ? (
               <div className="text-center py-10 text-gray-500">Đang tải dữ liệu khách hàng...</div>
             ) : (
@@ -391,18 +380,7 @@ export default function UserManagement() {
           </div>
         ) : activeTab === "employees" ? (
           <div className="animate-in fade-in duration-300">
-            <div className="flex justify-between items-center mb-6">
-              <div className="relative w-full max-w-sm">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm nhân viên..."
-                  value={employeeSearch}
-                  onChange={(e) => setEmployeeSearch(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 text-sm transition-all"
-                />
-              </div>
-              
+            <div className="mb-6 flex justify-end">
               {hasPermission("CREATE_USER") && (
                 <button
                   onClick={() => {

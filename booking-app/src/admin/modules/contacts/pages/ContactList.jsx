@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Search, RefreshCw, Mail, Loader2 } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { RefreshCw, Mail, Loader2 } from "lucide-react";
 import { contactService } from "../services/contactService";
 import Pagination from "../../../components/Pagination";
 
 export default function ContactList() {
+    const { searchQuery } = useOutletContext();
     const [contacts, setContacts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
-
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
@@ -31,10 +31,10 @@ export default function ContactList() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm]);
+    }, [searchQuery]);
 
     const filteredContacts = contacts.filter(contact => {
-        return (contact.email || "").toLowerCase().includes(searchTerm.toLowerCase());
+        return (contact.email || "").toLowerCase().includes(searchQuery.toLowerCase());
     });
 
     const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
@@ -51,24 +51,8 @@ export default function ContactList() {
 
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Danh sách đăng ký nhận tin</h1>
-        </div>
-      </div>
-
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm w-full overflow-hidden">
-        <div className="p-6 pb-2 border-b border-gray-100 flex justify-between items-center">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm email..." 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)} 
-              className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 text-sm transition-all" 
-            />
-          </div>
+        <div className="p-6 pb-2 border-b border-gray-100 flex justify-end items-center">
           <button 
             onClick={fetchData}
             className="p-2.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200"

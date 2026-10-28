@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus, Loader2, Trash2, Zap, Search } from "lucide-react"; 
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { Plus, Loader2, Trash2, Zap } from "lucide-react";
 import { DepartureTable, DepartureTrashTable } from "../components/DepartureTable";
 import { DepartureModal } from "../components/DepartureModal";
 import { departureService } from "../services/departureService";
@@ -25,6 +25,7 @@ const getCurrentUserId = () => {
 
 export default function DepartureList() {
   const navigate = useNavigate();
+  const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("CREATE_OPERATIONS");
   const canManageTrash = hasPermission("OPERATIONS_TRASH");
@@ -42,7 +43,6 @@ export default function DepartureList() {
   const [accountList, setAccountList] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isFlashSaleLoading, setIsFlashSaleLoading] = useState(false);
   const itemsPerPage = 9;
 
@@ -274,22 +274,7 @@ export default function DepartureList() {
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Lịch khởi hành</h1>
-        </div>
         <div className="flex gap-2 items-center">
-          {/* Search box */}
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              id="departure-search"
-              type="text"
-              placeholder="Tìm tour, điểm đi, HDV..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
-            />
-          </div>
           {/* Flash Sale button */}
           {canCreate && (
             <button

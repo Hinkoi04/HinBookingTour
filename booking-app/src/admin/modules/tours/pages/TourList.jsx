@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Plus, Search, Loader2, Lock } from "lucide-react";
+import { Link, useOutletContext } from "react-router-dom";
+import { Plus, Loader2, Lock } from "lucide-react";
 import { TourTable, TourTrashTable } from "../components/TourTable";
 import { TourDetailModal } from "../components/TourDetailModal"; 
 import { tourService } from "../services/tourService";
@@ -13,6 +13,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
 
 export function TourList() {
+  const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
   const isAdmin = useMemo(() => {
@@ -29,8 +30,6 @@ export function TourList() {
   const [accountList, setAccountList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [trashSearchTerm, setTrashSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("active");
   const [selectedTour, setSelectedTour] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -63,7 +62,7 @@ export function TourList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, trashSearchTerm, activeTab]);
+  }, [searchQuery, activeTab]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -114,11 +113,11 @@ export function TourList() {
   };
 
   const filteredTours = tours.filter((tour) =>
-    (tour.title || tour.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+    (tour.title || tour.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredDeletedTours = deletedTours.filter((tour) =>
-    (tour.title || tour.name || "").toLowerCase().includes(trashSearchTerm.toLowerCase())
+    (tour.title || tour.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const currentList = activeTab === "active" ? filteredTours : filteredDeletedTours;
@@ -211,10 +210,6 @@ export function TourList() {
   return (
     <div className="p-8 w-full relative">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Tour</h1>
-        </div>
-        
         {hasPermission("CREATE_TOUR") && (
           <Link
             to="/admin/tours/new"
@@ -254,17 +249,6 @@ export function TourList() {
         </div>
 
         <div>
-          <div className="relative max-w-sm mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder={activeTab === "active" ? "Tìm kiếm tour..." : "Tìm kiếm trong thùng rác..."}
-              value={activeTab === "active" ? searchTerm : trashSearchTerm}
-              onChange={(e) => activeTab === "active" ? setSearchTerm(e.target.value) : setTrashSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 text-sm transition-all"
-            />
-          </div>
-
           {loading ? (
             <div className="flex flex-col items-center justify-center min-h-[300px]">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />

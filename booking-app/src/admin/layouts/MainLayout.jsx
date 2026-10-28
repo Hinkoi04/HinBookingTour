@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MapPin, FolderTree, Calendar, Ticket, BusFront,
-  ShoppingCart, FileText, Users, MessageSquare, Image as ImageIcon, 
-  LogOut, Settings, KeyRound
+  ShoppingCart, FileText, Users, MessageSquare,
+  LogOut, Settings, KeyRound, Search, X, RefreshCw
 } from "lucide-react";
 
 import { getMeService } from "../modules/login/services/authService"; 
@@ -35,8 +35,13 @@ export default function MainLayout() {
   const [user, setUser] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   
   const dropdownRef = useRef(null);
+  const currentPage = [...navigation]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((item) => location.pathname === item.href || location.pathname.startsWith(`${item.href}/`))
+    || (location.pathname === "/admin/change-password" ? { name: "Đổi mật khẩu" } : null);
 
   const fetchUser = async () => {
     try {
@@ -77,6 +82,10 @@ export default function MainLayout() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    setSearchQuery("");
+  }, [location.pathname]);
+
   const handleLogout = () => {
     setIsDropdownOpen(false);
     setConfirmConfig({
@@ -102,7 +111,7 @@ export default function MainLayout() {
 
   const handleChangePassword = () => {
     setIsDropdownOpen(false);
-    alert("Chức năng Đổi mật khẩu đang được phát triển.");
+    navigate("/admin/change-password");
   };
 
   return (
@@ -136,64 +145,104 @@ export default function MainLayout() {
               })}
             </ul>
           </nav>
-          <div className="border-t border-gray-200 py-4 shrink-0 relative" ref={dropdownRef}>
-            
+        </div>
+      </div>
+
+      <main className="flex-1 min-w-0 overflow-y-auto bg-gray-50">
+        <header className="sticky top-0 z-30 flex min-h-20 items-center gap-6 border-b border-gray-200 bg-white px-5 py-3 shadow-sm sm:px-8">
+          <div className="hidden min-w-40 sm:block">
+            <h1 className="text-lg font-semibold text-gray-900">
+              {currentPage?.name || "Quản trị"}
+            </h1>
+          </div>
+
+          <div className="relative w-full max-w-xl">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Tìm kiếm nội dung trang..."
+              aria-label="Tìm kiếm nội dung trang"
+              className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 pr-10 text-sm text-gray-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                aria-label="Xóa nội dung tìm kiếm"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="shrink-0 rounded-xl border border-gray-200 p-3 text-gray-600 transition hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
+            title="Tải lại trang"
+            aria-label="Tải lại trang"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </button>
+
+          <div className="relative ml-auto shrink-0" ref={dropdownRef}>
             {isDropdownOpen && (
-              <div className="absolute bottom-full left-0 mb-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-200">
+              <div className="absolute right-0 top-full z-40 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg animate-in slide-in-from-top-2 fade-in duration-200">
                 <div className="flex flex-col py-1">
-                  <button 
+                  <button
                     onClick={openProfileModal}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-medium transition-colors w-full text-left"
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                   >
-                    <Settings className="w-4 h-4 text-gray-500" />
+                    <Settings className="h-4 w-4 text-gray-500" />
                     Cập nhật thông tin
                   </button>
-                  <button 
+                  <button
                     onClick={handleChangePassword}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-medium transition-colors w-full text-left"
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                   >
-                    <KeyRound className="w-4 h-4 text-gray-500" />
+                    <KeyRound className="h-4 w-4 text-gray-500" />
                     Đổi mật khẩu
                   </button>
-                  <div className="h-px bg-gray-100 my-1"></div>
-                  <button 
+                  <div className="my-1 h-px bg-gray-100" />
+                  <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors w-full text-left"
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="h-4 w-4" />
                     Đăng xuất
                   </button>
                 </div>
               </div>
             )}
-
-            <button 
+            <button
+              type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`flex items-center gap-3 p-2 rounded-lg transition-colors text-left w-full ${isDropdownOpen ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+              className={`flex items-center gap-3 rounded-lg p-1.5 text-left transition-colors ${isDropdownOpen ? "bg-gray-100" : "hover:bg-gray-50"}`}
+              aria-expanded={isDropdownOpen}
+              aria-label="Tài khoản"
             >
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0 overflow-hidden border border-blue-200">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-blue-200 bg-blue-100 font-bold text-blue-600">
                 {user?.avatar ? (
-                  <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={user.avatar} alt="" className="h-full w-full object-cover" />
                 ) : (
                   user?.fullName?.charAt(0)?.toUpperCase() || "U"
                 )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-gray-900 truncate">
+              </span>
+              <span className="hidden min-w-0 md:block">
+                <span className="block max-w-36 truncate text-sm font-semibold text-gray-900">
                   {user ? user.fullName : "Đang tải..."}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
+                </span>
+                <span className="block max-w-36 truncate text-xs text-gray-500">
                   {user ? user.email : ""}
-                </p>
-              </div>
+                </span>
+              </span>
             </button>
           </div>
-
-        </div>
-      </div>
-
-      <main className="flex-1 min-w-0 overflow-y-auto bg-gray-50">
-        <Outlet />
+        </header>
+        <Outlet context={{ searchQuery }} />
       </main>
 
       <UserProfileModal 

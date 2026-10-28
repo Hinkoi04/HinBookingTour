@@ -1,17 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Lock } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { reviewService } from "../services/reviewService";
 import { ReviewTable } from "../components/ReviewTable";
 import Pagination from "../../../components/Pagination";
 
 export default function ReviewList() {
+  const { searchQuery } = useOutletContext();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   
   const [activeTab, setActiveTab] = useState("active");
-  const [trashSearch, setTrashSearch] = useState("");
   
   const [actionId, setActionId] = useState(null);
   const [actionType, setActionType] = useState(null);
@@ -57,7 +57,7 @@ export default function ReviewList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, trashSearch, activeTab]);
+  }, [searchQuery, activeTab]);
 
   const handleToggleVisibility = async (id) => {
     if (!canUpdate) return;
@@ -92,11 +92,9 @@ export default function ReviewList() {
     }
   };
 
-  const currentSearch = activeTab === "active" ? searchTerm : trashSearch;
-  
   const filteredReviews = reviews.filter(review =>
-    (review.userFullName || "").toLowerCase().includes(currentSearch.toLowerCase()) ||
-    (review.content || "").toLowerCase().includes(currentSearch.toLowerCase())
+    (review.userFullName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (review.content || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredReviews.length / itemsPerPage);
@@ -106,12 +104,7 @@ export default function ReviewList() {
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
       
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Đánh giá</h1>
-          <p className="text-gray-500 mt-1">Kiểm duyệt và quản lý đánh giá từ khách hàng</p>
-        </div>
-      </div>
+
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm w-full overflow-hidden">
         
@@ -140,17 +133,6 @@ export default function ReviewList() {
         </div>
 
         <div className="p-6 pt-2">
-          <div className="relative max-w-sm mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder={activeTab === "active" ? "Tìm kiếm theo khách hàng hoặc nội dung..." : "Tìm kiếm trong thùng rác..."}
-              value={activeTab === "active" ? searchTerm : trashSearch}
-              onChange={(e) => activeTab === "active" ? setSearchTerm(e.target.value) : setTrashSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all"
-            />
-          </div>
-
           {loading ? (
             <div className="text-center py-10 text-gray-500 text-sm">Đang tải dữ liệu...</div>
           ) : (

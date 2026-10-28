@@ -42,6 +42,23 @@ export const loginService = async (email, password) => {
     }
 };
 
+export const changePasswordService = async (currentPassword, newPassword) => {
+    try {
+        const response = await apiClient.post('/admin/auth/change-password', {
+            currentPassword,
+            newPassword
+        });
+        return response.data;
+    } catch (error) {
+        const responseData = error.response?.data;
+        const message = responseData?.message ||
+            (typeof responseData === "string" ? responseData : null) ||
+            error.message ||
+            "Đổi mật khẩu thất bại";
+        throw new Error(message);
+    }
+};
+
 export const getMeService = async () => {
     try {
         const response = await apiClient.get('/admin/auth/me');

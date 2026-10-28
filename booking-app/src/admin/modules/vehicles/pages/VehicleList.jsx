@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Search, RefreshCw, Trash2, Lock, Loader2 } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { Plus, RefreshCw, Trash2, Lock, Loader2 } from "lucide-react";
 import { VehicleTable, VehicleTrashTable } from "../components/VehicleTable";
 import { VehicleModal } from "../components/VehicleModal";
 import { vehicleService } from "../services/vehicleService";
@@ -14,6 +15,7 @@ const initialFormState = {
 };
 
 export default function VehicleList() {
+  const { searchQuery } = useOutletContext();
   const userPermissions = useMemo(() => {
     try {
       const userString = localStorage.getItem("user");
@@ -35,9 +37,6 @@ export default function VehicleList() {
   const [accountList, setAccountList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [trashSearchTerm, setTrashSearchTerm] = useState("");
-  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editVehicle, setEditVehicle] = useState(null);
   const [formData, setFormData] = useState(initialFormState);
@@ -95,11 +94,11 @@ export default function VehicleList() {
   };
 
   const filteredVehicles = vehicles.filter(v =>
-    v.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    v.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredDeletedVehicles = deletedVehicles.filter(v =>
-    v.name?.toLowerCase().includes(trashSearchTerm.toLowerCase())
+    v.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSubmit = async () => {
@@ -201,18 +200,9 @@ export default function VehicleList() {
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
       
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Phương tiện</h1>
-          <p className="text-gray-500 mt-1">Danh mục các loại xe, tàu, máy bay</p>
-        </div>
+
         <div className="flex gap-2">
-          <button 
-            onClick={() => { setIsLoading(true); fetchVehicles(); }} 
-            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" 
-            title="Tải lại dữ liệu"
-          >
-            <RefreshCw className={`w-5 h-5 text-gray-600 ${isLoading ? "animate-spin" : ""}`} />
-          </button>
+
           
           {activeTab === "active" && canCreate && (
             <button 
@@ -251,17 +241,6 @@ export default function VehicleList() {
         </div>
 
         <div className="p-6 pt-2">
-          <div className="relative max-w-sm mb-4">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder={activeTab === "active" ? "Tìm kiếm phương tiện..." : "Tìm kiếm trong thùng rác..."} 
-              value={activeTab === "active" ? searchTerm : trashSearchTerm} 
-              onChange={(e) => activeTab === "active" ? setSearchTerm(e.target.value) : setTrashSearchTerm(e.target.value)} 
-              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all" 
-            />
-          </div>
-          
           {isLoading ? (
             <div className="flex flex-col items-center justify-center min-h-[300px]">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />

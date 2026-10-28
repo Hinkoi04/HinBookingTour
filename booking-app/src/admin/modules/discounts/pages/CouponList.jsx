@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, Search, Trash2, Lock, Loader2 } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { Plus, Trash2, Lock, Loader2 } from "lucide-react";
 import { CouponTable } from "../components/CouponTable";
 import { CouponTrashTable } from "../components/CouponTrashTable";
 import { CouponModal } from "../components/DiscountModal";
@@ -24,6 +25,7 @@ const initialFormState = {
 };
 
 export default function CouponList() {
+  const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("CREATE_COUPON");
   const canUpdate = hasPermission("UPDATE_COUPON");
@@ -36,7 +38,6 @@ export default function CouponList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
-  const [searchTerm, setSearchTerm] = useState("");
   const [viewCoupon, setViewCoupon] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editCoupon, setEditCoupon] = useState(null);
@@ -65,7 +66,7 @@ export default function CouponList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, activeTab]);
+  }, [searchQuery, activeTab]);
 
   const fetchData = async () => {
     try {
@@ -97,11 +98,11 @@ export default function CouponList() {
   };
 
   const filteredCoupons = coupons.filter(c => 
-    c.code?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.code?.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   const filteredDeletedCoupons = deletedCoupons.filter(c => 
-    c.code?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.code?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const currentList = activeTab === "active" ? filteredCoupons : filteredDeletedCoupons;
@@ -200,9 +201,6 @@ export default function CouponList() {
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Mã giảm giá</h1>
-        </div>
         <div className="flex gap-2">
           {activeTab === "active" && canCreate && (
             <button 
@@ -240,17 +238,6 @@ export default function CouponList() {
         </div>
 
         <div className="p-6 pt-2">
-          <div className="relative max-w-sm mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder={activeTab === "active" ? "Tìm kiếm mã code..." : "Tìm kiếm trong thùng rác..."} 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)} 
-              className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 text-sm transition-all" 
-            />
-          </div>
-
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
               Không thể tải dữ liệu: {error}

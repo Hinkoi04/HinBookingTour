@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { bookingService } from "../services/BookService";
 import { paymentService } from "../services/paymentService";
@@ -24,11 +25,11 @@ const PAYMENT_STATUS_LABELS = {
 };
 
 export default function BookingList() {
+  const { searchQuery } = useOutletContext();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [accountMap, setAccountMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,7 +76,7 @@ export default function BookingList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, activeTab, isAscending]); 
+  }, [searchQuery, activeTab, isAscending]);
 
   const closeConfirm = () => {
     setConfirmConfig(prev => ({ ...prev, isOpen: false }));
@@ -165,9 +166,9 @@ export default function BookingList() {
 
   const filteredBookings = bookings.filter(booking => {
     const matchesSearch = 
-      booking.bookingCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (booking.tourTitle && booking.tourTitle.toLowerCase().includes(searchTerm.toLowerCase()));
+      booking.bookingCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (booking.tourTitle && booking.tourTitle.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesTab = activeTab === "all" || booking.status === activeTab;
     return matchesSearch && matchesTab;
@@ -187,22 +188,7 @@ export default function BookingList() {
 
   return (
     <div className="p-8 w-full relative">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Quản lý Đơn đặt vé</h1>
-      </div>
-
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden p-6 pb-2">
-        <div className="relative max-w-md mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Tìm kiếm mã đơn, khách hàng, tour..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-blue-100 text-sm transition-all"
-          />
-        </div>
-
         <div className="flex gap-2 border-b border-gray-100 mb-4 pb-2 overflow-x-auto">
           <button onClick={() => setActiveTab("all")} className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${activeTab === "all" ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>
             Tất cả ({bookings.length})

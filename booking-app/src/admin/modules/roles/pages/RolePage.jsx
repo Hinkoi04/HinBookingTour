@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus, Search, Lock, Loader2 } from "lucide-react"; 
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { Plus, Lock, Loader2 } from "lucide-react";
 
 import { roleService, permissionService } from "../services/roleService";
 import PermissionMatrix from "../components/PermissionMatrix";
@@ -12,9 +12,9 @@ import AlertModal from "../../../components/AlertModal";
 
 const RolePage = () => {
   const navigate = useNavigate();
+  const { searchQuery } = useOutletContext();
 
   const [activeTab, setActiveTab] = useState("roles"); 
-  const [searchTerm, setSearchTerm] = useState("");
   
   const [roles, setRoles] = useState([]);
   const [allPermissions, setAllPermissions] = useState([]);
@@ -87,8 +87,8 @@ const RolePage = () => {
   useEffect(() => { loadData(); }, [canManagePermissions]);
 
   const filteredRoles = roles.filter(role => 
-    role.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (role.description && role.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (role.description && role.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleOpenNew = () => navigate("/admin/roles/new");
@@ -141,10 +141,6 @@ const RolePage = () => {
   return (
     <div className="p-8 w-full">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Phân quyền Hệ thống</h1>
-        </div>
-        
         <button
           onClick={handleOpenNew}
           disabled={!canCreateRole}
@@ -181,18 +177,6 @@ const RolePage = () => {
             Phân quyền
           </button>
         </div>
-        {activeTab === "roles" && (
-          <div className="relative max-w-sm mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm vai trò (ID, Tên)..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-blue-500 text-sm transition-colors"
-            />
-          </div>
-        )}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />

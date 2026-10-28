@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Search, Lock, Loader2 } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { Plus, Lock, Loader2 } from "lucide-react";
 import { CategoryTable, CategoryTrashTable } from "../components/CategoryTable";
 import { CategoryModal } from "../components/CategoryModal";
 import { CategoryDetailModal } from "../components/CategoryDetailModal";
@@ -13,6 +14,7 @@ import AlertModal from "../../../components/AlertModal";
 const initialFormState = { title: "", description: "", parentId: "" };
 
 export default function CategoryList() {
+  const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
   const [categories, setCategories] = useState([]);
@@ -22,9 +24,6 @@ export default function CategoryList() {
   const [isLoading, setIsLoading] = useState(true);
   const [viewCategory, setViewCategory] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [trashSearchTerm, setTrashSearchTerm] = useState("");
-  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const [formData, setFormData] = useState(initialFormState);
@@ -61,7 +60,7 @@ export default function CategoryList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, trashSearchTerm, activeTab]);
+  }, [searchQuery, activeTab]);
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -97,11 +96,11 @@ export default function CategoryList() {
   }, [activeTab]);
 
   const filteredCategories = categories.filter(cat =>
-    cat.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    cat.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredDeletedCategories = deletedCategories.filter(cat =>
-    cat.title?.toLowerCase().includes(trashSearchTerm.toLowerCase())
+    cat.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const currentList = activeTab === "active" ? filteredCategories : filteredDeletedCategories;
@@ -206,8 +205,6 @@ export default function CategoryList() {
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Quản lý Danh mục</h1>
-        
         {hasPermission("CREATE_CATEGORY") && (
           <button 
             onClick={() => { setFormData(initialFormState); setEditCategory(null); setIsDialogOpen(true); }} 
@@ -233,13 +230,6 @@ export default function CategoryList() {
         </div>
 
         <div className="p-6 pt-2">
-          <div className="relative max-w-sm mb-4">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            <input type="text" placeholder="Tìm kiếm..." value={activeTab === "active" ? searchTerm : trashSearchTerm} 
-                   onChange={(e) => activeTab === "active" ? setSearchTerm(e.target.value) : setTrashSearchTerm(e.target.value)}
-                   className="w-full pl-9 py-2 border border-gray-300 rounded-lg text-sm" />
-          </div>
-          
           {isLoading ? (
             <div className="flex flex-col items-center justify-center min-h-[300px]">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />

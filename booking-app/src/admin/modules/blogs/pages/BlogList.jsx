@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Plus, Search, Lock } from "lucide-react";
+import { Link, useOutletContext } from "react-router-dom";
+import { Plus, Lock } from "lucide-react";
 import { BlogTable } from "../components/BlogTable";
 import { BlogTrashTable } from "../components/BlogTrashTable";
 import { BlogDetailModal } from "../components/BlogDetailModal";
@@ -10,14 +10,12 @@ import { blogService } from "../services/blogService";
 import { accountService } from "../../users/services/accountService";
 
 export function BlogList() {
+  const { searchQuery } = useOutletContext();
   const [blogs, setBlogs] = useState([]);
   const [trashedBlogs, setTrashedBlogs] = useState([]);
   const [accountList, setAccountList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [trashSearch, setTrashSearch] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -66,7 +64,7 @@ export function BlogList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, trashSearch, activeTab]);
+  }, [searchQuery, activeTab]);
 
   const getAccountName = (id) => {
     const acc = accountList.find(a => String(a.id) === String(id));
@@ -74,12 +72,12 @@ export function BlogList() {
   };
 
   const filteredBlogs = blogs.filter(b =>
-    b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredTrash = trashedBlogs.filter(b =>
-    b.title.toLowerCase().includes(trashSearch.toLowerCase())
+    b.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const currentList = activeTab === "active" ? filteredBlogs : filteredTrash;
@@ -131,10 +129,7 @@ export function BlogList() {
   return (
     <div className="p-8 w-full">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Bài viết</h1>
-          <p className="text-gray-500 mt-1">Tạo và quản lý các bài viết tin tức</p>
-        </div>
+
         {canCreate && (
           <Link
             to="/admin/blogs/new"
@@ -166,17 +161,6 @@ export function BlogList() {
             {!canViewTrash && <Lock className="w-3.5 h-3.5" />}
             Thùng rác {canViewTrash && `(${trashedBlogs.length})`}
           </button>
-        </div>
-
-        <div className="relative max-w-sm mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder={activeTab === "active" ? "Tìm kiếm bài viết..." : "Tìm kiếm trong thùng rác..."}
-            value={activeTab === "active" ? searchTerm : trashSearch}
-            onChange={(e) => activeTab === "active" ? setSearchTerm(e.target.value) : setTrashSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-gray-300 text-sm"
-          />
         </div>
 
         {activeTab === "active" ? (

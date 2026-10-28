@@ -29,10 +29,7 @@ export default function Dashboard() {
 
   return (
     <div className="w-full p-6 lg:p-8 space-y-6 max-w-full overflow-hidden">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Tổng quan</h1>
-        <p className="text-gray-500 mt-1">Thống kê tổng quan hệ thống quản lý tour</p>
-      </div>
+
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
