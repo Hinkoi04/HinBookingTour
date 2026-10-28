@@ -165,7 +165,7 @@ export default function UserManagement() {
       isOpen: true,
       title: `Xác nhận ${actionText}`,
       message: `Bạn có chắc chắn muốn ${actionText} tài khoản này không?`,
-      variant: currentStatus === "active" ? "danger" : "info",
+      variant: "warning",
       action: async () => {
         try {
           if (userType === "customer") {
@@ -254,7 +254,7 @@ export default function UserManagement() {
         try {
           await accountService.softDelete(id);
           loadEmployees();
-          showAlert("Thành công", "Đã chuyển nhân viên vào thùng rác!", "success");
+          showAlert("Đã xóa", "Đã chuyển nhân viên vào thùng rác!", "danger");
         } catch (error) {
           showAlert("Lỗi", error.message || "Lỗi xóa nhân viên", "danger");
         }
@@ -291,7 +291,7 @@ export default function UserManagement() {
         try {
           await accountService.hardDelete(id);
           await loadTrash();
-          showAlert("Thành công", "Đã xóa vĩnh viễn nhân viên!", "success");
+          showAlert("Đã xóa", "Đã xóa vĩnh viễn nhân viên!", "danger");
         } catch (error) {
           showAlert("Lỗi", error.message || "Xóa vĩnh viễn thất bại", "danger");
         }

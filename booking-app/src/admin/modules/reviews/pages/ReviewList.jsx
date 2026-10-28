@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { reviewService } from "../services/reviewService";
 import { ReviewTable } from "../components/ReviewTable";
 import Pagination from "../../../components/Pagination";
+import { toastDeleted } from "../../../utils/notifications";
 
 export default function ReviewList() {
   const { searchQuery } = useOutletContext();
@@ -75,13 +76,13 @@ export default function ReviewList() {
     try {
       if (actionType === 'softDelete' && canDelete) {
         await reviewService.delete(actionId);
-        toast.success("Đã chuyển vào thùng rác");
+        toastDeleted("Đã chuyển vào thùng rác");
       } else if (actionType === 'restore' && canUpdate) {
         await reviewService.restore(actionId);
         toast.success("Đã khôi phục đánh giá");
       } else if (actionType === 'hardDelete' && canDelete) {
         await reviewService.hardDelete(actionId);
-        toast.success("Đã xóa vĩnh viễn");
+        toastDeleted("Đã xóa vĩnh viễn");
       }
       setReviews(prev => prev.filter(r => r.id !== actionId));
     } catch (error) {

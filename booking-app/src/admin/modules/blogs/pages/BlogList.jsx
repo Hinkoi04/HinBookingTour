@@ -8,6 +8,8 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import Pagination from "../../../components/Pagination";
 import { blogService } from "../services/blogService";
 import { accountService } from "../../users/services/accountService";
+import { toast } from "sonner";
+import { toastDeleted } from "../../../utils/notifications";
 
 export function BlogList() {
   const { searchQuery } = useOutletContext();
@@ -98,12 +100,21 @@ export function BlogList() {
   const handleConfirm = async () => {
     const { type, id } = confirmState;
     try {
-      if (type === "delete" && canDelete) await blogService.softDelete(id);
-      if (type === "restore" && canUpdate) await blogService.restore(id);
-      if (type === "hardDelete" && canDelete) await blogService.hardDelete(id);
+      if (type === "delete" && canDelete) {
+        await blogService.softDelete(id);
+        toastDeleted("Đã chuyển bài viết vào thùng rác.");
+      }
+      if (type === "restore" && canUpdate) {
+        await blogService.restore(id);
+        toast.success("Đã khôi phục bài viết.");
+      }
+      if (type === "hardDelete" && canDelete) {
+        await blogService.hardDelete(id);
+        toastDeleted("Đã xóa vĩnh viễn bài viết.");
+      }
       await loadData();
     } catch (err) {
-      alert("Lỗi: " + err.message);
+      toast.error("Lỗi: " + err.message);
     } finally {
       setConfirmState({ open: false, type: null, id: null });
     }

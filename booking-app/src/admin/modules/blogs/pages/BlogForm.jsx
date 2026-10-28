@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, X, ImageIcon } from "lucide-react";
 import { Editor } from '@tinymce/tinymce-react';
 import { blogService } from "../services/blogService";
 import ConfirmModal from "../../../components/ConfirmModal"; 
+import { toast } from "sonner";
 
 export default function BlogForm() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export default function BlogForm() {
           status:      blog.status || "published",
         });
       } catch (err) {
-        alert("Không tìm thấy bài viết: " + err.message);
+        toast.error("Không tìm thấy bài viết: " + err.message);
         navigate("/admin/blogs");
       } finally {
         setLoading(false);
@@ -52,7 +53,7 @@ export default function BlogForm() {
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert("Ảnh không được vượt quá 5MB"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.warning("Ảnh không được vượt quá 5MB"); return; }
     
     setThumbnailFile(file);
     setFormData(prev => ({ ...prev, thumbnail: URL.createObjectURL(file) }));
@@ -60,8 +61,8 @@ export default function BlogForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title) { alert("Vui lòng nhập tiêu đề"); return; }
-    if (!formData.content) { alert("Vui lòng nhập nội dung"); return; }
+    if (!formData.title) { toast.warning("Vui lòng nhập tiêu đề"); return; }
+    if (!formData.content) { toast.warning("Vui lòng nhập nội dung"); return; }
 
     try {
       setSubmitting(true);
@@ -82,7 +83,7 @@ export default function BlogForm() {
         setSuccessModal({ open: true, message: "Thêm bài viết mới thành công!" });
       }
           } catch (err) {
-      alert("Lỗi: " + err.message);
+      toast.error("Lỗi: " + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -260,7 +261,7 @@ export default function BlogForm() {
         title="Thành công!"
         message={successModal.message}
         confirmText="Đóng"
-        variant="info"
+        variant="success"
         hideCancel={true}
       />
     </div>

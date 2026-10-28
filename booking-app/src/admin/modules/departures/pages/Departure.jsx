@@ -7,6 +7,8 @@ import { departureService } from "../services/departureService";
 import { vehicleService } from "../../vehicles/services/vehicleService"; 
 import { tourService } from "../../tours/services/tourService";
 import { accountService } from "../../users/services/accountService"; 
+import { toast } from "sonner";
+import { toastDeleted } from "../../../utils/notifications";
 
 import Pagination from "../../../components/Pagination";
 import ConfirmModal from "../../../components/ConfirmModal";
@@ -80,10 +82,10 @@ export default function DepartureList() {
         try {
           setIsFlashSaleLoading(true);
           const result = await departureService.applyFlashSale();
-          alert(result.message || "Flash Sale đã được áp dụng!");
+          toast.success(result.message || "Flash Sale đã được áp dụng!");
           fetchData();
         } catch (error) {
-          alert("Lỗi: " + error.message);
+          toast.error("Lỗi: " + error.message);
         } finally {
           setIsFlashSaleLoading(false);
         }
@@ -165,15 +167,17 @@ export default function DepartureList() {
 
           if (editDeparture) {
             await departureService.update(editDeparture.id, payload);
+            toast.success("Cập nhật lịch khởi hành thành công.");
           } else {
             await departureService.create(payload);
+            toast.success("Thêm lịch khởi hành thành công.");
           }
           
           setIsDialogOpen(false);
           resetForm();
           fetchData(); 
         } catch (error) {
-          alert("Lỗi: " + error.message);
+          toast.error("Lỗi: " + error.message);
         }
       }
     });
@@ -205,14 +209,14 @@ export default function DepartureList() {
       isOpen: true,
       title: "Hủy chuyến đi",
       message: "Bạn có chắc chắn muốn hủy chuyến đi này?",
-      variant: "warning",
+      variant: "danger",
       action: async () => {
         try {
           await departureService.delete(id);
-          alert("Đã hủy thành công");
+          toastDeleted("Đã hủy chuyến đi thành công.");
           fetchData(); 
         } catch (error) {
-          alert("Lỗi: " + error.message);
+          toast.error("Lỗi: " + error.message);
         }
       }
     });
@@ -227,10 +231,10 @@ export default function DepartureList() {
       action: async () => {
         try {
           await departureService.restore(id);
-          alert("Khôi phục thành công!");
+          toast.success("Khôi phục thành công!");
           fetchData();
         } catch (error) {
-          alert("Lỗi: " + error.message);
+          toast.error("Lỗi: " + error.message);
         }
       }
     });
@@ -245,10 +249,10 @@ export default function DepartureList() {
       action: async () => {
         try {
           await departureService.hardDelete(id);
-          alert("Đã xóa vĩnh viễn!");
+          toastDeleted("Đã xóa vĩnh viễn lịch khởi hành.");
           fetchData();
         } catch (error) {
-          alert("Lỗi: " + error.message);
+          toast.error("Lỗi: " + error.message);
         }
       }
     });

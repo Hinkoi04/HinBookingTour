@@ -147,7 +147,7 @@ export function TourList() {
             ]);
             setTours(tours.filter((t) => t.id !== id));
           }
-          showAlert("Thành công", "Đã chuyển tour vào thùng rác.", "success");
+          showAlert("Đã xóa", "Đã chuyển tour vào thùng rác.", "danger");
         } catch (err) {
           showAlert("Lỗi", "Lỗi khi xóa: " + err.message, "danger");
         }
@@ -188,7 +188,7 @@ export function TourList() {
         try {
           await tourService.hardDelete(id);
           setDeletedTours(deletedTours.filter((t) => t.id !== id));
-          showAlert("Thành công", "Đã xóa vĩnh viễn tour.", "success");
+          showAlert("Đã xóa", "Đã xóa vĩnh viễn tour.", "danger");
         } catch (err) {
           showAlert("Lỗi", "Lỗi khi xóa vĩnh viễn: " + err.message, "danger");
         }

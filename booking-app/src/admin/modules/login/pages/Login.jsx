@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LoginForm from '../components/LoginForm';
 import { loginService } from '../services/authService';
+import { toast } from "sonner";
 
 const DEMO_ACCOUNTS = [
   { label: "Admin",     role: "Toàn quyền hệ thống", email: "dovanhin04@gmail.com",  password: "password123" },
@@ -20,7 +21,7 @@ const LoginPage = () => {
       localStorage.setItem('accessToken', data.accessToken);
       window.location.href = '/admin';
     } catch (err) {
-      alert(err.response?.data?.message || "Lỗi đăng nhập tài khoản hoặc mật khẩu không đúng");
+      toast.error(err.response?.data?.message || "Lỗi đăng nhập tài khoản hoặc mật khẩu không đúng");
     } finally {
       setLoading(false);
     }

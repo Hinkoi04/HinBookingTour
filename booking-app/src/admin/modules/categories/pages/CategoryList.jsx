@@ -158,7 +158,7 @@ export default function CategoryList() {
         try {
           await categoryService.softDelete(id);
           fetchData();
-          showAlert("Thành công", "Đã chuyển danh mục vào thùng rác.", "success");
+          showAlert("Đã xóa", "Đã chuyển danh mục vào thùng rác.", "danger");
         } catch (error) {
           showAlert("Lỗi", "Lỗi: " + error.message, "danger");
         }
@@ -194,7 +194,7 @@ export default function CategoryList() {
         try {
           await categoryService.hardDelete(id);
           fetchData();
-          showAlert("Thành công", "Đã xóa vĩnh viễn danh mục.", "success");
+          showAlert("Đã xóa", "Đã xóa vĩnh viễn danh mục.", "danger");
         } catch (error) {
           showAlert("Lỗi", "Lỗi: " + error.message, "danger");
         }

@@ -108,7 +108,7 @@ const RolePage = () => {
       isOpen: true,
       title: `Xác nhận ${actionText}`,
       message: `Bạn có chắc chắn muốn ${actionText} vai trò "${role.name}"?`,
-      variant: isCurrentlyLocked ? "info" : "danger",
+      variant: "warning",
       action: async () => {
         try {
           if (isCurrentlyLocked) {

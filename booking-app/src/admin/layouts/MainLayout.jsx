@@ -92,7 +92,7 @@ export default function MainLayout() {
       isOpen: true,
       title: "Xác nhận đăng xuất",
       message: "Bạn có chắc chắn muốn đăng xuất không?",
-      variant: "danger",
+      variant: "warning",
       action:()=>{
       localStorage.removeItem("accessToken"); 
       localStorage.removeItem("refreshToken"); 

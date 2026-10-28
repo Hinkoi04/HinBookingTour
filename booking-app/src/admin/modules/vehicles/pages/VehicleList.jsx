@@ -149,7 +149,7 @@ export default function VehicleList() {
       action: async () => {
         try {
           await vehicleService.delete(id);
-          showAlert("Thành công", "Đã chuyển vào thùng rác thành công!", "success");
+          showAlert("Đã xóa", "Đã chuyển vào thùng rác thành công!", "danger");
           fetchVehicles();
         } catch (error) {
           showAlert("Lỗi", "Lỗi khi xóa: " + error.message, "danger");
@@ -187,7 +187,7 @@ export default function VehicleList() {
       action: async () => {
         try {
           await vehicleService.hardDelete(id);
-          showAlert("Thành công", "Đã xóa vĩnh viễn!", "success");
+          showAlert("Đã xóa", "Đã xóa vĩnh viễn!", "danger");
           fetchVehicles();
         } catch (error) {
           showAlert("Lỗi", "Lỗi khi xóa vĩnh viễn: " + error.message, "danger");

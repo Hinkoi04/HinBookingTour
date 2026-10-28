@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Upload, User, Mail, Phone } from "lucide-react";
 import { accountService } from "../services/accountService"; 
+import { toast } from "sonner";
 
 export default function UserProfileModal({ isOpen, onClose, user, onUpdateSuccess }) {
   const [formData, setFormData] = useState({
@@ -45,7 +46,7 @@ export default function UserProfileModal({ isOpen, onClose, user, onUpdateSucces
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("Ảnh không được vượt quá 5MB");
+        toast.warning("Ảnh không được vượt quá 5MB");
         return;
       }
       setAvatarFile(file);
@@ -68,11 +69,11 @@ const handleSubmit = async (e) => {
 
     await accountService.update(user.id, payload, avatarFile);
     
-    alert("Cập nhật thông tin thành công!");
+    toast.success("Cập nhật thông tin thành công!");
     onUpdateSuccess();
     onClose();
   } catch (error) {
-    alert("Lỗi khi cập nhật thông tin: " + error.message);
+    toast.error("Lỗi khi cập nhật thông tin: " + error.message);
   } finally {
     setIsSubmitting(false);
   }

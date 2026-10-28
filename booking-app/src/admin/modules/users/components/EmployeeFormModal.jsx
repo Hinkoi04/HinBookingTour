@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 export function EmployeeFormModal({ 
   isOpen, 
@@ -14,24 +15,24 @@ export function EmployeeFormModal({
 
   const handleSubmit = () => {
     if (!formData.fullName || !formData.fullName.trim()) {
-      alert("Vui lòng nhập họ và tên!");
+      toast.warning("Vui lòng nhập họ và tên!");
       return;
     }
     if (!formData.email || !formData.email.trim()) {
-      alert("Vui lòng nhập email đăng nhập!");
+      toast.warning("Vui lòng nhập email đăng nhập!");
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      alert("Email không hợp lệ!");
+      toast.warning("Email không hợp lệ!");
       return;
     }
     if (!isEdit && (!formData.password || formData.password.length < 6)) {
-      alert("Mật khẩu phải có ít nhất 6 ký tự!");
+      toast.warning("Mật khẩu phải có ít nhất 6 ký tự!");
       return;
     }
     if (!formData.roleId) {
-      alert("Vui lòng chọn phân quyền!");
+      toast.warning("Vui lòng chọn phân quyền!");
       return;
     }
 

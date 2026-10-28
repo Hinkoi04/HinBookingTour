@@ -154,7 +154,7 @@ export default function CouponList() {
         try {
           await couponService.delete(id);
           fetchData();
-          showAlert("Thành công", "Đã chuyển vào thùng rác.", "success");
+          showAlert("Đã xóa", "Đã chuyển vào thùng rác.", "danger");
         } catch (err) {
           showAlert("Lỗi", "Lỗi: " + err.message, "danger");
         }
@@ -190,7 +190,7 @@ export default function CouponList() {
         try {
           await couponService.hardDelete(id);
           fetchData();
-          showAlert("Thành công", "Đã xóa vĩnh viễn mã giảm giá!", "success");
+          showAlert("Đã xóa", "Đã xóa vĩnh viễn mã giảm giá!", "danger");
         } catch (err) {
           showAlert("Lỗi", "Lỗi: " + err.message, "danger");
         }
