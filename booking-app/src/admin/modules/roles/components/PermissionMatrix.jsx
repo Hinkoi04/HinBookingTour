@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Shield, Check, X } from "lucide-react";
+import { Shield, Check, X, Loader2 } from "lucide-react";
 
 const ACTIONS = [
   { key: "create", label: "Tạo", prefix: "CREATE" },
@@ -109,7 +109,12 @@ const PermissionMatrix = ({ roles, allPermissions, rolePermissions, onSave, isLo
               disabled={isLoading || isAdmin || !selectedRoleId}
               className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 disabled:opacity-50 transition"
             >
-              {isLoading ? "Đang lưu..." : "Lưu thay đổi"}
+              {isLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Đang lưu...
+                </span>
+              ) : "Lưu thay đổi"}
             </button>
           </div>
 

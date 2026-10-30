@@ -2,18 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronDown, Phone, Menu, X, Shield, Sparkles, User, LogIn, LogOut,
-  MapPin, Globe, Award, Flame, Settings, KeyRound
+  MapPin, Globe, Award, Flame, Settings, KeyRound, ClipboardList
 } from "lucide-react";
 import { BRAND_LOGO_URL } from "../../services/branding";
 import { authService } from "../modules/auth/services/authService";
-import { ClientAccountModal } from "../modules/auth/components/ClientAccountModal";
 import { toast } from "sonner";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
   const [userDropdown, setUserDropdown] = useState(false);
-  const [accountModalMode, setAccountModalMode] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeNavItem, setActiveNavItem] = useState("");
   const location = useLocation();
@@ -74,23 +72,16 @@ export function Navbar() {
     toast.success("Đã đăng xuất tài khoản thành công");
   };
 
-  const openAccountModal = (mode) => {
+  const openProfilePage = () => {
     setUserDropdown(false);
     setIsOpen(false);
-    setAccountModalMode(mode);
+    navigate("/profile");
   };
 
-  const handleProfileUpdated = (updatedUser) => {
-    localStorage.setItem("client_travelgo_user", JSON.stringify(updatedUser));
-    setCurrentUser(updatedUser);
-    window.dispatchEvent(new Event("auth-changed"));
-  };
-
-  const handlePasswordChanged = () => {
-    setAccountModalMode(null);
-    authService.logout();
-    setCurrentUser(null);
-    navigate("/login", { replace: true });
+  const openChangePasswordPage = () => {
+    setUserDropdown(false);
+    setIsOpen(false);
+    navigate("/change-password");
   };
 
   const domesticSubmenu = [
@@ -305,17 +296,27 @@ export function Navbar() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => openAccountModal("profile")}
+                    onClick={openProfilePage}
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-xl"
                   >
                     <Settings className="w-3.5 h-3.5 text-blue-600" /> Cập nhật thông tin
                   </button>
                   <button
                     type="button"
-                    onClick={() => openAccountModal("password")}
+                    onClick={openChangePasswordPage}
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-xl"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-blue-600" /> Đổi mật khẩu
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUserDropdown(false);
+                      navigate("/order-history");
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-xl"
+                  >
+                    <ClipboardList className="w-3.5 h-3.5 text-blue-600" /> Lịch sử đơn hàng
                   </button>
                   <button
                     type="button"
@@ -447,17 +448,27 @@ export function Navbar() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => openAccountModal("profile")}
+                    onClick={openProfilePage}
                     className="rounded-lg bg-white px-2 py-2 text-xs font-semibold text-gray-700"
                   >
                     Cập nhật thông tin
                   </button>
                   <button
                     type="button"
-                    onClick={() => openAccountModal("password")}
+                    onClick={openChangePasswordPage}
                     className="rounded-lg bg-white px-2 py-2 text-xs font-semibold text-gray-700"
                   >
                     Đổi mật khẩu
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/order-history");
+                    }}
+                    className="rounded-lg bg-white px-2 py-2 text-xs font-semibold text-gray-700"
+                  >
+                    Lịch sử đơn hàng
                   </button>
                   <button
                     type="button"
@@ -481,15 +492,6 @@ export function Navbar() {
             )}
           </div>
         </div>
-      )}
-      {currentUser && accountModalMode && (
-        <ClientAccountModal
-          user={currentUser}
-          mode={accountModalMode}
-          onClose={() => setAccountModalMode(null)}
-          onProfileUpdated={handleProfileUpdated}
-          onPasswordChanged={handlePasswordChanged}
-        />
       )}
     </header>
   );

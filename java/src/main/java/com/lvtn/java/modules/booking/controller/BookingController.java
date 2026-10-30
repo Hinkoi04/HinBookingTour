@@ -1,6 +1,7 @@
 package com.lvtn.java.modules.booking.controller;
 
 import com.lvtn.java.common.ApiResponse;
+import com.lvtn.java.dto.booking.BookingHistoryResponse;
 import com.lvtn.java.dto.booking.BookingResponse;
 import com.lvtn.java.dto.booking.BookingStatusUpdateRequest;
 import com.lvtn.java.modules.booking.service.BookingService;
@@ -26,6 +27,13 @@ public class BookingController {
 //    @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'VIEW_BOOKING')")
     public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllActive() {
         return ResponseEntity.ok(ApiResponse.success(bookingService.findAllActive()));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<List<BookingHistoryResponse>>> getMyBookings() {
+        return ResponseEntity.ok(ApiResponse.success(
+                bookingService.findHistoryByEmail(securityUtils.getCurrentEmail())
+        ));
     }
 
     @GetMapping("/{id}")

@@ -1,7 +1,8 @@
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, AlertCircle } from "lucide-react";
 import { bookingService } from "../services/bookingService";
+import { authService } from "../../auth/services/authService";
 import { BookingSteps, BookingForm, BookingOrderSummary, BookingPolicy } from "../components";
 import { toast } from "sonner";
 
@@ -9,15 +10,45 @@ export function BookingPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
+  const currentUser = authService.getCurrentUser();
 
   const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
+    fullName: currentUser?.fullName || "",
+    email: currentUser?.email || "",
+    phone: currentUser?.phone || "",
     idNumber: "",
     address: "",
     notes: "",
   });
+
+  useEffect(() => {
+    if (!currentUser) return undefined;
+    let active = true;
+
+    authService.getProfile(currentUser.id)
+      .then((profile) => {
+        if (!active) return;
+        setForm((current) => ({
+          ...current,
+          fullName: current.fullName || profile.fullName || "",
+          email: current.email || profile.email || "",
+          phone: current.phone || profile.phone || "",
+        }));
+      })
+      .catch((error) => {
+        if (active) {
+          toast.error(
+            error.response?.data?.message ||
+            error.message ||
+            "Không thể tải thông tin người đặt tour"
+          );
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [currentUser?.id]);
 
   const tour = state?.tour;
   const date = state?.date;

@@ -18,6 +18,9 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE b.id = :id")
     Optional<Booking> findByIdWithDetails(@Param("id") Integer id);
 
+    @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId WHERE LOWER(b.email) = LOWER(:email) AND (b.deleted = false OR b.deleted IS NULL) ORDER BY b.createdAt DESC")
+    List<Booking> findHistoryByEmail(@Param("email") String email);
+
     @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d WHERE d.id = :departureId AND (b.deleted = false OR b.deleted IS NULL) AND (LOWER(b.status) = 'confirmed' OR LOWER(b.status) = 'completed')")
     List<Booking> findByDepartureIdWithDetails(@Param("departureId") Integer departureId);
 

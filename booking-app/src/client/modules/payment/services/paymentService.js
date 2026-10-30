@@ -54,6 +54,6 @@ export const paymentService = {
 
   confirmPayment: async (paymentData) => {
     const res = await apiClient.post("/payments", paymentData);
-    return res.data;
+    return res.data?.data ?? res.data;
   },
 };

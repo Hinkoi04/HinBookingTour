@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { roleService } from "../services/roleService";
 
@@ -108,7 +108,11 @@ const RoleForm = () => {
               disabled={isLoading}
               className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
-              <Save className="w-4 h-4" />
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
               {isLoading ? "Đang xử lý..." : "Lưu Vai trò"}
             </button>
           </div>

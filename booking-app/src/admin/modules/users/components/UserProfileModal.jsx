@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Upload, User, Mail, Phone } from "lucide-react";
+import { X, Upload, User, Mail, Phone, Loader2 } from "lucide-react";
 import { accountService } from "../services/accountService"; 
 import { toast } from "sonner";
 
@@ -16,7 +16,6 @@ export default function UserProfileModal({ isOpen, onClose, user, onUpdateSucces
 
   useEffect(() => {
     if (user && isOpen) {
-        console.log("user data:", user);
       setFormData({
         fullName: user.fullName || "",
         phone: user.phone || "",
@@ -128,7 +127,7 @@ const handleSubmit = async (e) => {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                <User className="w-4 h-4 text-gray-400" /> Họ và tên
+                <User className="w-4 h-4 text-gray-400" /> Tên người dùng
               </label>
               <input
                 type="text"
@@ -166,7 +165,12 @@ const handleSubmit = async (e) => {
               disabled={isSubmitting}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-70"
             >
-              {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Đang lưu...
+                </span>
+              ) : "Lưu thay đổi"}
             </button>
           </div>
         </form>

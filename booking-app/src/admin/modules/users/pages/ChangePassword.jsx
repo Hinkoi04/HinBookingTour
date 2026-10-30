@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { KeyRound } from "lucide-react";
+import { KeyRound, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { changePasswordService } from "../../login/services/authService";
 
@@ -130,7 +130,12 @@ export default function ChangePassword() {
               disabled={isSubmitting}
               className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Đang cập nhật..." : "Đổi mật khẩu"}
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Đang cập nhật...
+                </span>
+              ) : "Đổi mật khẩu"}
             </button>
           </div>
         </form>

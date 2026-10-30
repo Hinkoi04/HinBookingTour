@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
 export function EmployeeFormModal({ 
@@ -114,20 +114,25 @@ export function EmployeeFormModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Phân quyền <span className="text-red-500">*</span></label>
-              <select
-                value={formData.roleId || ""}
-                onChange={(e) => setFormData({ ...formData, roleId: Number(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none"
-              >
+              <div className="relative">
+                <select
+                  value={formData.roleId || ""}
+                  onChange={(e) => setFormData({ ...formData, roleId: Number(e.target.value) })}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none"
+                >
+                  {roles.length === 0 && (
+                    <option value="" disabled>Đang tải danh sách phân quyền...</option>
+                  )}
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
                 {roles.length === 0 && (
-                  <option value="" disabled>Đang tải danh sách phân quyền...</option>
+                  <Loader2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-blue-600" aria-hidden="true" />
                 )}
-                {roles.map((role) => (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                ))}
-              </select>
+              </div>
             </div>
           </div>
           {isEdit && (
@@ -158,7 +163,12 @@ export function EmployeeFormModal({
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-70"
             disabled={loading}
           >
-            {loading ? "Đang xử lý..." : (isEdit ? "Cập nhật" : "Tạo tài khoản")}
+            {loading ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Đang xử lý...
+              </span>
+            ) : (isEdit ? "Cập nhật" : "Tạo tài khoản")}
           </button>
         </div>
       </div>

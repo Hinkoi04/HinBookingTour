@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Plus, Lock } from "lucide-react";
+import { Loader2, Plus, Lock } from "lucide-react";
 import { CustomerTable } from "../components/UserTable";
 import { EmployeeTable } from "../components/AccountTable";
 import { TrashTable } from "../components/TrashTable";
@@ -368,7 +368,10 @@ export default function UserManagement() {
         {activeTab === "customers" ? (
           <div className="animate-in fade-in duration-300">
             {loading ? (
-              <div className="text-center py-10 text-gray-500">Đang tải dữ liệu khách hàng...</div>
+              <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
+                <span>Đang tải dữ liệu khách hàng...</span>
+              </div>
             ) : (
               <CustomerTable
                 data={paginatedList}
@@ -397,7 +400,10 @@ export default function UserManagement() {
             </div>
 
             {loading ? (
-              <div className="text-center py-10 text-gray-500">Đang tải dữ liệu nhân viên...</div>
+              <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
+                <span>Đang tải dữ liệu nhân viên...</span>
+              </div>
             ) : (
               <EmployeeTable
                 data={paginatedList}
@@ -413,7 +419,10 @@ export default function UserManagement() {
         ) : (
           <div className="animate-in fade-in duration-300">
             {loading ? (
-              <div className="text-center py-10 text-gray-500">Đang tải thùng rác...</div>
+              <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
+                <span>Đang tải thùng rác...</span>
+              </div>
             ) : (
               <TrashTable
                 data={paginatedList}

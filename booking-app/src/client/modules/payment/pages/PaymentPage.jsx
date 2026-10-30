@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useState } from "react";
-import { ChevronRight, Check, AlertCircle, Banknote } from "lucide-react";
+import { ChevronRight, Check, AlertCircle, Banknote, Loader2 } from "lucide-react";
 import { paymentService } from "../services/paymentService";
 import {
   PaymentMethods,
@@ -26,6 +26,7 @@ export function PaymentPage() {
   const [agreed, setAgreed] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [confirmedOrderId, setConfirmedOrderId] = useState("");
 
   if (!state?.tour) {
     return (
@@ -67,23 +68,26 @@ export function PaymentPage() {
     setSubmitting(true);
     try {
       const result = await paymentService.confirmPayment({
-        orderId,
-        tourId: tour.id,
-        date,
+        departureId: tour.departure?.id,
         adults,
         children,
         babies,
-        totalPrice,
-        deposit,
-        remainingAmount,
         paymentPlan,
-        customer,
-        passengers,
         paymentMethod: selectedMethod,
+        customer,
+        passengers: passengers.map((passenger) => ({
+          fullName: passenger.fullName,
+          dob: passenger.dob || null,
+          gender: passenger.gender,
+          idCard: passenger.idCard,
+          phone: passenger.phone,
+          type: passenger.type,
+        })),
       });
       if (result?.success === false) {
         throw new Error(result.message || "Không thể xác nhận thanh toán");
       }
+      setConfirmedOrderId(result.bookingCode || orderId);
       setSuccess(true);
     } catch (error) {
       toast.error(
@@ -100,7 +104,7 @@ export function PaymentPage() {
   if (success) {
     return (
       <PaymentSuccess
-        orderId={orderId}
+        orderId={confirmedOrderId || orderId}
         tour={tour}
         date={date}
         customer={customer}
@@ -224,7 +228,12 @@ export function PaymentPage() {
               }`}
             >
               {submitting
-                ? "Đang xử lý..."
+                ? (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                      Đang xử lý...
+                    </span>
+                  )
                 : `Xác nhận ${selectedMethod === "cod" ? "đặt tour thanh toán COD" : `thanh toán ${fmt(deposit)}`}`}
             </button>
           </div>

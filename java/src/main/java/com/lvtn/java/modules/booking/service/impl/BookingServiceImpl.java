@@ -3,6 +3,7 @@ package com.lvtn.java.modules.booking.service.impl;
 import com.lvtn.java.common.exception.BadRequestException;
 import com.lvtn.java.common.exception.NotFoundException;
 import com.lvtn.java.dto.booking.BookingResponse;
+import com.lvtn.java.dto.booking.BookingHistoryResponse;
 import com.lvtn.java.dto.booking.PassengerResponse;
 import com.lvtn.java.dto.booking.PaymentResponse;
 import com.lvtn.java.modules.booking.entity.Booking;
@@ -76,6 +77,25 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingResponse> findAllActive() {
         return bookingRepository.findByDeletedFalse().stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public List<BookingHistoryResponse> findHistoryByEmail(String email) {
+        return bookingRepository.findHistoryByEmail(email).stream()
+                .map(booking -> new BookingHistoryResponse(
+                        booking.getId(),
+                        booking.getBookingCode(),
+                        booking.getDeparture() != null && booking.getDeparture().getTourId() != null
+                                ? booking.getDeparture().getTourId().getTitle() : null,
+                        booking.getDeparture() != null ? booking.getDeparture().getStartTime() : null,
+                        booking.getQuantityAdult(),
+                        booking.getQuantityChildren(),
+                        booking.getQuantityBaby(),
+                        booking.getTotal(),
+                        booking.getStatus(),
+                        booking.getCreatedAt()
+                ))
+                .toList();
     }
 
     @Override

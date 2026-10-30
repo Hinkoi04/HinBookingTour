@@ -105,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
         Account account = accountRepository.findByEmail(email).orElseThrow();
 
         if (!passwordEncoder.matches(request.currentPassword(), account.getPassword())) {
-            throw new RuntimeException("Mật khẩu hiện tại không đúng");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu hiện tại không đúng");
         }
 
         account.setPassword(passwordEncoder.encode(request.newPassword()));

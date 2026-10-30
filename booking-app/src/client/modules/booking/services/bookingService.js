@@ -44,4 +44,9 @@ export const bookingService = {
     const res = await apiClient.post("/bookings", bookingData);
     return res.data;
   },
+
+  getMyBookings: async () => {
+    const res = await apiClient.get("/bookings/my");
+    return res.data.data;
+  },
 };

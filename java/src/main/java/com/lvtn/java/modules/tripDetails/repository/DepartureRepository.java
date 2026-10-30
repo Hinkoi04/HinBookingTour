@@ -26,6 +26,9 @@ public interface DepartureRepository extends JpaRepository<Departure, Integer> {
     @Query("SELECT d FROM Departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH d.vehicle LEFT JOIN FETCH d.guide WHERE d.id = :id")
     java.util.Optional<Departure> findByIdWithDetails(@Param("id") Integer id);
 
+    @Query(value = "SELECT * FROM departures WHERE id = :id AND deleted = 0 FOR UPDATE", nativeQuery = true)
+    java.util.Optional<Departure> findByIdForBooking(@Param("id") Integer id);
+
     @Query("SELECT d FROM Departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH d.vehicle LEFT JOIN FETCH d.guide WHERE d.deleted = true")
     List<Departure> findAllTrash();
 

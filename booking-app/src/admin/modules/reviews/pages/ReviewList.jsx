@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Lock } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { reviewService } from "../services/reviewService";
 import { ReviewTable } from "../components/ReviewTable";
@@ -135,7 +135,10 @@ export default function ReviewList() {
 
         <div className="p-6 pt-2">
           {loading ? (
-            <div className="text-center py-10 text-gray-500 text-sm">Đang tải dữ liệu...</div>
+            <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
+              <span>Đang tải dữ liệu...</span>
+            </div>
           ) : (
             <ReviewTable
               reviews={paginatedList}

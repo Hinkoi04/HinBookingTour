@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 export function PassengerEditModal({ passenger, isOpen, onClose, onSave }) {
   const [formData, setFormData] = useState({
@@ -143,7 +143,12 @@ export function PassengerEditModal({ passenger, isOpen, onClose, onSave }) {
               disabled={isSubmitting}
               className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Đang lưu...
+                </span>
+              ) : "Lưu thay đổi"}
             </button>
           </div>
         </form>

@@ -98,7 +98,7 @@ export function DepartureTable({ departures, onView, onViewPassengers, onEdit, o
 
                 <td className="py-3 px-4">
                   <div className="text-sm font-medium text-gray-900">{dateDisplay}</div>
-                  <div className="text-sm font-medium text-blue-600">{departure.guideName || "Đang cập nhật"}</div>
+                  <div className="text-sm font-medium text-blue-600">{departure.guideName || "Chưa cập nhật"}</div>
                   
                 </td>
                 

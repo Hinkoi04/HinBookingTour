@@ -3,7 +3,8 @@ import { HomePage } from "../modules/home";
 import { TourDetailPage, TourListPage } from "../modules/tours";
 import { BookingPage } from "../modules/booking";
 import { PaymentPage } from "../modules/payment";
-import { LoginPage, RegisterPage } from "../modules/auth";
+import { ChangePasswordPage, ClientProfilePage, LoginPage, RegisterPage } from "../modules/auth";
+import { OrderHistoryPage } from "../modules/booking/pages/OrderHistoryPage";
 import { BlogDetailPage, BlogListPage } from "../modules/blogs";
 
 export const clientRoutes = [
@@ -33,6 +34,18 @@ export const clientRoutes = [
       {
         path: "/register",
         element: <RegisterPage />,
+      },
+      {
+        path: "/change-password",
+        element: <ChangePasswordPage />,
+      },
+      {
+        path: "/profile",
+        element: <ClientProfilePage />,
+      },
+      {
+        path: "/order-history",
+        element: <OrderHistoryPage />,
       },
       {
         path: "/tour/:slug",
