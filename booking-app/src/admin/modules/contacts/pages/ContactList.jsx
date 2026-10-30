@@ -33,9 +33,15 @@ export default function ContactList() {
         setCurrentPage(1);
     }, [searchQuery]);
 
-    const filteredContacts = contacts.filter(contact => {
-        return (contact.email || "").toLowerCase().includes(searchQuery.toLowerCase());
-    });
+    const filteredContacts = [...contacts]
+        .sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return (Number.isFinite(dateB) ? dateB : 0) - (Number.isFinite(dateA) ? dateA : 0);
+        })
+        .filter(contact => {
+            return (contact.email || "").toLowerCase().includes(searchQuery.toLowerCase());
+        });
 
     const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;

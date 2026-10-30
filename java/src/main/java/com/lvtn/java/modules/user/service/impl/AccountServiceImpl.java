@@ -56,7 +56,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse findById(Integer id) {
-        Account account = accountRepository.findById(id)
+        Account account = accountRepository.findByIdWithRole(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản với ID: " + id));
         return mapToResponse(account);
     }

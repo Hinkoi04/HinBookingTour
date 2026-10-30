@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MapPin, FolderTree, Calendar, Ticket, BusFront,
   ShoppingCart, FileText, Users, MessageSquare,
-  LogOut, Settings, KeyRound, Search, X, RefreshCw
+  LogOut, Settings, KeyRound, Search, X, RefreshCw, ChevronLeft, ChevronRight
 } from "lucide-react";
 
 import { getMeService } from "../modules/login/services/authService"; 
@@ -36,6 +36,7 @@ export default function MainLayout() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   const dropdownRef = useRef(null);
   const currentPage = [...navigation]
@@ -117,11 +118,25 @@ export default function MainLayout() {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       
-      <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full shrink-0 px-4">
+      <div className={`bg-white border-r border-gray-200 flex flex-col h-full shrink-0 transition-all duration-200 ${isSidebarCollapsed ? "w-16 px-2" : "w-64 px-4"}`}>
         <div className="flex flex-col h-full relative">
-          <Link to="/admin" className="flex mt-4 w-full">
-            <img className="logo__img max-h-12 max-w-[220px] w-auto object-contain" src={BRAND_LOGO_URL} alt="TRAVELGO" />
-          </Link>
+          <div className={`mt-4 flex w-full items-center ${isSidebarCollapsed ? "justify-center" : "justify-between"}`}>
+            {!isSidebarCollapsed && (
+              <Link to="/admin" className="flex min-w-0">
+                <img className="logo__img max-h-12 max-w-[180px] w-auto object-contain" src={BRAND_LOGO_URL} alt="TRAVELGO" />
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+              aria-label={isSidebarCollapsed ? "Mở rộng thanh bên" : "Thu gọn thanh bên"}
+              aria-expanded={!isSidebarCollapsed}
+              title={isSidebarCollapsed ? "Mở rộng thanh bên" : "Thu gọn thanh bên"}
+            >
+              {isSidebarCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+            </button>
+          </div>
           <nav className="flex-1 overflow-y-auto py-6">
             <ul className="flex flex-col gap-1">
               {navigation.map((item) => {
@@ -131,14 +146,18 @@ export default function MainLayout() {
                   <li key={item.name}>
                     <Link
                       to={item.href}
-                      className={`flex items-center gap-4 py-3 px-3 rounded-lg text-sm transition-all duration-200 font-medium w-full ${
+                      className={`flex items-center rounded-lg py-3 text-sm transition-all duration-200 font-medium w-full ${
+                        isSidebarCollapsed ? "justify-center px-0" : "gap-4 px-3"
+                      } ${
                         isActive
                           ? "bg-blue-50 text-blue-600"
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`}
+                      title={isSidebarCollapsed ? item.name : undefined}
+                      aria-label={isSidebarCollapsed ? item.name : undefined}
                     >
                       <Icon className="w-5 h-5 shrink-0" />
-                      <span className="text-base font-medium">{item.name}</span>
+                      {!isSidebarCollapsed && <span className="text-base font-medium">{item.name}</span>}
                     </Link>
                   </li>
                 );

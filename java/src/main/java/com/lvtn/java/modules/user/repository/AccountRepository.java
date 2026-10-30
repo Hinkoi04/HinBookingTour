@@ -16,7 +16,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     List<Account> findByDeletedFalse();
     @Query("SELECT a FROM Account a JOIN FETCH a.role WHERE a.deleted = true")
     List<Account> findByDeletedTrue();
-    @Query("SELECT a FROM Account a JOIN FETCH a.role WHERE a.id = :id")
+    @Query("SELECT a FROM Account a LEFT JOIN FETCH a.role WHERE a.id = :id")
     Optional<Account> findByIdWithRole(@Param("id") Integer id);
 
     long countByDeletedFalse();
