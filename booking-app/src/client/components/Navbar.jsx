@@ -2,16 +2,18 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronDown, Phone, Menu, X, Shield, Sparkles, User, LogIn, LogOut,
-  MapPin, Globe, Award, Flame
+  MapPin, Globe, Award, Flame, Settings, KeyRound
 } from "lucide-react";
-import logoImg from "../../assets/Client/images/logotravelgo.png";
+import { BRAND_LOGO_URL } from "../../services/branding";
 import { authService } from "../modules/auth/services/authService";
+import { ClientAccountModal } from "../modules/auth/components/ClientAccountModal";
 import { toast } from "sonner";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
   const [userDropdown, setUserDropdown] = useState(false);
+  const [accountModalMode, setAccountModalMode] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeNavItem, setActiveNavItem] = useState("");
   const location = useLocation();
@@ -68,7 +70,27 @@ export function Navbar() {
     authService.logout();
     setCurrentUser(null);
     setUserDropdown(false);
+    setIsOpen(false);
     toast.success("Đã đăng xuất tài khoản thành công");
+  };
+
+  const openAccountModal = (mode) => {
+    setUserDropdown(false);
+    setIsOpen(false);
+    setAccountModalMode(mode);
+  };
+
+  const handleProfileUpdated = (updatedUser) => {
+    localStorage.setItem("client_travelgo_user", JSON.stringify(updatedUser));
+    setCurrentUser(updatedUser);
+    window.dispatchEvent(new Event("auth-changed"));
+  };
+
+  const handlePasswordChanged = () => {
+    setAccountModalMode(null);
+    authService.logout();
+    setCurrentUser(null);
+    navigate("/login", { replace: true });
   };
 
   const domesticSubmenu = [
@@ -124,9 +146,9 @@ export function Navbar() {
         {/* Logo with image */}
         <Link to="/home" className="flex items-center gap-3 group">
           <img
-            src={logoImg}
+            src={BRAND_LOGO_URL}
             alt="TravelGo Logo"
-            className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-10 sm:h-11 max-w-[220px] w-auto object-contain transition-transform group-hover:scale-105"
           />
         </Link>
 
@@ -281,13 +303,20 @@ export function Navbar() {
                     <p className="text-xs font-bold text-gray-800 truncate">{currentUser.fullName}</p>
                     <p className="text-[11px] text-gray-400 truncate">{currentUser.email || "Thành viên TravelGo"}</p>
                   </div>
-                  <Link
-                    to="/admin"
-                    onClick={() => setUserDropdown(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-xl"
+                  <button
+                    type="button"
+                    onClick={() => openAccountModal("profile")}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-xl"
                   >
-                    <User className="w-3.5 h-3.5 text-blue-600" /> Trang quản trị
-                  </Link>
+                    <Settings className="w-3.5 h-3.5 text-blue-600" /> Cập nhật thông tin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openAccountModal("password")}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-xl"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-blue-600" /> Đổi mật khẩu
+                  </button>
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -299,18 +328,12 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               <Link
                 to="/login"
                 className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-md shadow-blue-600/20 transition-all hover:scale-105 active:scale-95"
               >
                 <LogIn className="w-4 h-4" /> Đăng nhập
-              </Link>
-              <Link
-                to="/register"
-                className="text-gray-700 hover:text-blue-600 text-sm font-bold px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors"
-              >
-                Đăng ký
               </Link>
             </div>
           )}
@@ -417,36 +440,56 @@ export function Navbar() {
 
           <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
             {currentUser ? (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                <span className="text-sm font-bold text-gray-800">{currentUser.fullName}</span>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-xs font-bold text-red-600 hover:underline"
-                >
-                  Đăng xuất
-                </button>
+              <div className="rounded-xl bg-gray-50 p-3">
+                <p className="mb-2 text-sm font-bold text-gray-800">
+                  Xin chào, {currentUser.fullName || currentUser.username}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openAccountModal("profile")}
+                    className="rounded-lg bg-white px-2 py-2 text-xs font-semibold text-gray-700"
+                  >
+                    Cập nhật thông tin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openAccountModal("password")}
+                    className="rounded-lg bg-white px-2 py-2 text-xs font-semibold text-gray-700"
+                  >
+                    Đổi mật khẩu
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="col-span-2 rounded-lg bg-red-50 px-2 py-2 text-xs font-bold text-red-600"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div>
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-1.5 bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm"
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 py-2.5 text-sm font-bold text-white shadow-sm"
                 >
                   <LogIn className="w-4 h-4" /> Đăng nhập
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-sm"
-                >
-                  Đăng ký
                 </Link>
               </div>
             )}
           </div>
         </div>
+      )}
+      {currentUser && accountModalMode && (
+        <ClientAccountModal
+          user={currentUser}
+          mode={accountModalMode}
+          onClose={() => setAccountModalMode(null)}
+          onProfileUpdated={handleProfileUpdated}
+          onPasswordChanged={handlePasswordChanged}
+        />
       )}
     </header>
   );

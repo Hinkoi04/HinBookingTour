@@ -29,13 +29,15 @@ export function HomePage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("q") || "";
+  const selectedDate = searchParams.get("date") || "";
   const selectedCategory = searchParams.get("category") || "";
 
   const countdown = useCountdown(8 * 3600000 + 23 * 60000 + 45000);
   const [search, setSearch] = useState(searchQuery);
-  const [searchDate, setSearchDate] = useState("");
+  const [searchDate, setSearchDate] = useState(selectedDate);
   const [contactEmail, setContactEmail] = useState("");
   const [contactSent, setContactSent] = useState(false);
+  const [contactLoading, setContactLoading] = useState(false);
 
   const [allTours, setAllTours] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
@@ -45,6 +47,10 @@ export function HomePage() {
   useEffect(() => {
     setSearch(searchQuery);
   }, [searchQuery]);
+
+  useEffect(() => {
+    setSearchDate(selectedDate);
+  }, [selectedDate]);
 
   useEffect(() => {
     let isMounted = true;
@@ -74,11 +80,14 @@ export function HomePage() {
   }, []);
 
   const handleSearch = () => {
-    if (!search.trim()) {
-      toast.error("Vui lòng nhập điểm đến hoặc tên tour");
+    if (!search.trim() && !searchDate) {
+      toast.error("Vui lòng nhập điểm đến hoặc chọn ngày khởi hành");
       return;
     }
-    setSearchParams({ q: search.trim() });
+    const params = {};
+    if (search.trim()) params.q = search.trim();
+    if (searchDate) params.date = searchDate;
+    setSearchParams(params);
     const resultsEl = document.getElementById("search-results");
     if (resultsEl) {
       resultsEl.scrollIntoView({ behavior: "smooth" });
@@ -96,10 +105,21 @@ export function HomePage() {
       toast.error("Vui lòng nhập địa chỉ email của bạn");
       return;
     }
-    await homeService.sendContact({ email: contactEmail.trim(), message: "Đăng ký nhận tin & tư vấn tour từ TravelGo" });
-    setContactSent(true);
-    setContactEmail("");
-    toast.success("Cảm ơn bạn! Chúng tôi đã nhận thông tin và sẽ gửi ưu đãi sớm nhất.");
+    setContactLoading(true);
+    try {
+      await homeService.sendContact({ email: contactEmail.trim(), message: "Đăng ký nhận tin & tư vấn tour từ TravelGo" });
+      setContactSent(true);
+      setContactEmail("");
+      toast.success("Cảm ơn bạn! Chúng tôi đã nhận thông tin và sẽ gửi ưu đãi sớm nhất.");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          (typeof error.response?.data === "string" ? error.response.data : "") ||
+          "Không thể gửi thông tin. Vui lòng thử lại."
+      );
+    } finally {
+      setContactLoading(false);
+    }
   };
 
   const flashSaleItems = homeService.getFlashSaleItems(allTours);
@@ -120,7 +140,7 @@ export function HomePage() {
     return { ...cat, count: count > 0 ? count : (allTours.length > 0 ? Math.ceil(allTours.length / 4) : 10) };
   });
 
-  const filteredTours = (searchQuery || selectedCategory)
+  const filteredTours = (searchQuery || selectedCategory || selectedDate)
     ? allTours.filter((t) => {
         const q = (searchQuery || "").toLowerCase();
         const matchQuery = searchQuery
@@ -133,7 +153,10 @@ export function HomePage() {
           ? (t.category || "").toLowerCase().includes(selectedCategory.toLowerCase().replace("tour ", "")) ||
             (selectedCategory === "Tour Quốc tế" && t.type === "international")
           : true;
-        return matchQuery && matchCategory;
+        const matchDate = selectedDate
+          ? t.departures?.some((departure) => departure.startTime?.slice(0, 10) === selectedDate)
+          : true;
+        return matchQuery && matchCategory && matchDate;
       })
     : [];
 
@@ -212,7 +235,7 @@ export function HomePage() {
       </section>
 
       {/* Filtered Search Results Section */}
-      {(searchQuery || selectedCategory) && (
+      {(searchQuery || selectedCategory || selectedDate) && (
         <section id="search-results" className="py-14 bg-blue-50/50 border-b border-blue-100">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -537,10 +560,11 @@ export function HomePage() {
                   </div>
 
                   <button
+                    disabled={contactLoading}
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 active:scale-98 cursor-pointer text-sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-black py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 active:scale-98 cursor-pointer text-sm"
                   >
-                    <Send className="w-4 h-4" /> Đăng ký nhận ưu đãi ngay
+                    <Send className="w-4 h-4" /> {contactLoading ? "Đang gửi..." : "Đăng ký nhận ưu đãi ngay"}
                   </button>
 
                   <p className="text-[11px] text-gray-400 text-center">

@@ -31,7 +31,12 @@ export function LoginForm() {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      toast.error(err.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+      toast.error(
+        err.response?.data?.message ||
+          (typeof err.response?.data === "string" ? err.response.data : "") ||
+          err.message ||
+          "Đăng nhập thất bại. Vui lòng thử lại."
+      );
     } finally {
       setLoading(false);
     }
@@ -41,13 +46,13 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-          Tên đăng nhập hoặc Email *
+          Email *
         </label>
         <div className="relative">
           <Mail className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="nguyenvana hoặc email@example.com"
+            placeholder="email@example.com"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -126,24 +131,14 @@ export function LoginForm() {
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => {
-            toast.success("Đăng nhập Google thành công!");
-            authService.login({ username: "Google User", email: "user@gmail.com" });
-            window.dispatchEvent(new Event("auth-changed"));
-            navigate(from, { replace: true });
-          }}
+          onClick={() => toast.info("Đăng nhập Google chưa được tích hợp. Vui lòng đăng nhập bằng email.")}
           className="flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
         >
           <Globe className="w-4 h-4" aria-hidden="true" /> Google
         </button>
         <button
           type="button"
-          onClick={() => {
-            toast.success("Đăng nhập Facebook thành công!");
-            authService.login({ username: "FB User", email: "fb_user@facebook.com" });
-            window.dispatchEvent(new Event("auth-changed"));
-            navigate(from, { replace: true });
-          }}
+          onClick={() => toast.info("Đăng nhập Facebook chưa được tích hợp. Vui lòng đăng nhập bằng email.")}
           className="flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
         >
           <Facebook className="w-4 h-4 text-blue-600" aria-hidden="true" /> Facebook

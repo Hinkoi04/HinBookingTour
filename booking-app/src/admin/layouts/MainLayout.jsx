@@ -9,7 +9,7 @@ import {
 import { getMeService } from "../modules/login/services/authService"; 
 import UserProfileModal from "../modules/users/components/UserProfileModal";
 import { accountService } from "../modules/users/services/accountService";
-import logoTravelGo from "../../assets/Client/images/logotravelgo.png";
+import { BRAND_LOGO_URL } from "../../services/branding";
 
 import ConfirmModal from "../components/ConfirmModal";
 
@@ -120,7 +120,7 @@ export default function MainLayout() {
       <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full shrink-0 px-4">
         <div className="flex flex-col h-full relative">
           <Link to="/admin" className="flex mt-4 w-full">
-            <img className="logo__img " src={logoTravelGo} alt="TRAVELGO" />
+            <img className="logo__img max-h-12 max-w-[220px] w-auto object-contain" src={BRAND_LOGO_URL} alt="TRAVELGO" />
           </Link>
           <nav className="flex-1 overflow-y-auto py-6">
             <ul className="flex flex-col gap-1">

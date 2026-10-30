@@ -79,12 +79,7 @@ export const tourService = {
   },
 
   submitReview: async (payload) => {
-    try {
-      const res = await apiClient.post("/reviews", payload);
-      return res.data;
-    } catch (error) {
-      console.error("Lỗi khi gửi đánh giá:", error);
-      return { success: true };
-    }
+    const res = await apiClient.post("/reviews", payload);
+    return res.data;
   },
 };

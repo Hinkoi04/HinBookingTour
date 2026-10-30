@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Compass, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ShieldCheck, CreditCard, Award, Landmark, Wallet, Banknote } from "lucide-react";
-import logoImg from "../../assets/Client/images/logotravelgo.png";
+import { BRAND_LOGO_URL } from "../../services/branding";
 
 export function Footer() {
   return (
@@ -11,7 +11,7 @@ export function Footer() {
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/home" className="inline-flex items-center gap-2">
-              <img src={logoImg} alt="TravelGo Logo" className="h-10 w-auto object-contain bg-white/10 rounded-xl p-1 backdrop-blur-sm" />
+              <img src={BRAND_LOGO_URL} alt="TravelGo Logo" className="h-10 max-w-[220px] w-auto object-contain bg-white/10 rounded-xl p-1 backdrop-blur-sm" />
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               Nền tảng đặt tour du lịch hàng đầu Việt Nam. Cam kết chất lượng tour vượt trội, giá cả minh bạch và dịch vụ hỗ trợ tận tâm 24/7.

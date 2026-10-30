@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import logoTravelGo from "../../assets/Client/images/logotravelgo.png";
+import { BRAND_LOGO_URL } from "../../services/branding";
 
 
 function AuthLayout() {
@@ -18,7 +18,7 @@ function AuthLayout() {
           onClick={() => navigate("/")}
           className="flex items-center gap-3 hover:opacity-70 transition-opacity"
         >
-          <img className="logo__img max-w-xs" src={logoTravelGo} alt="TRAVELGO" />
+          <img className="logo__img max-h-12 max-w-[220px] w-auto object-contain" src={BRAND_LOGO_URL} alt="TRAVELGO" />
         </button>
       </header>
 

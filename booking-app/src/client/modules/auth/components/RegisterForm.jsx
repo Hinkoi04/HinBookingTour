@@ -54,7 +54,15 @@ export function RegisterForm() {
         navigate("/home", { replace: true });
       }
     } catch (err) {
-      toast.error(err.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      const validationMessage = Object.values(err.response?.data?.errors || {})[0];
+      toast.error(
+        err.response?.data?.message && err.response.data.message !== "Validation failed"
+          ? err.response.data.message
+          : validationMessage ||
+              (typeof err.response?.data === "string" ? err.response.data : "") ||
+              err.message ||
+              "Đăng ký thất bại. Vui lòng thử lại."
+      );
     } finally {
       setLoading(false);
     }

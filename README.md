@@ -104,24 +104,31 @@ http://localhost:8080/swagger-ui/index.html
 cd booking-app
 ```
 
-#### Bước 3.2: Cài đặt các gói thư viện (Dependencies)
+#### Bước 3.2: Cấu hình biến môi trường
+Tạo file `.env` từ mẫu `.env.example` rồi đặt `VITE_API_BASE_URL` thành địa chỉ API backend, bao gồm hậu tố `/api`. Khi deploy, cấu hình biến này trong môi trường build của nền tảng thay vì sửa mã nguồn. Nếu cần đồng bộ trạng thái booking với một dịch vụ riêng, cấu hình thêm `VITE_BOOKING_STATUS_SYNC_URL`; để trống nếu không dùng.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+#### Bước 3.3: Cài đặt các gói thư viện (Dependencies)
 ```bash
 npm install
 ```
 
-#### Bước 3.3: Khởi chạy Development Server
+#### Bước 3.4: Khởi chạy Development Server
 ```bash
 npm run dev
 ```
 Mặc định ứng dụng sẽ chạy tại địa chỉ: `http://localhost:5173`
 
-#### Bước 3.4: Build Production Bundle
+#### Bước 3.5: Build Production Bundle
 ```bash
 npm run build
 ```
 *Gói bundle tối ưu sẽ được xuất ra thư mục `booking-app/dist/`.*
 
-#### Bước 3.5: Xem thử bản Production (Preview)
+#### Bước 3.6: Xem thử bản Production (Preview)
 ```bash
 npm run preview
 ```

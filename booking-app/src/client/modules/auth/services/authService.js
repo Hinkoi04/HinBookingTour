@@ -7,8 +7,16 @@ export const authService = {
   getCurrentUser: () => {
     try {
       const data = localStorage.getItem(AUTH_USER_KEY);
-      return data ? JSON.parse(data) : null;
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      if (!data || !token || token.split(".").length !== 3) {
+        localStorage.removeItem(AUTH_USER_KEY);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        return null;
+      }
+      return JSON.parse(data);
     } catch {
+      localStorage.removeItem(AUTH_USER_KEY);
+      localStorage.removeItem(AUTH_TOKEN_KEY);
       return null;
     }
   },
@@ -18,64 +26,75 @@ export const authService = {
   },
 
   login: async (credentials) => {
-    try {
-      // Try backend admin auth endpoint first
-      const res = await apiClient.post("/admin/auth/login", {
-        username: credentials.username || credentials.email,
-        password: credentials.password,
-      });
-
-      if (res.data) {
-        const token = res.data.accessToken || res.data.token || "token_" + Date.now();
-        const user = {
-          id: res.data.id || 1,
-          username: credentials.username || credentials.email,
-          fullName: res.data.fullName || credentials.username || "Khách hàng",
-          email: credentials.email || `${credentials.username}@gmail.com`,
-          avatar: res.data.avatar || "",
-          role: res.data.role || "USER",
-        };
-        localStorage.setItem(AUTH_TOKEN_KEY, token);
-        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-        return { success: true, user, token };
-      }
-    } catch (error) {
-      console.warn("Backend auth call error, fallback to local authentication:", error);
-      // If mock/demo credentials or server error, provide a smooth login experience
-      const user = {
-        id: Date.now(),
-        username: credentials.username || credentials.email.split("@")[0],
-        fullName: credentials.fullName || credentials.username || "Khách hàng TravelGo",
-        email: credentials.email || `${credentials.username}@gmail.com`,
-        avatar: "",
-        role: "USER",
-      };
-      const token = "token_" + Date.now();
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-      return { success: true, user, token };
+    const email = credentials.email || credentials.username;
+    const res = await apiClient.post("/admin/auth/login", {
+      email,
+      password: credentials.password,
+    });
+    const { accessToken, user: responseUser } = res.data || {};
+    if (!accessToken || !responseUser) {
+      throw new Error("Phản hồi đăng nhập không hợp lệ");
     }
+
+    const user = {
+      id: responseUser.id,
+      username: responseUser.email,
+      fullName: responseUser.fullName,
+      email: responseUser.email,
+      avatar: responseUser.avatar || "",
+      role: responseUser.role,
+    };
+    localStorage.setItem(AUTH_TOKEN_KEY, accessToken);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    return { success: true, user, token: accessToken };
+  },
+
+  getProfile: async (id) => {
+    const res = await apiClient.get(`/accounts/${id}`);
+    return res.data;
+  },
+
+  updateProfile: async (id, profile) => {
+    const body = new FormData();
+    body.append("data", new Blob([JSON.stringify(profile)], { type: "application/json" }));
+    const res = await apiClient.put(`/accounts/${id}`, body, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  },
+
+  changePassword: async (currentPassword, newPassword) => {
+    const res = await apiClient.post("/admin/auth/change-password", {
+      currentPassword,
+      newPassword,
+    });
+    return res.data;
   },
 
   register: async (data) => {
-    try {
-      const user = {
-        id: Date.now(),
-        username: data.username || data.email.split("@")[0],
-        fullName: data.fullName || "Khách hàng mới",
-        email: data.email,
-        phone: data.phone || "",
-        avatar: "",
-        role: "USER",
-      };
-      const token = "token_" + Date.now();
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-      return { success: true, user, token };
-    } catch (error) {
-      console.error("Lỗi đăng ký:", error);
-      throw error;
+    const res = await apiClient.post("/admin/auth/register", {
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      password: data.password,
+    });
+    const { accessToken, user: responseUser } = res.data || {};
+    if (!accessToken || !responseUser) {
+      throw new Error("Phản hồi đăng ký không hợp lệ");
     }
+
+    const user = {
+      id: responseUser.id,
+      username: responseUser.email,
+      fullName: responseUser.fullName,
+      email: responseUser.email,
+      phone: data.phone || "",
+      avatar: responseUser.avatar || "",
+      role: responseUser.role,
+    };
+    localStorage.setItem(AUTH_TOKEN_KEY, accessToken);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    return { success: true, user, token: accessToken };
   },
 
   logout: () => {

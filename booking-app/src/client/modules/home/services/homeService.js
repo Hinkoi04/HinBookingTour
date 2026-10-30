@@ -342,12 +342,7 @@ export const homeService = {
   },
 
   sendContact: async (data) => {
-    try {
-      const res = await apiClient.post("/contacts", data);
-      return res.data;
-    } catch (error) {
-      console.error("Lỗi khi gửi liên hệ:", error);
-      return { success: true };
-    }
+    const res = await apiClient.post("/contacts", data);
+    return res.data;
   },
 };

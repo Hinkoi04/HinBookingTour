@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { LoginForm } from "../components/LoginForm";
-import logoImg from "../../../../assets/Client/images/logotravelgo.png";
+import { BRAND_LOGO_URL } from "../../../../services/branding";
 import { ShieldCheck, Sparkles, Star } from "lucide-react";
 
 export function LoginPage() {
@@ -17,15 +17,7 @@ export function LoginPage() {
           
           <div className="relative z-10 space-y-6">
             <Link to="/home" className="inline-flex items-center gap-2.5">
-              <img src={logoImg} alt="TravelGo Logo" className="h-10 w-auto bg-white/10 rounded-xl p-1 backdrop-blur-sm" />
-              <div>
-                <span className="text-2xl font-black text-white tracking-tight">
-                  Travel<span className="text-yellow-400">Go</span>
-                </span>
-                <span className="block text-[10px] uppercase font-bold tracking-widest text-blue-200">
-                  Hệ thống Đặt Tour
-                </span>
-              </div>
+              <img src={BRAND_LOGO_URL} alt="TravelGo" className="h-12 max-w-[240px] w-auto rounded-xl bg-white/10 p-1 backdrop-blur-sm" />
             </Link>
 
             <div className="space-y-3 pt-6">

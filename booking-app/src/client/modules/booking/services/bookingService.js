@@ -41,12 +41,7 @@ export const bookingService = {
   },
 
   createBooking: async (bookingData) => {
-    try {
-      const res = await apiClient.post("/bookings", bookingData);
-      return res.data;
-    } catch (error) {
-      console.error("Lỗi khi tạo booking:", error);
-      return { success: true };
-    }
+    const res = await apiClient.post("/bookings", bookingData);
+    return res.data;
   },
 };

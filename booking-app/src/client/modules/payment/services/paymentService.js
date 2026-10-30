@@ -53,12 +53,7 @@ export const paymentService = {
   getPaymentMethods: () => paymentMethodsList,
 
   confirmPayment: async (paymentData) => {
-    try {
-      const res = await apiClient.post("/payments", paymentData);
-      return res.data;
-    } catch (error) {
-      console.error("Lỗi khi xác nhận thanh toán:", error);
-      return { success: true };
-    }
+    const res = await apiClient.post("/payments", paymentData);
+    return res.data;
   },
 };

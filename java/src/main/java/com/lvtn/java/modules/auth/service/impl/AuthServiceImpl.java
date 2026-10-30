@@ -3,22 +3,28 @@ package com.lvtn.java.modules.auth.service.impl;
 import com.lvtn.java.config.AppJwtProperties;
 import com.lvtn.java.modules.user.entity.Account;
 import com.lvtn.java.dto.auth.*;
+import com.lvtn.java.modules.role.entity.Role;
+import com.lvtn.java.modules.role.repository.RoleRepository;
 import com.lvtn.java.modules.user.repository.AccountRepository;
 import com.lvtn.java.security.JwtService;
 import com.lvtn.java.modules.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final AppJwtProperties jwtProperties;
     private final PasswordEncoder passwordEncoder;
@@ -37,6 +43,37 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return generateAndSaveTokens(account);
+    }
+
+    @Transactional
+    public AuthResponse register(RegisterRequest request) {
+        String email = request.email().trim().toLowerCase();
+        if (accountRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email này đã được sử dụng");
+        }
+
+        Role clientRole = roleRepository.findByNameIgnoreCaseAndDeleted("CLIENT", 0)
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setName("CLIENT");
+                    role.setDescription("Tài khoản khách hàng");
+                    role.setDeleted(0);
+                    role.setPermissions(Set.of());
+                    return roleRepository.save(role);
+                });
+        if (clientRole.getPermissions() != null && !clientRole.getPermissions().isEmpty()) {
+            clientRole.setPermissions(Set.of());
+            clientRole = roleRepository.save(clientRole);
+        }
+
+        Account account = new Account();
+        account.setFullName(request.fullName().trim());
+        account.setEmail(email);
+        account.setPhone(request.phone() == null ? "" : request.phone().trim());
+        account.setPassword(passwordEncoder.encode(request.password()));
+        account.setStatus("active");
+        account.setRole(clientRole);
+        return generateAndSaveTokens(accountRepository.save(account));
     }
 
     @Transactional

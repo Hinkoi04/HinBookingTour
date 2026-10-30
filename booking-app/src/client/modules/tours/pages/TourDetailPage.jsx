@@ -182,13 +182,21 @@ export function TourDetailPage() {
       date: new Date().toISOString().split("T")[0],
       comment: newRev.comment,
     };
-    await tourService.submitReview({
-      tourId: tour.id,
-      rating: newRev.rating,
-      content: newRev.comment,
-    });
-    setReviews((prev) => [revObj, ...prev]);
-    toast.success("Cảm ơn bạn đã gửi đánh giá cho chuyến đi!");
+    try {
+      await tourService.submitReview({
+        tourId: tour.id,
+        rating: newRev.rating,
+        content: newRev.comment,
+      });
+      setReviews((prev) => [revObj, ...prev]);
+      toast.success("Cảm ơn bạn đã gửi đánh giá cho chuyến đi!");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          (typeof error.response?.data === "string" ? error.response.data : "") ||
+          "Không thể gửi đánh giá. Vui lòng đăng nhập và thử lại."
+      );
+    }
   };
 
   return (

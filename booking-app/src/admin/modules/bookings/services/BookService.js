@@ -1,5 +1,6 @@
 import axios from "axios";
 import { apiClient } from "../../login/services/authService";
+import { BOOKING_STATUS_SYNC_URL } from "../../../../services/apiConfig";
 
 export const bookingService = {
   getAll: async () => {
@@ -27,9 +28,11 @@ export const bookingService = {
   },
 
   notifyStatusChange: async (bookingId, status, paymentStatus) => {
+    if (!BOOKING_STATUS_SYNC_URL) return;
+
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/booking/admin/update-status",
+        BOOKING_STATUS_SYNC_URL,
         {
           bookingId,
           status,

@@ -25,6 +25,7 @@ export function PaymentPage() {
   });
   const [agreed, setAgreed] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (!state?.tour) {
     return (
@@ -56,28 +57,44 @@ export function PaymentPage() {
   const currentMethod = paymentMethods.find((m) => m.id === selectedMethod);
 
   const handleConfirm = async () => {
-    if (!agreed) {
-      toast.error("Vui lòng đồng ý điều khoản để tiếp tục");
+    if (!agreed || submitting) {
+      if (!agreed) {
+        toast.error("Vui lòng đồng ý điều khoản để tiếp tục");
+      }
       return;
     }
 
-    await paymentService.confirmPayment({
-      orderId,
-      tourId: tour.id,
-      date,
-      adults,
-      children,
-      babies,
-      totalPrice,
-      deposit,
-      remainingAmount,
-      paymentPlan,
-      customer,
-      passengers,
-      paymentMethod: selectedMethod,
-    });
-
-    setSuccess(true);
+    setSubmitting(true);
+    try {
+      const result = await paymentService.confirmPayment({
+        orderId,
+        tourId: tour.id,
+        date,
+        adults,
+        children,
+        babies,
+        totalPrice,
+        deposit,
+        remainingAmount,
+        paymentPlan,
+        customer,
+        passengers,
+        paymentMethod: selectedMethod,
+      });
+      if (result?.success === false) {
+        throw new Error(result.message || "Không thể xác nhận thanh toán");
+      }
+      setSuccess(true);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          (typeof error.response?.data === "string" ? error.response.data : "") ||
+          error.message ||
+          "Không thể xác nhận thanh toán. Vui lòng thử lại."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (success) {
@@ -199,13 +216,16 @@ export function PaymentPage() {
             <button
               type="button"
               onClick={handleConfirm}
+              disabled={submitting}
               className={`w-full font-black py-4 rounded-xl transition-all text-base ${
-                agreed
+                agreed && !submitting
                   ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 cursor-pointer active:scale-98"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
               }`}
             >
-              Xác nhận {selectedMethod === "cod" ? "đặt tour thanh toán COD" : `thanh toán ${fmt(deposit)}`}
+              {submitting
+                ? "Đang xử lý..."
+                : `Xác nhận ${selectedMethod === "cod" ? "đặt tour thanh toán COD" : `thanh toán ${fmt(deposit)}`}`}
             </button>
           </div>
 
