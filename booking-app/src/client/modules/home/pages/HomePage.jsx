@@ -495,7 +495,7 @@ export function HomePage() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-2xl h-80 animate-pulse" />
+                <div key={i} className="loading-skeleton bg-white rounded-2xl h-80" />
               ))}
             </div>
           ) : (

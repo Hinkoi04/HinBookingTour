@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Plus, Lock, Loader2 } from "lucide-react";
+import { Plus, Lock } from "lucide-react";
 import { CategoryTable, CategoryTrashTable } from "../components/CategoryTable";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { CategoryModal } from "../components/CategoryModal";
 import { CategoryDetailModal } from "../components/CategoryDetailModal";
 import { categoryService } from "../services/categoryApi";
@@ -231,10 +232,7 @@ export default function CategoryList() {
 
         <div className="p-6 pt-2">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center min-h-[300px]">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <p className="text-gray-500 text-sm font-medium">Đang tải dữ liệu...</p>
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : (
             <>
               {activeTab === "active" ? (

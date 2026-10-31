@@ -7,6 +7,7 @@ import { tourService } from "../services/tourService";
 import { saveSchedules, getSchedulesByTourId } from "../services/scheduleService";
 
 import AlertModal from "../../../components/AlertModal"; 
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export default function TourForm() {
   const navigate = useNavigate();
@@ -226,11 +227,8 @@ export default function TourForm() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-64">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Đang tải dữ liệu tour...</p>
-        </div>
+      <div className="mx-auto w-full max-w-7xl p-8">
+        <LoadingSkeleton variant="form" />
       </div>
     );
   }

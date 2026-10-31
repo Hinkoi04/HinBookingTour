@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { CalendarDays, ClipboardList, Loader2 } from "lucide-react";
+import { CalendarDays, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../../auth/services/authService";
 import { bookingService } from "../services/bookingService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 const statusLabels = {
   pending: "Chờ xác nhận",
@@ -71,10 +72,7 @@ export function OrderHistoryPage() {
       </header>
 
       {isLoading ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-white p-8 text-sm text-gray-500">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-          <span>Đang tải lịch sử đơn hàng...</span>
-        </div>
+        <LoadingSkeleton variant="list" />
       ) : bookings.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-12 text-center">
           <ClipboardList className="mx-auto h-10 w-10 text-gray-300" />

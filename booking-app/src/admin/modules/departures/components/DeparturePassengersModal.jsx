@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { LoadingSkeleton } from '../../../../components/LoadingSkeleton';
 import {
   X,
   Users,
@@ -376,10 +377,7 @@ export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode 
           {/* Passenger Table Container */}
           <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
             {isLoading ? (
-              <div className="py-20 flex flex-col items-center justify-center gap-3">
-                <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
-                <p className="text-gray-500 text-sm font-medium">Đang tải danh sách hành khách...</p>
-              </div>
+              <LoadingSkeleton variant="table" className="p-4" />
             ) : error ? (
               <div className="py-16 flex flex-col items-center justify-center gap-2">
                 <AlertCircle className="w-10 h-10 text-red-500" />

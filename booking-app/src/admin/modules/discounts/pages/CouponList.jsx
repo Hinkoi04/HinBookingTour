@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Plus, Trash2, Lock, Loader2 } from "lucide-react";
+import { Plus, Trash2, Lock } from "lucide-react";
 import { CouponTable } from "../components/CouponTable";
 import { CouponTrashTable } from "../components/CouponTrashTable";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { CouponModal } from "../components/DiscountModal";
 import { couponService } from "../services/couponService";
 import { accountService } from "../../users/services/accountService";
@@ -245,10 +246,7 @@ export default function CouponList() {
           )}
 
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
-              <p className="text-gray-500 text-sm">Đang tải dữ liệu...</p>
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : (
             <>
               {activeTab === "active" ? (

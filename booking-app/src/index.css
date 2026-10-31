@@ -14,6 +14,27 @@ body {
   min-height: 100vh;
 }
 
+.loading-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.loading-skeleton::after {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 85%), transparent);
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  content: "";
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .home-reveal {
   opacity: 0;
   transform: translate3d(0, 24px, 0);
@@ -183,6 +204,10 @@ body {
   .tour-tab-panel,
   .tour-image-lightbox,
   .tour-image-lightbox-content {
+    animation: none;
+  }
+
+  .loading-skeleton::after {
     animation: none;
   }
 }

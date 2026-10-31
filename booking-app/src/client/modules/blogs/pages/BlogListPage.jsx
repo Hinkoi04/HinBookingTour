@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, CalendarDays, Loader2 } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays } from "lucide-react";
 import { blogService } from "../services/blogService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 const fallbackImage =
   "https://images.unsplash.com/photo-1528127269322-539801943592?w=800&q=80";
@@ -71,10 +72,7 @@ export function BlogListPage() {
         </div>
 
         {loading ? (
-          <div className="min-h-64 flex items-center justify-center gap-3 text-gray-500">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-            <span>Đang tải bài viết...</span>
-          </div>
+          <LoadingSkeleton variant="cards" />
         ) : error ? (
           <div role="alert" className="bg-white rounded-2xl border border-red-100 p-8 text-center text-red-700">
             {error}

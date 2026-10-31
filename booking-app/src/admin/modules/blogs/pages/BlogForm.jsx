@@ -5,6 +5,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { blogService } from "../services/blogService";
 import ConfirmModal from "../../../components/ConfirmModal"; 
 import { toast } from "sonner";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export default function BlogForm() {
   const navigate = useNavigate();
@@ -91,8 +92,8 @@ export default function BlogForm() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-64">
-        <div className="w-8 h-8 border-2 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto" />
+      <div className="mx-auto w-full max-w-5xl p-8">
+        <LoadingSkeleton variant="form" />
       </div>
     );
   }

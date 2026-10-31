@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { Plus, Loader2, Lock } from "lucide-react";
+import { Plus, Lock } from "lucide-react";
 import { TourTable, TourTrashTable } from "../components/TourTable";
 import { TourDetailModal } from "../components/TourDetailModal"; 
 import { tourService } from "../services/tourService";
@@ -8,6 +8,7 @@ import { accountService } from "../../users/services/accountService";
 
 import Pagination from "../../../components/Pagination";
 import { usePermission } from "../../../hooks/usePermission";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
@@ -250,10 +251,7 @@ export function TourList() {
 
         <div>
           {loading ? (
-            <div className="flex flex-col items-center justify-center min-h-[300px]">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <p className="text-gray-500 text-sm font-medium">Đang tải dữ liệu...</p>
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : (
             <>
               {activeTab === "active" ? (

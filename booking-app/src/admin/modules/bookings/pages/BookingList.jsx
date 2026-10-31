@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { CalendarCheck2, CheckCheck, Loader2 } from "lucide-react";
+import { CalendarCheck2, CheckCheck } from "lucide-react";
 import { toast } from "sonner";
 import { bookingService } from "../services/BookService";
 import { paymentService } from "../services/paymentService";
@@ -10,6 +10,7 @@ import { BookingDetailModal, getOverallPaymentStatus } from "../components/Booki
 import ConfirmModal from "../../../components/ConfirmModal";
 import Pagination from "../../../components/Pagination";
 import { accountService } from "../../users/services/accountService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 const STATUS_LABELS = {
   pending: "Chờ xác nhận",
@@ -280,10 +281,7 @@ export default function BookingList() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
-            <span className="text-sm font-medium text-gray-500">Đang tải dữ liệu...</span>
-          </div>
+          <LoadingSkeleton variant="table" />
         ) : (
           <>
             {canUpdate && (

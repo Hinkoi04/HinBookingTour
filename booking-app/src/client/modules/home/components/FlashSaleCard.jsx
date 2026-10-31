@@ -127,13 +127,13 @@ export function FlashSaleCard({ tour, item }) {
 
 export function TourSkeleton() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 animate-pulse">
-      <div className="h-52 bg-gray-200" />
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+      <div className="loading-skeleton h-52" />
       <div className="p-5 space-y-3">
-        <div className="h-3 bg-gray-200 rounded w-1/3" />
-        <div className="h-5 bg-gray-200 rounded w-4/5" />
-        <div className="h-3 bg-gray-200 rounded w-1/2" />
-        <div className="h-8 bg-gray-200 rounded mt-4" />
+        <div className="loading-skeleton h-3 rounded w-1/3" />
+        <div className="loading-skeleton h-5 rounded w-4/5" />
+        <div className="loading-skeleton h-3 rounded w-1/2" />
+        <div className="loading-skeleton h-8 rounded mt-4" />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { Plus, Lock, Loader2 } from "lucide-react";
+import { Plus, Lock } from "lucide-react";
 
 import { roleService, permissionService } from "../services/roleService";
 import PermissionMatrix from "../components/PermissionMatrix";
@@ -9,6 +9,7 @@ import { RoleDetailModal } from "../components/RoleDetailModal";
 
 import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 const RolePage = () => {
   const navigate = useNavigate();
@@ -178,10 +179,7 @@ const RolePage = () => {
           </button>
         </div>
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
-            <span className="text-sm font-medium text-gray-500">Đang tải dữ liệu...</span>
-          </div>
+          <LoadingSkeleton variant="table" />
         ) : activeTab === "roles" ? (
           <RoleTable 
             roles={filteredRoles} 

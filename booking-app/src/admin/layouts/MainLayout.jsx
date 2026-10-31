@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MapPin, FolderTree, Calendar, Ticket, BusFront,
-  ShoppingCart, FileText, Users, MessageSquare, Loader2,
+  ShoppingCart, FileText, Users, MessageSquare,
   LogOut, Settings, KeyRound, Search, X, RefreshCw, ChevronLeft, ChevronRight
 } from "lucide-react";
 
@@ -252,15 +252,10 @@ export default function MainLayout() {
               </span>
               <span className="hidden min-w-0 md:block">
                 <span className="block max-w-36 truncate text-sm font-semibold text-gray-900">
-                  {user ? user.fullName : (
-                    <span className="inline-flex items-center gap-1.5 text-blue-600">
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-                      Đang tải...
-                    </span>
-                  )}
+                  {user ? user.fullName : <span className="loading-skeleton block h-4 w-24" />}
                 </span>
                 <span className="block max-w-36 truncate text-xs text-gray-500">
-                  {user ? user.email : ""}
+                  {user ? user.email : <span className="loading-skeleton mt-1 block h-3 w-32" />}
                 </span>
               </span>
             </button>

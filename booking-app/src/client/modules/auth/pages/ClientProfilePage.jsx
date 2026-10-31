@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { Loader2, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../services/authService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 function getErrorMessage(error, fallback) {
   return (
@@ -96,9 +97,8 @@ export function ClientProfilePage() {
         </header>
 
         {isLoading ? (
-          <div className="flex flex-col items-center gap-3 p-8 text-sm text-gray-500">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-            <span>Đang tải thông tin...</span>
+          <div className="p-6">
+            <LoadingSkeleton variant="form" />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5 p-6">

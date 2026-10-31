@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Plus, RefreshCw, Trash2, Lock, Loader2 } from "lucide-react";
+import { Plus, RefreshCw, Trash2, Lock } from "lucide-react";
 import { VehicleTable, VehicleTrashTable } from "../components/VehicleTable";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { VehicleModal } from "../components/VehicleModal";
 import { vehicleService } from "../services/vehicleService";
 import { accountService } from "../../users/services/accountService";
@@ -242,10 +243,7 @@ export default function VehicleList() {
 
         <div className="p-6 pt-2">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center min-h-[300px]">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <p className="text-gray-500 text-sm font-medium">Đang tải dữ liệu...</p>
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : activeTab === "active" ? (
             <VehicleTable 
               vehicles={filteredVehicles} 

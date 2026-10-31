@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Loader2, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { reviewService } from "../services/reviewService";
 import { ReviewTable } from "../components/ReviewTable";
 import Pagination from "../../../components/Pagination";
 import { toastDeleted } from "../../../utils/notifications";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export default function ReviewList() {
   const { searchQuery } = useOutletContext();
@@ -135,10 +136,7 @@ export default function ReviewList() {
 
         <div className="p-6 pt-2">
           {loading ? (
-            <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-              <span>Đang tải dữ liệu...</span>
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : (
             <ReviewTable
               reviews={paginatedList}

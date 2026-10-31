@@ -3,6 +3,7 @@ import { StatCards } from "../components/StatCards";
 import { RevenueChart, BookingStatusChart } from "../components/DashboardCharts";
 import { TopToursTable } from "../components/TopToursTable";
 import { getDashboardData } from "../services/dashboardService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -32,10 +33,7 @@ export default function Dashboard() {
 
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <span className="text-sm font-medium text-gray-500">Đang tải dữ liệu...</span>
-        </div>
+        <LoadingSkeleton variant="dashboard" />
       ) : (<>
       {/* Truyền dữ liệu vào StatCards */}
       <StatCards data={dashboardData.statCards} />

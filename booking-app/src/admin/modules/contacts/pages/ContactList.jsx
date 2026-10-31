@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { RefreshCw, Mail, Loader2 } from "lucide-react";
+import { RefreshCw, Mail } from "lucide-react";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { contactService } from "../services/contactService";
 import Pagination from "../../../components/Pagination";
 
@@ -70,10 +71,7 @@ export default function ContactList() {
 
         <div className="p-6 min-h-[300px] flex flex-col justify-start">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center min-h-[300px]">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <p className="text-gray-500 text-sm font-medium">Đang tải dữ liệu...</p>
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : error ? (
             <div className="flex-1 flex flex-col items-center justify-center py-12">
               <p className="text-red-500 font-medium mb-1">Không thể tải dữ liệu</p>

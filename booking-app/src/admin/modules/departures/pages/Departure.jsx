@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { Plus, Loader2, Trash2, Zap } from "lucide-react";
 import { DepartureTable, DepartureTrashTable } from "../components/DepartureTable";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { DepartureModal } from "../components/DepartureModal";
 import { departureService } from "../services/departureService";
 import { vehicleService } from "../../vehicles/services/vehicleService"; 
@@ -322,10 +323,7 @@ export default function DepartureList() {
 
         <div className="p-6 pt-2 min-h-[300px] flex flex-col justify-start">
           {isLoading ? (
-            <div className="flex-1 flex flex-col items-center justify-center py-12 gap-2">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <p className="text-gray-500 text-sm font-medium">Đang tải dữ liệu...</p>
-            </div>
+            <LoadingSkeleton variant="table" className="flex-1" />
           ) : error ? (
             <div className="flex-1 flex flex-col items-center justify-center py-12">
               <p className="text-red-500 font-medium mb-1">Không thể tải dữ liệu</p>

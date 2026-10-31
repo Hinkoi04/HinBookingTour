@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-  ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Flame, Globe, Loader2, MapPin,
+  ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Flame, Globe, MapPin,
   RotateCcw, Search, SlidersHorizontal, Users,
 } from "lucide-react";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { homeService } from "../../home/services/homeService";
 import { TourCard } from "../../home/components";
 
@@ -330,10 +331,7 @@ export function TourListPage() {
             </div>
 
             {loading ? (
-              <div className="min-h-64 flex items-center justify-center gap-3 text-gray-500">
-                <Loader2 className="w-6 h-6 animate-spin text-purple-700" />
-                <span>Đang tải danh sách tour...</span>
-              </div>
+              <LoadingSkeleton variant="cards" />
             ) : filteredTours.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {filteredTours.map((tour) => <TourCard key={tour.id} tour={tour} />)}

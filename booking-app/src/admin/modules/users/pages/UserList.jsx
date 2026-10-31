@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Loader2, Plus, Lock } from "lucide-react";
+import { Plus, Lock } from "lucide-react";
 import { CustomerTable } from "../components/UserTable";
 import { EmployeeTable } from "../components/AccountTable";
 import { TrashTable } from "../components/TrashTable";
@@ -10,6 +10,7 @@ import { accountService } from "../services/accountService";
 import { userService } from "../services/userService";
 import { roleService } from "../services/roleService";
 import Pagination from "../../../components/Pagination";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { usePermission } from "../../../hooks/usePermission";
 
 import ConfirmModal from "../../../components/ConfirmModal";
@@ -368,10 +369,7 @@ export default function UserManagement() {
         {activeTab === "customers" ? (
           <div className="animate-in fade-in duration-300">
             {loading ? (
-              <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-                <span>Đang tải dữ liệu khách hàng...</span>
-              </div>
+              <LoadingSkeleton variant="table" />
             ) : (
               <CustomerTable
                 data={paginatedList}
@@ -400,10 +398,7 @@ export default function UserManagement() {
             </div>
 
             {loading ? (
-              <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-                <span>Đang tải dữ liệu nhân viên...</span>
-              </div>
+              <LoadingSkeleton variant="table" />
             ) : (
               <EmployeeTable
                 data={paginatedList}
@@ -419,10 +414,7 @@ export default function UserManagement() {
         ) : (
           <div className="animate-in fade-in duration-300">
             {loading ? (
-              <div className="flex flex-col items-center gap-3 py-10 text-sm text-gray-500">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-                <span>Đang tải thùng rác...</span>
-              </div>
+              <LoadingSkeleton variant="table" />
             ) : (
               <TrashTable
                 data={paginatedList}

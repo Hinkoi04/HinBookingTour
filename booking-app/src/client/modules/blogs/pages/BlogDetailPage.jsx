@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, BookOpen, CalendarDays, Loader2 } from "lucide-react";
+import { ArrowLeft, BookOpen, CalendarDays } from "lucide-react";
 import { blogService } from "../services/blogService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 const fallbackImage =
   "https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&q=80";
@@ -80,9 +81,10 @@ export function BlogDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center gap-3 text-gray-500">
-        <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
-        <span>Đang tải bài viết...</span>
+      <div className="min-h-screen bg-gray-50 px-4 py-8 sm:py-12">
+        <div className="mx-auto max-w-4xl">
+          <LoadingSkeleton variant="detail" />
+        </div>
       </div>
     );
   }

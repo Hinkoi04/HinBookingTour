@@ -107,80 +107,80 @@ export function TourDetailPage() {
         <p className="sr-only">Đang tải thông tin chuyến đi...</p>
         <div className="border-b border-gray-100 bg-white">
           <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-4">
-            <div className="h-3 w-16 animate-pulse rounded bg-gray-200" />
-            <div className="h-3 w-3 animate-pulse rounded bg-gray-100" />
-            <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
-            <div className="h-3 w-3 animate-pulse rounded bg-gray-100" />
-            <div className="h-3 w-40 animate-pulse rounded bg-gray-200" />
+            <div className="loading-skeleton h-3 w-16" />
+            <div className="loading-skeleton h-3 w-3" />
+            <div className="loading-skeleton h-3 w-24" />
+            <div className="loading-skeleton h-3 w-3" />
+            <div className="loading-skeleton h-3 w-40" />
           </div>
         </div>
 
         <div className="mx-auto max-w-7xl px-4 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="space-y-5 lg:col-span-2">
-              <div className="animate-pulse rounded-3xl border border-gray-100 bg-white p-4 shadow-sm">
-                <div className="h-72 rounded-2xl bg-gray-200 sm:h-96 md:h-[450px]" />
+              <div className="rounded-3xl border border-gray-100 bg-white p-4 shadow-sm">
+                <div className="loading-skeleton h-72 rounded-2xl sm:h-96 md:h-[450px]" />
                 <div className="mt-4 flex gap-2.5">
                   {[1, 2, 3, 4].map((item) => (
-                    <div key={item} className="h-16 w-24 shrink-0 rounded-xl bg-gray-100 sm:h-20 sm:w-28" />
+                    <div key={item} className="loading-skeleton h-16 w-24 shrink-0 sm:h-20 sm:w-28" />
                   ))}
                 </div>
               </div>
 
-              <div className="animate-pulse space-y-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="h-3 w-24 rounded bg-gray-200" />
-                <div className="h-7 w-3/4 rounded bg-gray-200" />
-                <div className="h-4 w-2/3 rounded bg-gray-100" />
-                <div className="h-4 w-40 rounded bg-gray-100" />
+              <div className="space-y-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="loading-skeleton h-3 w-24" />
+                <div className="loading-skeleton h-7 w-3/4" />
+                <div className="loading-skeleton h-4 w-2/3" />
+                <div className="loading-skeleton h-4 w-40" />
               </div>
 
-              <div className="animate-pulse space-y-5 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="h-6 w-48 rounded bg-gray-200" />
+              <div className="space-y-5 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="loading-skeleton h-6 w-48" />
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                   {[1, 2, 3].map((item) => (
-                    <div key={item} className="h-28 rounded-2xl bg-gray-100" />
+                    <div key={item} className="loading-skeleton h-28 rounded-2xl" />
                   ))}
                 </div>
               </div>
 
-              <div className="animate-pulse overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+              <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
                 <div className="flex gap-6 border-b border-gray-100 px-6 py-5">
                   {[1, 2, 3, 4].map((item) => (
-                    <div key={item} className="h-4 w-20 rounded bg-gray-200" />
+                    <div key={item} className="loading-skeleton h-4 w-20" />
                   ))}
                 </div>
                 <div className="space-y-4 p-6">
-                  <div className="h-5 w-44 rounded bg-gray-200" />
-                  <div className="h-3 w-full rounded bg-gray-100" />
-                  <div className="h-3 w-5/6 rounded bg-gray-100" />
-                  <div className="h-3 w-2/3 rounded bg-gray-100" />
+                  <div className="loading-skeleton h-5 w-44" />
+                  <div className="loading-skeleton h-3 w-full" />
+                  <div className="loading-skeleton h-3 w-5/6" />
+                  <div className="loading-skeleton h-3 w-2/3" />
                 </div>
               </div>
             </div>
 
-            <aside className="animate-pulse space-y-6 self-start rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+            <aside className="space-y-6 self-start rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
               <div className="space-y-3">
-                <div className="h-3 w-24 rounded bg-gray-100" />
-                <div className="h-9 w-48 rounded bg-gray-200" />
-                <div className="h-4 w-32 rounded bg-gray-100" />
+                <div className="loading-skeleton h-3 w-24" />
+                <div className="loading-skeleton h-9 w-48" />
+                <div className="loading-skeleton h-4 w-32" />
               </div>
               <div className="space-y-3">
-                <div className="h-4 w-36 rounded bg-gray-200" />
-                <div className="h-16 rounded-2xl bg-gray-100" />
+                <div className="loading-skeleton h-4 w-36" />
+                <div className="loading-skeleton h-16 rounded-2xl" />
               </div>
               <div className="space-y-4">
-                <div className="h-4 w-40 rounded bg-gray-200" />
+                <div className="loading-skeleton h-4 w-40" />
                 {[1, 2, 3].map((item) => (
                   <div key={item} className="flex items-center justify-between">
                     <div className="space-y-2">
-                      <div className="h-3 w-20 rounded bg-gray-200" />
-                      <div className="h-3 w-28 rounded bg-gray-100" />
+                      <div className="loading-skeleton h-3 w-20" />
+                      <div className="loading-skeleton h-3 w-28" />
                     </div>
-                    <div className="h-8 w-20 rounded-full bg-gray-100" />
+                    <div className="loading-skeleton h-8 w-20 rounded-full" />
                   </div>
                 ))}
               </div>
-              <div className="h-12 rounded-xl bg-blue-100" />
+              <div className="loading-skeleton h-12 rounded-xl" />
             </aside>
           </div>
         </div>

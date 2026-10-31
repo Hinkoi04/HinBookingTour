@@ -10,6 +10,7 @@ import { blogService } from "../services/blogService";
 import { accountService } from "../../users/services/accountService";
 import { toast } from "sonner";
 import { toastDeleted } from "../../../utils/notifications";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export function BlogList() {
   const { searchQuery } = useOutletContext();
@@ -128,11 +129,8 @@ export function BlogList() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-64">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Đang tải dữ liệu...</p>
-        </div>
+      <div className="p-8">
+        <LoadingSkeleton variant="table" />
       </div>
     );
   }

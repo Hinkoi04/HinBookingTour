@@ -1,6 +1,7 @@
-import { X, Map, Loader2 } from "lucide-react";
+import { X, Map } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getSchedulesByTourId } from "../services/scheduleService"; 
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export function TourDetailModal({ isOpen, onClose, selectedTour, getAccountName }) {
   const [schedules, setSchedules] = useState([]);
@@ -84,10 +85,7 @@ export function TourDetailModal({ isOpen, onClose, selectedTour, getAccountName 
             </div>
             
             {loading ? (
-              <div className="flex items-center justify-center py-6 text-gray-500">
-                <Loader2 className="w-6 h-6 animate-spin mr-2 text-blue-500" />
-                <span>Đang tải lộ trình...</span>
-              </div>
+              <LoadingSkeleton variant="list" />
             ) : schedules.length > 0 ? (
               <div className="space-y-4">
                 {schedules.map((schedule, index) => (

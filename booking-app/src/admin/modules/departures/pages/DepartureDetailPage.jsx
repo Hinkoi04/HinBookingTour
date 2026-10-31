@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AlertCircle, LoaderCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { DepartureDetailModal } from "../components/DepartureDetailModal";
 import { accountService } from "../../users/services/accountService";
 import { departureService } from "../services/departureService";
+import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export default function DepartureDetailPage() {
   const { id } = useParams();
@@ -43,9 +44,10 @@ export default function DepartureDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3">
-        <LoaderCircle className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-        <p className="text-sm text-gray-500">Đang tải chi tiết lịch khởi hành...</p>
+      <div className="p-6 lg:p-8">
+        <div className="mx-auto max-w-5xl">
+          <LoadingSkeleton variant="detail" />
+        </div>
       </div>
     );
   }
