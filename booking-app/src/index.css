@@ -66,6 +66,95 @@ body {
   }
 }
 
+.tour-detail-reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.tour-detail-reveal[data-tour-reveal-delay="1"] {
+  transition-delay: 60ms;
+}
+
+.tour-detail-reveal[data-tour-reveal-delay="2"] {
+  transition-delay: 120ms;
+}
+
+.tour-detail-reveal[data-tour-reveal-delay="3"] {
+  transition-delay: 180ms;
+}
+
+.tour-detail-reveal[data-tour-reveal-delay="4"] {
+  transition-delay: 240ms;
+}
+
+.tour-detail-reveal[data-tour-reveal-delay="5"] {
+  transition-delay: 300ms;
+}
+
+.tour-detail-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.tour-detail-gallery-image {
+  animation: tour-detail-image-enter 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.tour-tab-panel {
+  animation: tour-tab-panel-enter 350ms ease both;
+}
+
+.tour-image-lightbox {
+  animation: tour-lightbox-enter 180ms ease-out both;
+}
+
+.tour-image-lightbox-content {
+  animation: tour-lightbox-content-enter 250ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes tour-detail-image-enter {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tour-tab-panel-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes tour-lightbox-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tour-lightbox-content-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-reveal,
   .home-reveal.is-visible {
@@ -81,5 +170,19 @@ body {
   .home-hero-image {
     animation: none;
     transform: none;
+  }
+
+  .tour-detail-reveal,
+  .tour-detail-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .tour-detail-gallery-image,
+  .tour-tab-panel,
+  .tour-image-lightbox,
+  .tour-image-lightbox-content {
+    animation: none;
   }
 }

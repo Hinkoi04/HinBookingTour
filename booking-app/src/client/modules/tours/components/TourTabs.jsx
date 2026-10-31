@@ -47,7 +47,7 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
       <div className="p-6">
         {/* Overview Tab */}
         {activeTab === "overview" && (
-          <div className="space-y-6">
+          <div key="overview" className="tour-tab-panel space-y-6">
             {tour.description && (
               <div>
                 <h3 className="font-bold text-gray-800 mb-2 text-base">Mô tả chuyến đi</h3>
@@ -108,7 +108,7 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
 
         {/* Itinerary Tab */}
         {activeTab === "itinerary" && (
-          <div className="space-y-6">
+          <div key="itinerary" className="tour-tab-panel space-y-6">
             {!tour.itinerary || tour.itinerary.length === 0 ? (
               <div className="text-center py-12 text-gray-500 text-sm">
                 Lịch trình chi tiết đang được cập nhật. Quý khách vui lòng liên hệ hotline 1800 1234 để nhận thông tin đầy đủ.
@@ -228,7 +228,7 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
 
         {/* Gallery / Ảnh phụ Tab */}
         {activeTab === "gallery" && (
-          <div className="space-y-4">
+          <div key="gallery" className="tour-tab-panel space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-gray-800 flex items-center gap-2 text-base">
                 <ImageIcon className="w-5 h-5 text-blue-600" /> Bộ sưu tập ảnh chuyến đi
@@ -261,9 +261,9 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
             {previewModalImg && (
               <div
                 onClick={() => setPreviewModalImg(null)}
-                className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
+                className="tour-image-lightbox fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
               >
-                <div className="relative max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl">
+                <div className="tour-image-lightbox-content relative max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl">
                   <img
                     src={previewModalImg}
                     alt="Preview"
@@ -284,7 +284,7 @@ export function TourTabs({ tour, reviews = [], avgRating = 5, onAddReview }) {
 
         {/* Reviews Tab */}
         {activeTab === "reviews" && (
-          <div className="space-y-6">
+          <div key="reviews" className="tour-tab-panel space-y-6">
             <div className="flex items-center gap-8 p-5 bg-blue-50 rounded-2xl">
               <div className="text-center shrink-0">
                 <p className="text-5xl font-black text-blue-600">{avgRating.toFixed(1)}</p>

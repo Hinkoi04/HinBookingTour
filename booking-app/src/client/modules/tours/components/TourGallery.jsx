@@ -14,9 +14,10 @@ export function TourGallery({ images = [], tourName = "", discount = 0 }) {
       {/* Main Feature Image */}
       <div className="relative h-80 sm:h-96 md:h-[450px] rounded-2xl overflow-hidden bg-gray-950 group">
         <img
+          key={activeImg}
           src={displayImages[activeImg]}
           alt={`${tourName} - ảnh ${activeImg + 1}`}
-          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+          className="tour-detail-gallery-image w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
           onError={(e) => {
             e.target.src =
               "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80";
