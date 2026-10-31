@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { User, Mail, Phone, Lock, Eye, EyeOff, UserPlus, ArrowRight } from "lucide-react";
 import { authService } from "../services/authService";
 import { toast } from "sonner";
 
 export function RegisterForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/home";
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -51,7 +53,7 @@ export function RegisterForm() {
       if (res.success) {
         toast.success("Đăng ký tài khoản thành công!");
         window.dispatchEvent(new Event("auth-changed"));
-        navigate("/home", { replace: true });
+        navigate(from, { replace: true });
       }
     } catch (err) {
       const validationMessage = Object.values(err.response?.data?.errors || {})[0];

@@ -10,6 +10,7 @@ import {
   PaymentOrderSummary,
 } from "../components";
 import { BookingSteps } from "../../booking/components";
+import ConfirmModal from "../../../components/ConfirmModal";
 import { toast } from "sonner";
 
 const fmt = (v) =>
@@ -27,6 +28,8 @@ export function PaymentPage() {
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmedOrderId, setConfirmedOrderId] = useState("");
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [orderId] = useState(() => `TG${Date.now().toString().slice(-8)}`);
 
   if (!state?.tour) {
     return (
@@ -53,11 +56,10 @@ export function PaymentPage() {
     passengers = [],
   } = state;
 
-  const orderId = `TG${Date.now().toString().slice(-8)}`;
   const paymentMethods = paymentService.getPaymentMethods();
   const currentMethod = paymentMethods.find((m) => m.id === selectedMethod);
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!agreed || submitting) {
       if (!agreed) {
         toast.error("Vui lòng đồng ý điều khoản để tiếp tục");
@@ -65,6 +67,11 @@ export function PaymentPage() {
       return;
     }
 
+    setIsConfirmOpen(true);
+  };
+
+  const submitPayment = async () => {
+    setIsConfirmOpen(false);
     setSubmitting(true);
     try {
       const result = await paymentService.confirmPayment({
@@ -257,6 +264,18 @@ export function PaymentPage() {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title={selectedMethod === "cod" ? "Xác nhận đặt tour" : "Xác nhận thanh toán"}
+        message={
+          selectedMethod === "cod"
+            ? `Bạn có chắc muốn đặt tour ${tour.name} với hình thức thanh toán khi nhận vé, tổng giá trị ${fmt(totalPrice)}?`
+            : `Bạn có chắc muốn xác nhận thanh toán ${fmt(deposit)} cho tour ${tour.name}?`
+        }
+        confirmText={selectedMethod === "cod" ? "Xác nhận đặt tour" : "Xác nhận thanh toán"}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={submitPayment}
+      />
     </div>
   );
 }

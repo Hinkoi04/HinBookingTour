@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { BRAND_LOGO_URL } from "../../services/branding";
 import { authService } from "../modules/auth/services/authService";
+import ConfirmModal from "./ConfirmModal";
 import { toast } from "sonner";
 
 export function Navbar() {
@@ -14,6 +15,7 @@ export function Navbar() {
   const [userDropdown, setUserDropdown] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeNavItem, setActiveNavItem] = useState("");
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -65,6 +67,11 @@ export function Navbar() {
   }, []);
 
   const handleLogout = () => {
+    setIsLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = () => {
+    setIsLogoutConfirmOpen(false);
     authService.logout();
     setCurrentUser(null);
     setUserDropdown(false);
@@ -493,6 +500,14 @@ export function Navbar() {
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={isLogoutConfirmOpen}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?"
+        confirmText="Đăng xuất"
+        onCancel={() => setIsLogoutConfirmOpen(false)}
+        onConfirm={confirmLogout}
+      />
     </header>
   );
 }

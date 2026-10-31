@@ -28,7 +28,14 @@ export function LoginForm() {
       if (res.success) {
         toast.success(`Chào mừng bạn quay trở lại, ${res.user.fullName}!`);
         window.dispatchEvent(new Event("auth-changed"));
-        navigate(from, { replace: true });
+        if (typeof from === "string") {
+          navigate(from, { replace: true });
+        } else {
+          navigate(from.pathname || "/home", {
+            replace: true,
+            state: from.state,
+          });
+        }
       }
     } catch (err) {
       toast.error(
@@ -147,7 +154,7 @@ export function LoginForm() {
 
       <p className="text-center text-xs text-gray-500 pt-2">
         Chưa có tài khoản?{" "}
-        <Link to="/register" className="font-bold text-blue-600 hover:underline">
+        <Link to="/register" state={location.state} className="font-bold text-blue-600 hover:underline">
           Đăng ký ngay
         </Link>
       </p>

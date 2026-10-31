@@ -9,6 +9,7 @@ import {
   TourTabs,
   TourBookingSidebar,
 } from "../components";
+import { authService } from "../../auth/services/authService";
 import { toast } from "sonner";
 
 export function TourDetailPage() {
@@ -153,23 +154,36 @@ export function TourDetailPage() {
       return;
     }
 
-    navigate("/booking", {
-      state: {
-        tour: {
-          ...tour,
-          price: unitPrice,
-          departure: selectedDeparture,
-        },
-        date,
-        adults,
-        children,
-        babies,
-        unitPrice,
-        childPrice,
-        babyPrice,
-        totalPrice,
+    const bookingState = {
+      tour: {
+        ...tour,
+        price: unitPrice,
+        departure: selectedDeparture,
       },
-    });
+      date,
+      adults,
+      children,
+      babies,
+      unitPrice,
+      childPrice,
+      babyPrice,
+      totalPrice,
+    };
+
+    if (!authService.getCurrentUser()) {
+      toast.info("Vui lòng đăng nhập để tiếp tục đặt tour.");
+      navigate("/login", {
+        state: {
+          from: {
+            pathname: "/booking",
+            state: bookingState,
+          },
+        },
+      });
+      return;
+    }
+
+    navigate("/booking", { state: bookingState });
   };
 
   const handleAddReview = async (newRev) => {
