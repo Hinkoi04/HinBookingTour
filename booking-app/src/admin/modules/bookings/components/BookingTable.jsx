@@ -37,11 +37,26 @@ const STATUS_OPTIONS = [
   { value: "cancelled", label: "Đã hủy" },
 ];
 
-export function BookingTable({ data, onView, onChangeStatus, canUpdate, isAscending, onSort }) {
+export function BookingTable({
+  data,
+  onView,
+  onChangeStatus,
+  canUpdate,
+  selectedBookingIds = [],
+  onToggleBooking,
+  onToggleAllBookings,
+  isAscending,
+  onSort,
+}) {
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
+
+  const pendingBookingIds = canUpdate
+    ? data.filter(booking => booking.status === "pending").map(booking => booking.id)
+    : [];
+  const selectedPendingCount = pendingBookingIds.filter(id => selectedBookingIds.includes(id)).length;
 
   const renderSortIcon = () => (
     isAscending ? <ChevronUp className="w-4 h-4 text-blue-600" /> : <ChevronDown className="w-4 h-4 text-blue-600" />
@@ -52,6 +67,18 @@ export function BookingTable({ data, onView, onChangeStatus, canUpdate, isAscend
       <table className="w-full text-left border-collapse min-w-[950px]">
         <thead>
           <tr className="border-b bg-gray-50/50">
+            {canUpdate && (
+              <th className="py-3 px-4 text-sm font-semibold text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={pendingBookingIds.length > 0 && selectedPendingCount === pendingBookingIds.length}
+                  onChange={() => onToggleAllBookings(pendingBookingIds)}
+                  disabled={pendingBookingIds.length === 0}
+                  aria-label="Chọn tất cả đơn chờ xác nhận trên trang"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed"
+                />
+              </th>
+            )}
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Mã đơn</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Khách hàng</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Tour</th>
@@ -76,6 +103,19 @@ export function BookingTable({ data, onView, onChangeStatus, canUpdate, isAscend
 
             return (
               <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
+                {canUpdate && (
+                  <td className="py-3 px-4">
+                    {booking.status === "pending" && (
+                      <input
+                        type="checkbox"
+                        checked={selectedBookingIds.includes(booking.id)}
+                        onChange={() => onToggleBooking(booking.id)}
+                        aria-label={`Chọn đơn ${booking.bookingCode}`}
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    )}
+                  </td>
+                )}
                 <td className="py-3 px-4 font-mono text-sm font-medium text-gray-900">{booking.bookingCode}</td>
                 <td className="py-3 px-4 text-sm text-gray-700">{booking.fullName}</td>
                 <td className="py-3 px-4 text-sm text-gray-700 max-w-[200px] truncate" title={booking.tourTitle}>{booking.tourTitle}</td>
@@ -108,7 +148,7 @@ export function BookingTable({ data, onView, onChangeStatus, canUpdate, isAscend
             );
           })}
           {data.length === 0 && (
-            <tr><td colSpan={8} className="py-10 text-center text-gray-400 text-sm">Không có đơn đặt nào</td></tr>
+            <tr><td colSpan={canUpdate ? 9 : 8} className="py-10 text-center text-gray-400 text-sm">Không có đơn đặt nào</td></tr>
           )}
         </tbody>
       </table>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { CalendarCheck2, CheckCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { bookingService } from "../services/BookService";
 import { paymentService } from "../services/paymentService";
@@ -32,6 +32,7 @@ export default function BookingList() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [accountMap, setAccountMap] = useState({});
+  const [selectedBookingIds, setSelectedBookingIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
@@ -108,9 +109,80 @@ export default function BookingList() {
           }
           bookingService.notifyStatusChange(id, newStatus, getOverallPaymentStatus(booking.payments));
           toast.success("Đã cập nhật trạng thái đơn hàng");
+          setSelectedBookingIds(ids => ids.filter(selectedId => selectedId !== id));
           loadData();
         } catch (error) {
           toast.error(error.message || "Thao tác thất bại");
+        }
+      }
+    });
+  };
+
+  const handleToggleBooking = (bookingId) => {
+    setSelectedBookingIds(ids => ids.includes(bookingId)
+      ? ids.filter(id => id !== bookingId)
+      : [...ids, bookingId]);
+  };
+
+  const handleToggleAllBookings = (bookingIds) => {
+    const allSelected = bookingIds.every(id => selectedBookingIds.includes(id));
+    setSelectedBookingIds(ids => allSelected
+      ? ids.filter(id => !bookingIds.includes(id))
+      : [...new Set([...ids, ...bookingIds])]);
+  };
+
+  const handleBulkConfirm = () => {
+    if (!canUpdate || selectedBookingIds.length === 0) return;
+
+    const bookingIds = [...selectedBookingIds];
+    setConfirmConfig({
+      isOpen: true,
+      title: "Xác nhận nhiều đơn đặt vé",
+      message: `Bạn có chắc chắn muốn xác nhận ${bookingIds.length} đơn đang chờ xác nhận?`,
+      variant: "success",
+      action: async () => {
+        try {
+          await bookingService.bulkConfirm(bookingIds);
+          bookingIds.forEach(id => {
+            const booking = bookings.find(item => item.id === id);
+            if (booking) {
+              bookingService.notifyStatusChange(id, "confirmed", getOverallPaymentStatus(booking.payments));
+            }
+          });
+          setSelectedBookingIds([]);
+          toast.success(`Đã xác nhận ${bookingIds.length} đơn đặt vé`);
+          loadData();
+        } catch (error) {
+          toast.error(error.message || "Không thể xác nhận các đơn đã chọn");
+        }
+      }
+    });
+  };
+
+  const handleCompleteOverdue = () => {
+    if (!canUpdate) return;
+
+    setConfirmConfig({
+      isOpen: true,
+      title: "Hoàn thành chuyến nhanh",
+      message: "Tất cả đơn chưa bị hủy có ngày khởi hành trước hôm nay sẽ được chuyển sang trạng thái hoàn thành. Bạn có muốn tiếp tục?",
+      variant: "success",
+      action: async () => {
+        try {
+          const completedBookingIds = await bookingService.completeOverdue();
+          completedBookingIds.forEach(id => {
+            const booking = bookings.find(item => item.id === id);
+            if (booking) {
+              bookingService.notifyStatusChange(id, "completed", getOverallPaymentStatus(booking.payments));
+            }
+          });
+          setSelectedBookingIds([]);
+          toast.success(completedBookingIds.length
+            ? `Đã hoàn thành ${completedBookingIds.length} đơn đặt vé`
+            : "Không có đơn nào cần hoàn thành");
+          loadData();
+        } catch (error) {
+          toast.error(error.message || "Không thể hoàn thành các chuyến đã qua");
         }
       }
     });
@@ -214,11 +286,39 @@ export default function BookingList() {
           </div>
         ) : (
           <>
+            {canUpdate && (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={handleBulkConfirm}
+                    disabled={selectedBookingIds.length === 0}
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                  >
+                    <CheckCheck className="w-5 h-5" />
+                    Xác nhận hàng loạt
+                    {selectedBookingIds.length > 0 && (
+                      <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{selectedBookingIds.length}</span>
+                    )}
+                  </button>
+                  <span className="text-sm text-gray-500">Chọn các đơn chờ xác nhận trong bảng</span>
+                </div>
+                <button
+                  onClick={handleCompleteOverdue}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-green-700"
+                >
+                  <CalendarCheck2 className="w-5 h-5" />
+                  Hoàn thành chuyến nhanh
+                </button>
+              </div>
+            )}
             <BookingTable 
               data={paginatedBookings} 
               onView={handleView}
               onChangeStatus={handleChangeStatus}
               canUpdate={canUpdate}
+              selectedBookingIds={selectedBookingIds}
+              onToggleBooking={handleToggleBooking}
+              onToggleAllBookings={handleToggleAllBookings}
               isAscending={isAscending}
               onSort={() => setIsAscending(!isAscending)}
             />

@@ -10,4 +10,6 @@ public interface BookingService {
     List<BookingHistoryResponse> findHistoryByEmail(String email);
     BookingResponse findById(Integer id);
     BookingResponse updateStatus(Integer id, String newStatus , Integer updaterId);
+    int bulkConfirm(List<Integer> bookingIds, Integer updaterId);
+    List<Integer> completeOverdue(Integer updaterId);
 }

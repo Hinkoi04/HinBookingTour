@@ -20,6 +20,16 @@ export const bookingService = {
     return response.data.data;
   },
 
+  bulkConfirm: async (bookingIds) => {
+    const response = await apiClient.put("/bookings/bulk-confirm", bookingIds);
+    return response.data.data;
+  },
+
+  completeOverdue: async () => {
+    const response = await apiClient.put("/bookings/complete-overdue");
+    return response.data.data;
+  },
+
   cancelBooking: async (id) => {
     const response = await apiClient.put(`/bookings/${id}/status`, {
       status: "cancelled",

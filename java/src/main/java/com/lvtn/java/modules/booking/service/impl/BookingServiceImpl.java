@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Service
@@ -127,5 +129,45 @@ public class BookingServiceImpl implements BookingService {
         booking.setUpdatedBy(updaterId);
         Booking saved = bookingRepository.save(booking);
         return mapToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public int bulkConfirm(List<Integer> bookingIds, Integer updaterId) {
+        if (bookingIds == null || bookingIds.isEmpty() || bookingIds.contains(null)) {
+            throw new BadRequestException("Vui lòng chọn ít nhất một đơn hợp lệ để xác nhận!");
+        }
+
+        Set<Integer> uniqueIds = new LinkedHashSet<>(bookingIds);
+        List<Booking> bookings = bookingRepository.findAllById(uniqueIds);
+        if (bookings.size() != uniqueIds.size()) {
+            throw new NotFoundException("Một hoặc nhiều đơn đặt vé không tồn tại!");
+        }
+
+        for (Booking booking : bookings) {
+            if (Boolean.TRUE.equals(booking.getDeleted())) {
+                throw new BadRequestException("Không thể xác nhận đơn đặt vé đã bị xóa!");
+            }
+            if (booking.getStatus() == null || !"pending".equalsIgnoreCase(booking.getStatus())) {
+                throw new BadRequestException("Chỉ có thể xác nhận đơn đang chờ xác nhận!");
+            }
+            booking.setStatus("confirmed");
+            booking.setUpdatedBy(updaterId);
+        }
+
+        bookingRepository.saveAll(bookings);
+        return bookings.size();
+    }
+
+    @Override
+    @Transactional
+    public List<Integer> completeOverdue(Integer updaterId) {
+        List<Booking> overdueBookings = bookingRepository.findOverdueBookings(LocalDate.now().atStartOfDay());
+        overdueBookings.forEach(booking -> {
+            booking.setStatus("completed");
+            booking.setUpdatedBy(updaterId);
+        });
+        bookingRepository.saveAll(overdueBookings);
+        return overdueBookings.stream().map(Booking::getId).toList();
     }
 }

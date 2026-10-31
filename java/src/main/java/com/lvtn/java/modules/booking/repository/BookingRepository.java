@@ -15,6 +15,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE (b.deleted = false OR b.deleted IS NULL)")
     List<Booking> findByDeletedFalse();
 
+    @Query("SELECT b FROM Booking b JOIN b.departure d WHERE d.startTime < :cutoff " +
+            "AND (b.deleted = false OR b.deleted IS NULL) " +
+            "AND LOWER(COALESCE(b.status, 'pending')) NOT IN ('cancelled', 'completed')")
+    List<Booking> findOverdueBookings(@Param("cutoff") LocalDateTime cutoff);
+
     @Query("SELECT b FROM Booking b LEFT JOIN FETCH b.departure d LEFT JOIN FETCH d.tourId LEFT JOIN FETCH b.user WHERE b.id = :id")
     Optional<Booking> findByIdWithDetails(@Param("id") Integer id);
 

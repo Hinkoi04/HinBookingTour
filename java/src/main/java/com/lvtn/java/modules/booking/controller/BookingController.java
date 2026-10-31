@@ -52,4 +52,22 @@ public class BookingController {
                 bookingService.updateStatus(id, request.getStatus(), updaterId)
         ));
     }
+
+    @PutMapping("/bulk-confirm")
+    @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'UPDATE_BOOKING')")
+    public ResponseEntity<ApiResponse<Integer>> bulkConfirm(@RequestBody List<Integer> bookingIds) {
+        Integer updaterId = securityUtils.getCurrentAccountId();
+        return ResponseEntity.ok(ApiResponse.success(
+                bookingService.bulkConfirm(bookingIds, updaterId)
+        ));
+    }
+
+    @PutMapping("/complete-overdue")
+    @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'UPDATE_BOOKING')")
+    public ResponseEntity<ApiResponse<List<Integer>>> completeOverdue() {
+        Integer updaterId = securityUtils.getCurrentAccountId();
+        return ResponseEntity.ok(ApiResponse.success(
+                bookingService.completeOverdue(updaterId)
+        ));
+    }
 }
