@@ -33,7 +33,7 @@ export function FlashSaleCard({ tour, item }) {
   return (
     <Link
       to={`/tour/${encodeURIComponent(data.slug || data.id)}`}
-      className="flex-shrink-0 w-72 sm:w-80 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between border border-gray-200/90 hover:-translate-y-1"
+      className="home-reveal flex-shrink-0 w-72 sm:w-80 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between border border-gray-200/90 hover:-translate-y-1"
     >
       <div className="relative overflow-hidden h-44 sm:h-48 bg-gray-100">
         <img

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Clock, MapPin, ArrowRight, Search, Calendar, ChevronRight,
@@ -27,6 +27,7 @@ function useCountdown(targetMs) {
 
 export function HomePage() {
   const navigate = useNavigate();
+  const pageRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("q") || "";
   const selectedDate = searchParams.get("date") || "";
@@ -160,32 +161,66 @@ export function HomePage() {
       })
     : [];
 
+  useEffect(() => {
+    const revealItems = pageRef.current?.querySelectorAll(".home-reveal:not(.is-visible)");
+    if (!revealItems?.length) return undefined;
+
+    if (!("IntersectionObserver" in window)) {
+      revealItems.forEach((item) => item.classList.add("is-visible"));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, [
+    loading,
+    allTours.length,
+    blogsList.length,
+    filteredTours.length,
+    flashSaleItems.length,
+    searchQuery,
+    selectedCategory,
+    selectedDate,
+  ]);
+
   return (
-    <div>
+    <div ref={pageRef} className="home-page">
       {/* Hero Banner */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-24">
         <img
           src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80"
           alt="Hero"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="home-hero-image absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-900/75 to-blue-950/80" />
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 w-full flex flex-col items-center justify-center text-center">
-          <span className="inline-flex items-center gap-2 bg-blue-500/20 backdrop-blur-md text-blue-200 text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full border border-blue-400/30 mb-6 shadow-sm">
+          <span className="home-reveal inline-flex items-center gap-2 bg-blue-500/20 backdrop-blur-md text-blue-200 text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full border border-blue-400/30 mb-6 shadow-sm" data-home-reveal-delay="1">
             <Plane className="w-4 h-4" aria-hidden="true" /> Khám phá thế giới cùng TravelGo
           </span>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-tight mb-6 tracking-tight">
+          <h1 className="home-reveal text-4xl sm:text-6xl md:text-7xl font-black text-white leading-tight mb-6 tracking-tight" data-home-reveal-delay="2">
             Hành Trình <span className="text-yellow-400 drop-shadow-md">Đáng Nhớ</span> Của Bạn
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto font-medium">
+          <p className="home-reveal text-base sm:text-lg md:text-xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto font-medium" data-home-reveal-delay="3">
             Khám phá hơn 500+ tour du lịch trong nước và quốc tế với giá ưu đãi nhất. Đặt chỗ linh hoạt, dịch vụ tận tâm 24/7.
           </p>
 
           {/* Search box */}
-          <div className="w-full max-w-4xl bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-5 shadow-2xl border border-white/40">
+          <div className="home-reveal w-full max-w-4xl bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-5 shadow-2xl border border-white/40" data-home-reveal-delay="4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="md:col-span-2 relative">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -218,7 +253,7 @@ export function HomePage() {
           </div>
 
           {/* Quick stats */}
-          <div className="flex flex-wrap justify-center gap-8 sm:gap-16 mt-12 pt-8 border-t border-white/10 w-full max-w-3xl">
+          <div className="home-reveal flex flex-wrap justify-center gap-8 sm:gap-16 mt-12 pt-8 border-t border-white/10 w-full max-w-3xl" data-home-reveal-delay="5">
             {[
               { num: allTours.length > 0 ? `${allTours.length}+` : "500+", label: "Tour du lịch" },
               { num: "50K+", label: "Khách hàng" },
@@ -237,7 +272,7 @@ export function HomePage() {
       {/* Filtered Search Results Section */}
       {(searchQuery || selectedCategory || selectedDate) && (
         <section id="search-results" className="py-14 bg-blue-50/50 border-b border-blue-100">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="home-reveal max-w-7xl mx-auto px-4">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
               <div>
                 <div className="flex items-center gap-2 text-blue-600 font-bold text-sm mb-1">
@@ -292,7 +327,7 @@ export function HomePage() {
       {/* Flash Sale (Chỉ hiển thị khi có lịch khởi hành giảm giá trong 30 ngày tới) */}
       {!loading && flashSaleItems.length > 0 && (
         <section id="flash-sale" className="py-16 bg-gradient-to-r from-red-600 via-rose-600 to-orange-500 shadow-inner">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="home-reveal max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -338,11 +373,12 @@ export function HomePage() {
             <h2 className="text-3xl font-black text-gray-900">Khám Phá Theo Sở Thích</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {categoryCards.map((cat) => (
+            {categoryCards.map((cat, index) => (
               <div
                 key={cat.label}
                 onClick={() => setSearchParams({ category: cat.label })}
-                className="relative h-56 rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-all"
+                className="home-reveal relative h-56 rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-all"
+                data-home-reveal-delay={index}
               >
                 <img
                   src={cat.img}
@@ -433,8 +469,8 @@ export function HomePage() {
               { icon: CircleDollarSign, title: "Giá Tốt Nhất", desc: "Cam kết giá cạnh tranh, chính sách hoàn tiền minh bạch" },
               { icon: ShieldCheck, title: "An Toàn - Uy Tín", desc: "Bảo hiểm toàn diện, hỗ trợ 24/7 trong suốt chuyến đi" },
               { icon: Star, title: "98% Hài Lòng", desc: "Khách hàng luôn tin tưởng và tiếp tục lựa chọn đồng hành" },
-            ].map((item) => (
-              <div key={item.title} className="text-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+            ].map((item, index) => (
+              <div key={item.title} className="home-reveal text-center p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors" data-home-reveal-delay={index}>
                 <item.icon className="w-12 h-12 mx-auto mb-4" aria-hidden="true" />
                 <h3 className="text-white font-bold text-base mb-2">{item.title}</h3>
                 <p className="text-blue-200 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
@@ -464,8 +500,8 @@ export function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {blogsList.slice(0, 3).map((blog) => (
-                <Link to={`/cam-nang/${encodeURIComponent(blog.slug || blog.id)}`} key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group block border border-gray-100">
+              {blogsList.slice(0, 3).map((blog, index) => (
+                <Link to={`/cam-nang/${encodeURIComponent(blog.slug || blog.id)}`} key={blog.id} className="home-reveal bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group block border border-gray-100" data-home-reveal-delay={index}>
                   <div className="relative h-48 overflow-hidden">
                     <img
                       src={blog.image}
@@ -581,8 +617,8 @@ export function HomePage() {
                 { icon: Phone, color: "bg-blue-100 text-blue-600", title: "Hotline hỗ trợ 24/7", lines: ["1800 1234 (Miễn phí cước gọi)", "Thứ 2 – Chủ nhật: 08:00 – 22:00"] },
                 { icon: Mail, color: "bg-green-100 text-green-600", title: "Email tư vấn & CSKH", lines: ["hotro@travelgo.vn", "Phản hồi trong vòng 2 giờ làm việc"] },
                 { icon: MapPin, color: "bg-orange-100 text-orange-600", title: "Trụ sở chính", lines: ["123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM", "Thứ 2 – Thứ 7: 08:00 – 18:00"] },
-              ].map((item) => (
-                <div key={item.title} className="flex gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100">
+              ].map((item, index) => (
+                <div key={item.title} className="home-reveal flex gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100" data-home-reveal-delay={index}>
                   <div className={`w-12 h-12 ${item.color} rounded-2xl flex items-center justify-center shrink-0`}>
                     <item.icon className="w-6 h-6" />
                   </div>
