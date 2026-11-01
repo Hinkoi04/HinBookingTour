@@ -16,8 +16,11 @@ function mapAccount(acc) {
     updatedAt:   acc.updatedAt,
     deletedAt:   acc.deletedAt,
     createdBy:   acc.createdBy,
+    createdByName: acc.createdByName,
     updatedBy:   acc.updatedBy,
+    updatedByName: acc.updatedByName,
     deletedBy:   acc.deletedBy,
+    deletedByName: acc.deletedByName,
   };
 }
 

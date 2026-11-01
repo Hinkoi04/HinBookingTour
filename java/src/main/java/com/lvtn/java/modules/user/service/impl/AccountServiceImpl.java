@@ -14,7 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +61,21 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse findById(Integer id) {
         Account account = accountRepository.findByIdWithRole(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản với ID: " + id));
-        return mapToResponse(account);
+        AccountResponse response = mapToResponse(account);
+        List<Integer> auditIds = Stream.of(
+                        account.getCreatedBy(),
+                        account.getUpdatedBy(),
+                        account.getDeletedBy())
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Map<Integer, String> accountNames = accountRepository.findAllById(auditIds).stream()
+                .collect(Collectors.toMap(Account::getId, Account::getFullName));
+
+        response.setCreatedByName(accountNames.get(account.getCreatedBy()));
+        response.setUpdatedByName(accountNames.get(account.getUpdatedBy()));
+        response.setDeletedByName(accountNames.get(account.getDeletedBy()));
+        return response;
     }
 
     @Override

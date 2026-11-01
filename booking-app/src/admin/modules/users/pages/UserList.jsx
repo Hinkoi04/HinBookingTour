@@ -404,7 +404,6 @@ export default function UserManagement() {
                 data={paginatedList}
                 startIndex={startIndex}
                 accounts={employees}
-                onView={(user) => viewDetail(user, 'employee')}
                 onToggleLock={handleToggleLock}
                 onDelete={handleDeleteEmployee}
                 onEdit={handleEditEmployee}

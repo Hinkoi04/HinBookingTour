@@ -2,7 +2,7 @@
 import { Dashboard } from "../modules/dashboard";
 import { TourList } from "../modules/tours";
 import { CategoryList } from "../modules/categories";
-import { ChangePassword, UserList } from "../modules/users";
+import { ChangePassword, UserList, EmployeeDetailPage } from "../modules/users";
 import { Booking } from "../modules/bookings";
 import { Departure, DepartureDetailPage, DeparturePassengersPage } from "../modules/departures";
 import { Discount } from "../modules/discounts";
@@ -60,6 +60,10 @@ export const adminRoutes = [
           {
             path: "/admin/users",
             element: <UserList />,
+          },
+          {
+            path: "/admin/users/employees/:id",
+            element: <EmployeeDetailPage />,
           },
           {
             path: "/admin/change-password",

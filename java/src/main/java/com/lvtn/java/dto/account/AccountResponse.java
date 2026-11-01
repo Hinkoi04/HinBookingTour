@@ -28,6 +28,9 @@ public class AccountResponse {
     private LocalDateTime deletedAt;
 
     private Integer createdBy;
+    private String createdByName;
     private Integer updatedBy;
+    private String updatedByName;
     private Integer deletedBy;
+    private String deletedByName;
 }

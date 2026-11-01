@@ -1,5 +1,6 @@
 import { Eye, Lock, Unlock, ShieldCheck, User, Trash2, Edit } from "lucide-react";
 import { usePermission } from "../../../hooks/usePermission";
+import { Link } from "react-router-dom";
 
 const RoleBadge = ({ roleId, roleName }) => {
   if (roleId === 1) {
@@ -16,7 +17,7 @@ const RoleBadge = ({ roleId, roleName }) => {
   );
 };
 
-export function EmployeeTable({ data, onView, onToggleLock, onDelete, onEdit, startIndex = 0 }) {
+export function EmployeeTable({ data, onToggleLock, onDelete, onEdit, startIndex = 0 }) {
   const { hasPermission } = usePermission();
 
   return (
@@ -69,13 +70,13 @@ export function EmployeeTable({ data, onView, onToggleLock, onDelete, onEdit, st
               </td>
               <td className="py-3 px-4 text-right">
                 <div className="flex justify-end gap-1">
-                  <button 
-                    onClick={() => onView(employee)} 
+                  <Link
+                    to={`/admin/users/employees/${employee.id}`}
                     className="p-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors" 
                     title="Xem chi tiết"
                   >
                     <Eye className="w-4 h-4" />
-                  </button>
+                  </Link>
                   
                   {hasPermission("UPDATE_USER") && (
                     <>
