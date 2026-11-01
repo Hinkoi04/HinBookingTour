@@ -8,7 +8,7 @@ import { Departure, DepartureDetailPage, DeparturePassengersPage } from "../modu
 import { Discount } from "../modules/discounts";
 import { Login } from "../modules/login";
 import { BlogList } from "../modules/blogs";
-import { ReviewList } from "../modules/reviews";
+import { ReviewList, ReviewDetailPage } from "../modules/reviews";
 import TourForm from "../modules/tours/pages/TourForm";
 import { VehicleList } from "../modules/vehicles"
 import  {BlogForm}  from "../modules/blogs";
@@ -116,6 +116,10 @@ export const adminRoutes = [
           {
             path: "/admin/reviews",
             element: <ReviewList />,
+          },
+          {
+            path: "/admin/reviews/:id",
+            element: <ReviewDetailPage />,
           },
           {
             path: "/admin/contacts",

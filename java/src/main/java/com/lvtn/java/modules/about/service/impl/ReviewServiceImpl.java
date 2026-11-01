@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -139,6 +141,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewResponse> findAll() {
         return mapToResponseList(reviewRepository.findByDeletedFalse());
+    }
+
+    @Override
+    public ReviewResponse findById(Integer id) {
+        Review review = reviewRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy đánh giá"));
+        return mapToResponse(review);
     }
 
     @Override

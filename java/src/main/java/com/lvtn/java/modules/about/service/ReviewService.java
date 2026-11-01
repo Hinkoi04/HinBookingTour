@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ReviewService {
     List<ReviewResponse> findAll();
+    ReviewResponse findById(Integer id);
     List<ReviewResponse> findApprovedByTour(Integer tourId);
     ReviewResponse create(ReviewRequest request, Integer userId);
     ReviewResponse toggleVisibility(Integer id, Integer adminId);

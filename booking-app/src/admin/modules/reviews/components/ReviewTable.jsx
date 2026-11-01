@@ -1,6 +1,7 @@
-import { Eye, EyeOff, Trash2, Star, RotateCcw, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Trash2, Star, RotateCcw, AlertTriangle, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export function ReviewTable({ reviews, onToggleVisibility, onDelete, isTrashView, onRestore, onHardDelete, canUpdate, canDelete }) {
+export function ReviewTable({ reviews, onView, onToggleVisibility, onDelete, isTrashView, onRestore, onHardDelete, canUpdate, canDelete }) {
   const renderStars = (rating) => {
     return (
       <div className="flex gap-0.5">
@@ -24,8 +25,6 @@ export function ReviewTable({ reviews, onToggleVisibility, onDelete, isTrashView
       hour: '2-digit', minute: '2-digit'
     });
   };
-
-  const hasActionPermission = canUpdate || canDelete;
 
   if (reviews.length === 0) {
     return <div className="text-center py-10 text-gray-400 text-sm">Không có dữ liệu</div>;
@@ -51,9 +50,7 @@ export function ReviewTable({ reviews, onToggleVisibility, onDelete, isTrashView
               </>
             )}
             
-            {hasActionPermission && (
-              <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Thao tác</th>
-            )}
+            <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Thao tác</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -94,65 +91,76 @@ export function ReviewTable({ reviews, onToggleVisibility, onDelete, isTrashView
                   </td>
                   <td className="py-3 px-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                      review.isApproved ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                      review.isApproved
+                        ? "bg-green-100 text-green-700"
+                        : review.approvedBy
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-100 text-gray-600"
                     }`}>
-                      {review.isApproved ? "Đã duyệt" : "Chờ duyệt"}
+                      {review.isApproved ? "Đang hiển thị" : review.approvedBy ? "Đã ẩn" : "Chờ duyệt"}
                     </span>
                   </td>
                 </>
               )}
 
-              {hasActionPermission && (
-                <td className="py-3 px-4 text-right">
-                  <div className="flex justify-end gap-1">
-                    {isTrashView ? (
-                      <>
-                        {canUpdate && (
-                          <button
-                            onClick={() => onRestore(review.id)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                            title="Khôi phục"
-                          >
-                            <RotateCcw className="w-4 h-4" />
-                          </button>
-                        )}
-                        {canDelete && (
-                          <button
-                            onClick={() => onHardDelete(review.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                            title="Xóa vĩnh viễn"
-                          >
-                            <AlertTriangle className="w-4 h-4" />
-                          </button>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {canUpdate && (
-                          <button
-                            onClick={() => onToggleVisibility(review.id)}
-                            className={`p-2 rounded-md transition-colors ${
-                              review.isApproved ? "text-amber-600 hover:bg-amber-50" : "text-green-600 hover:bg-green-50"
-                            }`}
-                            title={review.isApproved ? "Bỏ duyệt / Ẩn" : "Duyệt / Hiển thị"}
-                          >
-                            {review.isApproved ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          </button>
-                        )}
-                        {canDelete && (
-                          <button
-                            onClick={() => onDelete(review.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                            title="Chuyển vào thùng rác"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </td>
-              )}
+              <td className="py-3 px-4 text-right">
+                <div className="flex justify-end gap-1">
+                  <Link
+                    to={`/admin/reviews/${review.id}`}
+                    className="rounded-md p-2 text-blue-600 transition-colors hover:bg-blue-50"
+                    title="Xem chi tiết"
+                    aria-label={`Xem chi tiết đánh giá #${review.id}`}
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Link>
+                  {isTrashView ? (
+                    <>
+                      {canUpdate && (
+                        <button
+                          onClick={() => onRestore(review.id)}
+                          className="rounded-md p-2 text-blue-600 transition-colors hover:bg-blue-50"
+                          title="Khôi phục"
+                        >
+                          <RotateCcw className="h-4 w-4" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          onClick={() => onHardDelete(review.id)}
+                          className="rounded-md p-2 text-red-600 transition-colors hover:bg-red-50"
+                          title="Xóa vĩnh viễn"
+                        >
+                          <AlertTriangle className="h-4 w-4" />
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {canUpdate && (
+                        <button
+                          onClick={() => onToggleVisibility(review)}
+                          className={`rounded-md p-2 transition-colors ${
+                            review.isApproved ? "text-amber-600 hover:bg-amber-50" : "text-green-600 hover:bg-green-50"
+                          }`}
+                          title={review.isApproved ? "Ẩn đánh giá" : "Hiển thị đánh giá"}
+                          aria-label={review.isApproved ? "Ẩn đánh giá" : "Hiển thị đánh giá"}
+                        >
+                          {review.isApproved ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          onClick={() => onDelete(review.id)}
+                          className="rounded-md p-2 text-red-600 transition-colors hover:bg-red-50"
+                          title="Chuyển vào thùng rác"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>

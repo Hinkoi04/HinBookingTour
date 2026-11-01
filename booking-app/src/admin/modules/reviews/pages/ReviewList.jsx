@@ -3,8 +3,9 @@ import { useOutletContext } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { reviewService } from "../services/reviewService";
-import { ReviewTable } from "../components/ReviewTable";
+import { ReviewTable } from "../components";
 import Pagination from "../../../components/Pagination";
+import ConfirmModal from "../../../components/ConfirmModal";
 import { toastDeleted } from "../../../utils/notifications";
 import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
@@ -17,6 +18,7 @@ export default function ReviewList() {
   
   const [actionId, setActionId] = useState(null);
   const [actionType, setActionType] = useState(null);
+  const [actionReview, setActionReview] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -61,15 +63,11 @@ export default function ReviewList() {
     setCurrentPage(1);
   }, [searchQuery, activeTab]);
 
-  const handleToggleVisibility = async (id) => {
+  const handleToggleVisibility = (review) => {
     if (!canUpdate) return;
-    try {
-      const updatedReview = await reviewService.toggleVisibility(id);
-      setReviews(prev => prev.map(r => r.id === id ? { ...r, isApproved: updatedReview.isApproved } : r));
-      toast.success(updatedReview.isApproved ? "Đã hiển thị đánh giá" : "Đã ẩn đánh giá");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Thao tác thất bại");
-    }
+    setActionId(review.id);
+    setActionType("toggleVisibility");
+    setActionReview(review);
   };
 
   const executeAction = async () => {
@@ -84,15 +82,65 @@ export default function ReviewList() {
       } else if (actionType === 'hardDelete' && canDelete) {
         await reviewService.hardDelete(actionId);
         toastDeleted("Đã xóa vĩnh viễn");
+      } else if (actionType === "toggleVisibility" && canUpdate) {
+        const updatedReview = await reviewService.toggleVisibility(actionId);
+        setReviews(prev => prev.map(review => (
+          review.id === actionId ? { ...review, isApproved: updatedReview.isApproved, updatedAt: updatedReview.updatedAt, approvedByName: updatedReview.approvedByName } : review
+        )));
+        toast.success(updatedReview.isApproved ? "Đã hiển thị đánh giá" : "Đã ẩn đánh giá");
       }
-      setReviews(prev => prev.filter(r => r.id !== actionId));
+      if (actionType !== "toggleVisibility") {
+        setReviews(prev => prev.filter(r => r.id !== actionId));
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Thao tác thất bại");
     } finally {
       setActionId(null);
       setActionType(null);
+      setActionReview(null);
     }
   };
+
+  const cancelAction = () => {
+    setActionId(null);
+    setActionType(null);
+    setActionReview(null);
+  };
+
+  const confirmation = actionType === "toggleVisibility"
+    ? actionReview?.isApproved
+      ? {
+          title: "Xác nhận ẩn đánh giá",
+          message: "Đánh giá này sẽ không còn hiển thị công khai. Bạn có muốn tiếp tục?",
+          confirmText: "Ẩn đánh giá",
+          variant: "warning",
+        }
+      : {
+          title: "Xác nhận hiển thị đánh giá",
+          message: "Đánh giá này sẽ được hiển thị công khai trên hệ thống. Bạn có muốn tiếp tục?",
+          confirmText: "Hiển thị",
+          variant: "success",
+        }
+    : actionType === "restore"
+      ? {
+          title: "Xác nhận khôi phục",
+          message: "Đánh giá này sẽ được khôi phục khỏi thùng rác.",
+          confirmText: "Khôi phục",
+          variant: "info",
+        }
+      : actionType === "hardDelete"
+        ? {
+            title: "Xác nhận xóa vĩnh viễn",
+            message: "Hành động này không thể hoàn tác. Đánh giá sẽ bị xóa vĩnh viễn.",
+            confirmText: "Xóa vĩnh viễn",
+            variant: "danger",
+          }
+        : {
+            title: "Xác nhận xóa đánh giá",
+            message: "Đánh giá sẽ được chuyển vào thùng rác.",
+            confirmText: "Chuyển vào thùng rác",
+            variant: "danger",
+          };
 
   const filteredReviews = reviews.filter(review =>
     (review.userFullName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -162,38 +210,12 @@ export default function ReviewList() {
         </div>
       </div>
 
-      {actionId !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden p-6 space-y-4 animate-in fade-in zoom-in duration-200">
-            <h3 className="text-lg font-bold text-gray-900">
-              {actionType === 'softDelete' ? "Xác nhận xóa đánh giá" : actionType === 'restore' ? "Xác nhận khôi phục" : "Xác nhận xóa vĩnh viễn"}
-            </h3>
-            <p className="text-sm text-gray-500">
-              {actionType === 'softDelete' 
-                ? "Đánh giá sẽ được chuyển vào thùng rác." 
-                : actionType === 'restore' 
-                ? "Đánh giá này sẽ được hiển thị lại trên hệ thống."
-                : "Hành động này không thể hoàn tác. Đánh giá sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu."}
-            </p>
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                onClick={() => { setActionId(null); setActionType(null); }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={executeAction}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors shadow-sm ${
-                  actionType === 'restore' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700'
-                }`}
-              >
-                {actionType === 'restore' ? "Khôi phục" : "Xác nhận"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={actionId !== null}
+        onConfirm={executeAction}
+        onCancel={cancelAction}
+        {...confirmation}
+      />
     </div>
   );
 }

@@ -6,6 +6,11 @@ export const reviewService = {
     return response.data.data || response.data;
   },
 
+  getById: async (id) => {
+    const response = await apiClient.get(`/reviews/${id}`);
+    return response.data.data || response.data;
+  },
+
   toggleVisibility: async (id) => {
     const response = await apiClient.put(`/reviews/${id}/toggle-visibility`);
     return response.data.data || response.data;

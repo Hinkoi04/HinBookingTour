@@ -42,6 +42,11 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getReviewById(@PathVariable Integer id) {
+        return ResponseEntity.ok(reviewService.findById(id));
+    }
+
     @GetMapping("/tour/{tourId}")
     public ResponseEntity<?> getApprovedReviewsByTour(@PathVariable Integer tourId) {
         return ResponseEntity.ok(reviewService.findApprovedByTour(tourId));

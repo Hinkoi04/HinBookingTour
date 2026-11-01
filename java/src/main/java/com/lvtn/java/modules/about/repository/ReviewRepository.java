@@ -4,11 +4,15 @@ import com.lvtn.java.modules.about.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
+    @Query("SELECT r FROM Review r LEFT JOIN FETCH r.user LEFT JOIN FETCH r.tour LEFT JOIN FETCH r.booking WHERE r.id = :id")
+    Optional<Review> findByIdWithDetails(@Param("id") Integer id);
+
     @Query("SELECT r FROM Review r LEFT JOIN FETCH r.user LEFT JOIN FETCH r.tour LEFT JOIN FETCH r.booking WHERE r.deleted = false")
     List<Review> findByDeletedFalse();
 
