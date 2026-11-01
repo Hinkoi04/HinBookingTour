@@ -1,14 +1,14 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
-export function RevenueChart({ data }) {
+export function RevenueChart({ data, periodLabel }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 overflow-hidden">
-      <h3 className="text-lg font-bold text-gray-900 mb-6">Doanh thu 6 tháng gần nhất</h3>
+      <h3 className="text-lg font-bold text-gray-900 mb-6">Doanh thu {periodLabel}</h3>
       <div className="w-full" style={{ height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} dy={10} />
+            <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} dx={-10}
               tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
             />

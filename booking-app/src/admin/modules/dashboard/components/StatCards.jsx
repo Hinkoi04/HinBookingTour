@@ -1,13 +1,13 @@
 import { TrendingUp, Users, ShoppingCart, MapPin } from "lucide-react";
 
-export function StatCards({ data }) {
+export function StatCards({ data, periodLabel }) {
   if (!data) return null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <div className="flex flex-row items-center justify-between pb-4">
-          <h3 className="text-sm font-medium text-gray-600">Doanh thu tháng này</h3>
+          <h3 className="text-sm font-medium text-gray-600">Doanh thu {periodLabel}</h3>
           <TrendingUp className="w-4 h-4 text-green-600" />
         </div>
         <div>
@@ -20,7 +20,7 @@ export function StatCards({ data }) {
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <div className="flex flex-row items-center justify-between pb-4">
-          <h3 className="text-sm font-medium text-gray-600">Tổng đơn đặt</h3>
+          <h3 className="text-sm font-medium text-gray-600">Đơn đặt trong kỳ</h3>
           <ShoppingCart className="w-4 h-4 text-blue-600" />
         </div>
         <div>

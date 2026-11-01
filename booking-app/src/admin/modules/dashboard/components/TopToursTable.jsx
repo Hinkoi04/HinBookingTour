@@ -2,7 +2,7 @@ export function TopToursTable({ tours }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
       <div className="p-6 border-b border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900">Top 5 Tour bán chạy</h3>
+        <h3 className="text-lg font-bold text-gray-900">Top 5 tour bán chạy trong kỳ</h3>
       </div>
       <div className="w-full overflow-x-auto">
         <table className="w-full text-left border-collapse min-w-[600px]">
@@ -15,18 +15,24 @@ export function TopToursTable({ tours }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {tours.map((tour, index) => (
-              <tr key={tour.name} className="hover:bg-gray-50 transition-colors">
-                <td className="py-4 px-6 text-sm text-gray-500">{index + 1}</td>
-                <td className="py-4 px-6 text-sm font-medium text-gray-900">{tour.name}</td>
-                <td className="py-4 px-6 text-sm text-gray-600">
-                  <span className="font-medium">{tour.bookings}</span> lượt
-                </td>
-                <td className="py-4 px-6 text-sm font-bold text-green-600 text-right">
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tour.revenue)}
-                </td>
-              </tr>
-            ))}
+            {tours.length > 0 ? tours.map((tour, index) => (
+                <tr key={tour.name} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-6 text-sm text-gray-500">{index + 1}</td>
+                  <td className="py-4 px-6 text-sm font-medium text-gray-900">{tour.name}</td>
+                  <td className="py-4 px-6 text-sm text-gray-600">
+                    <span className="font-medium">{tour.bookings}</span> lượt
+                  </td>
+                  <td className="py-4 px-6 text-sm font-bold text-green-600 text-right">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tour.revenue)}
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan="4" className="py-8 px-6 text-center text-sm text-gray-500">
+                    Chưa có dữ liệu tour trong khoảng thời gian này.
+                  </td>
+                </tr>
+              )}
           </tbody>
         </table>
       </div>

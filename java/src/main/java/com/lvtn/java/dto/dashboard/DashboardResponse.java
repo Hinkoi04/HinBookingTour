@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 @Builder
 public class DashboardResponse {
+    private String periodLabel;
     private StatCards statCards;
     private List<RevenueData> revenueData;
     private List<TopTour> topTours;
@@ -46,7 +47,7 @@ public class DashboardResponse {
 
     @Data @Builder
     public static class RevenueData {
-        private String month;
+        private String label;
         private long revenue;
     }
 

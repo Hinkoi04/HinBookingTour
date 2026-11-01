@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +19,9 @@ public class DashboardController {
 
     @GetMapping("/summary")
     // @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'VIEW_DASHBOARD')") // Bỏ comment dòng này nếu bạn có module phân quyền cho dashboard
-    public ResponseEntity<DashboardResponse> getDashboardSummary() {
-        return ResponseEntity.ok(dashboardService.getSummary());
+    public ResponseEntity<DashboardResponse> getDashboardSummary(
+            @RequestParam(defaultValue = "month") String period,
+            @RequestParam(required = false) String date) {
+        return ResponseEntity.ok(dashboardService.getSummary(period, date));
     }
 }
