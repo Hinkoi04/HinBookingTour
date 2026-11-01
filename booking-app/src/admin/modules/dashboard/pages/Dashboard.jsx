@@ -91,7 +91,7 @@ export default function Dashboard() {
           <p className="mt-1 text-sm text-gray-500">Theo dõi tình hình kinh doanh và đặt tour.</p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="min-w-40">
             <label htmlFor="dashboard-period" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
               Xem theo
