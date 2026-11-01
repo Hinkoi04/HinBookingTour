@@ -19,4 +19,6 @@ public class UserResponse {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+    private Integer deletedBy;
 }

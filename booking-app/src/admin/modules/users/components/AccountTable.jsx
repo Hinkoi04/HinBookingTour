@@ -71,7 +71,7 @@ export function EmployeeTable({ data, onToggleLock, onDelete, onEdit, startIndex
               <td className="py-3 px-4 text-right">
                 <div className="flex justify-end gap-1">
                   <Link
-                    to={`/admin/users/employees/${employee.id}`}
+                    to={`/admin/employees/${employee.id}`}
                     className="p-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors" 
                     title="Xem chi tiết"
                   >

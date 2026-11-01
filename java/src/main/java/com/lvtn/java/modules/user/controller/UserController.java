@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/trash")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'ACCOUNT_TRASH')")
     public ResponseEntity<List<UserResponse>> getAllTrash() {
         return ResponseEntity.ok(userService.findAllTrash());
     }

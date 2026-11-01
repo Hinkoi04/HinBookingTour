@@ -59,10 +59,14 @@ export const adminRoutes = [
           },
           {
             path: "/admin/users",
-            element: <UserList />,
+            element: <UserList key="customers" listMode="customers" />,
           },
           {
-            path: "/admin/users/employees/:id",
+            path: "/admin/employees",
+            element: <UserList key="employees" listMode="employees" />,
+          },
+          {
+            path: "/admin/employees/:id",
             element: <EmployeeDetailPage />,
           },
           {

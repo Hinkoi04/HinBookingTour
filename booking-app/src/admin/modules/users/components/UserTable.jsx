@@ -1,7 +1,7 @@
-import { Eye, Lock, Unlock, Trash2 } from "lucide-react";
+import { Eye, Lock, Unlock, Trash2, Edit } from "lucide-react";
 import { usePermission } from "../../../hooks/usePermission";
 
-export function CustomerTable({ data, onView, onToggleLock, onDelete, startIndex = 0 }) {
+export function CustomerTable({ data, onView, onEdit, onToggleLock, onDelete, startIndex = 0 }) {
   const { hasPermission } = usePermission();
 
   return (
@@ -48,14 +48,31 @@ export function CustomerTable({ data, onView, onToggleLock, onDelete, startIndex
                     <Eye className="w-4 h-4" />
                   </button>
                   
-                  {/* 👉 [THAY ĐỔI] Thay quyền sửa bằng UPDATE_USER */}
                   {hasPermission("UPDATE_USER") && (
-                    <button 
-                      onClick={() => onToggleLock(customer.id, "customer", customer.status)} 
-                      className={`p-2 rounded-md transition-colors ${customer.status === "active" ? "text-red-600 hover:bg-red-50" : "text-green-600 hover:bg-green-50"}`}
-                      title={customer.status === "active" ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                    <>
+                      <button
+                        onClick={() => onEdit(customer)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                        title="Sửa thông tin"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => onToggleLock(customer.id, "customer", customer.status)}
+                        className={`p-2 rounded-md transition-colors ${customer.status === "active" ? "text-red-600 hover:bg-red-50" : "text-green-600 hover:bg-green-50"}`}
+                        title={customer.status === "active" ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                      >
+                        {customer.status === "active" ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                      </button>
+                    </>
+                  )}
+                  {hasPermission("DELETE_USER") && (
+                    <button
+                      onClick={() => onDelete(customer.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      title="Chuyển vào thùng rác"
                     >
-                      {customer.status === "active" ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>

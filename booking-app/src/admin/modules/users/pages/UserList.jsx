@@ -5,6 +5,7 @@ import { CustomerTable } from "../components/UserTable";
 import { EmployeeTable } from "../components/AccountTable";
 import { TrashTable } from "../components/TrashTable";
 import { UserDetailModal } from "../components/UserDetailModal";
+import { CustomerEditModal } from "../components/CustomerEditModal";
 import { EmployeeFormModal } from "../components/EmployeeFormModal";
 import { accountService } from "../services/accountService";
 import { userService } from "../services/userService";
@@ -16,21 +17,23 @@ import { usePermission } from "../../../hooks/usePermission";
 import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
 
-export default function UserManagement() {
+export default function UserManagement({ listMode = "customers" }) {
   const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
-  const canViewEmployee = hasPermission("VIEW_USER"); 
   const canManageTrash = hasPermission("ACCOUNT_TRASH");
 
   const [customers, setCustomers] = useState([]);
+  const [customerTrashItems, setCustomerTrashItems] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [trashItems, setTrashItems] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [activeTab, setActiveTab] = useState("customers");
+  const [activeTab, setActiveTab] = useState(listMode === "employees" ? "employees" : "customers");
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [isSavingCustomer, setIsSavingCustomer] = useState(false);
   const [isEmployeeFormOpen, setIsEmployeeFormOpen] = useState(false);
   
   const defaultEmployeeForm = {
@@ -55,10 +58,91 @@ export default function UserManagement() {
     closeConfirm();
   };
 
+  const loadCustomerTrash = async () => {
+    try {
+      setLoading(true);
+      const data = await userService.getAllTrash();
+      setCustomerTrashItems(data);
+    } catch (error) {
+      showAlert("Lỗi", error.message || "Lỗi tải thùng rác khách hàng", "danger");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const showAlert = (title, message, variant = "info") => {
     setAlertConfig({ isOpen: true, title, message, variant });
   };
-  
+
+  const handleSaveCustomer = async (payload) => {
+    if (!editingCustomer) return;
+    try {
+      setIsSavingCustomer(true);
+      await userService.update(editingCustomer.id, payload);
+      setEditingCustomer(null);
+      await loadCustomers();
+      showAlert("Thành công", "Cập nhật thông tin khách hàng thành công!", "success");
+    } catch (error) {
+      showAlert("Lỗi", error.message || "Cập nhật khách hàng thất bại", "danger");
+    } finally {
+      setIsSavingCustomer(false);
+    }
+  };
+
+  const handleDeleteCustomer = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Chuyển khách hàng vào thùng rác",
+      message: "Tài khoản khách hàng sẽ được chuyển vào thùng rác. Bạn có muốn tiếp tục?",
+      variant: "danger",
+      action: async () => {
+        try {
+          await userService.softDelete(id);
+          await Promise.all([loadCustomers(), loadCustomerTrash()]);
+          showAlert("Thành công", "Đã chuyển khách hàng vào thùng rác.", "success");
+        } catch (error) {
+          showAlert("Lỗi", error.message || "Không thể xóa khách hàng", "danger");
+        }
+      }
+    });
+  };
+
+  const handleRestoreCustomer = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Khôi phục khách hàng",
+      message: "Khách hàng sẽ được khôi phục về danh sách đang hoạt động.",
+      variant: "info",
+      action: async () => {
+        try {
+          await userService.restore(id);
+          await Promise.all([loadCustomerTrash(), loadCustomers()]);
+          showAlert("Thành công", "Đã khôi phục khách hàng.", "success");
+        } catch (error) {
+          showAlert("Lỗi", error.message || "Khôi phục khách hàng thất bại", "danger");
+        }
+      }
+    });
+  };
+
+  const handleForceDeleteCustomer = (id) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Xóa khách hàng vĩnh viễn",
+      message: "Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa khách hàng?",
+      variant: "danger",
+      action: async () => {
+        try {
+          await userService.hardDelete(id);
+          await loadCustomerTrash();
+          showAlert("Đã xóa", "Đã xóa vĩnh viễn khách hàng.", "success");
+        } catch (error) {
+          showAlert("Lỗi", error.message || "Xóa vĩnh viễn khách hàng thất bại", "danger");
+        }
+      }
+    });
+  };
+
   const closeAlert = () => setAlertConfig(prev => ({ ...prev, isOpen: false }));
 
   useEffect(() => {
@@ -115,21 +199,22 @@ export default function UserManagement() {
   };
 
   useEffect(() => {
-    loadCustomers();
-  }, []);
+    if (listMode === "customers") loadCustomers();
+  }, [listMode]);
 
   useEffect(() => {
-    if (canViewEmployee || true) { 
+    if (listMode === "employees") {
       loadEmployees();
       loadRoles();
     }
-  }, [canViewEmployee]);
+  }, [listMode]);
 
   useEffect(() => {
     if (activeTab === "trash") {
-      loadTrash();
+      if (listMode === "customers") loadCustomerTrash();
+      else loadTrash();
     }
-  }, [activeTab]);
+  }, [activeTab, listMode]);
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -143,16 +228,17 @@ export default function UserManagement() {
     (employee.phone && employee.phone.includes(searchQuery))
   );
 
-  const filteredTrashItems = trashItems.filter(item =>
+  const currentTrashItems = listMode === "customers" ? customerTrashItems : trashItems;
+  const filteredTrashItems = currentTrashItems.filter(item =>
     [item.fullName, item.name, item.email, item.phone]
       .some(value => String(value || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const currentList = activeTab === "customers" 
-    ? filteredCustomers 
-    : activeTab === "employees" 
-      ? filteredEmployees 
-      : filteredTrashItems;
+  const currentList = activeTab === "trash"
+    ? filteredTrashItems
+    : listMode === "customers"
+      ? filteredCustomers
+      : filteredEmployees;
 
   const totalPages = Math.ceil(currentList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -333,40 +419,28 @@ export default function UserManagement() {
   return (
     <div className="p-8 w-full relative">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden p-6 pb-2">
-        <div className="inline-flex bg-gray-100 rounded-xl p-1 mb-6">
+        <div className="mb-6 inline-flex rounded-xl bg-gray-100 p-1">
           <button
-            onClick={() => setActiveTab("customers")}
-            className={`py-2 px-6 font-medium text-sm rounded-lg transition-all duration-200 ${
-              activeTab === "customers" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            onClick={() => setActiveTab(listMode === "employees" ? "employees" : "customers")}
+            className={`rounded-lg px-6 py-2 text-sm font-medium transition-all duration-200 ${
+              activeTab !== "trash" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            Khách hàng ({customers.length})
+            {listMode === "employees" ? `Nhân viên (${employees.length})` : `Khách hàng (${customers.length})`}
           </button>
-          
-          <button
-            onClick={() => setActiveTab("employees")}
-            className={`flex items-center gap-1.5 py-2 px-6 font-medium text-sm rounded-lg transition-all duration-200 ${
-              activeTab === "employees"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Nhân viên ({employees.length})
-          </button>
-
           {canManageTrash && (
             <button
               onClick={() => setActiveTab("trash")}
-              className={`py-2 px-6 font-medium text-sm rounded-lg transition-all duration-200 ${
+              className={`rounded-lg px-6 py-2 text-sm font-medium transition-all duration-200 ${
                 activeTab === "trash" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              Thùng rác ({trashItems.length})
+              Thùng rác ({listMode === "customers" ? customerTrashItems.length : trashItems.length})
             </button>
           )}
         </div>
 
-        {activeTab === "customers" ? (
+        {listMode === "customers" && activeTab === "customers" ? (
           <div className="animate-in fade-in duration-300">
             {loading ? (
               <LoadingSkeleton variant="table" />
@@ -375,11 +449,13 @@ export default function UserManagement() {
                 data={paginatedList}
                 startIndex={startIndex}
                 onView={(user) => viewDetail(user, 'customer')}
+                onEdit={setEditingCustomer}
                 onToggleLock={handleToggleLock}
+                onDelete={handleDeleteCustomer}
               />
             )}
           </div>
-        ) : activeTab === "employees" ? (
+        ) : listMode === "employees" && activeTab === "employees" ? (
           <div className="animate-in fade-in duration-300">
             <div className="mb-6 flex justify-end">
               {hasPermission("CREATE_USER") && (
@@ -419,8 +495,9 @@ export default function UserManagement() {
                 data={paginatedList}
                 startIndex={startIndex}
                 accounts={employees}
-                onRestore={handleRestoreEmployee}
-                onForceDelete={handleForceDeleteEmployee}
+                isCustomer={listMode === "customers"}
+                onRestore={listMode === "customers" ? handleRestoreCustomer : handleRestoreEmployee}
+                onForceDelete={listMode === "customers" ? handleForceDeleteCustomer : handleForceDeleteEmployee}
               />
             )}
           </div>
@@ -448,6 +525,13 @@ export default function UserManagement() {
             handleEditEmployee(user);
           }
         }}
+      />
+
+      <CustomerEditModal
+        customer={editingCustomer}
+        onClose={() => setEditingCustomer(null)}
+        onSubmit={handleSaveCustomer}
+        loading={isSavingCustomer}
       />
 
       <EmployeeFormModal

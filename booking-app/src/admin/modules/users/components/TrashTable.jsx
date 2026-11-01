@@ -1,7 +1,7 @@
-import { RotateCcw, Trash2, ShieldCheck } from "lucide-react";
+import { RotateCcw, Trash2, ShieldCheck, UserRound } from "lucide-react";
 import { usePermission } from "../../../hooks/usePermission";
 
-export function TrashTable({ data, onRestore, onForceDelete, startIndex = 0 }) {
+export function TrashTable({ data, onRestore, onForceDelete, isCustomer = false, startIndex = 0 }) {
   const { hasPermission } = usePermission();
 
   return (
@@ -10,7 +10,7 @@ export function TrashTable({ data, onRestore, onForceDelete, startIndex = 0 }) {
         <thead>
           <tr className="border-b bg-gray-50/50">
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">STT</th>
-            <th className="py-3 px-4 text-sm font-semibold text-gray-600">Nhân viên</th>
+            <th className="py-3 px-4 text-sm font-semibold text-gray-600">{isCustomer ? "Khách hàng" : "Nhân viên"}</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Email</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Ngày xóa</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Thao tác</th>
@@ -22,8 +22,17 @@ export function TrashTable({ data, onRestore, onForceDelete, startIndex = 0 }) {
               <td className="py-3 px-4 text-sm text-gray-500">{startIndex + index + 1}</td>
               <td className="py-3 px-4">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-purple-500" />
-                  <span className="font-medium text-gray-900">{item.fullName}</span>
+                  {isCustomer ? (
+                    <>
+                      <UserRound className="h-4 w-4 text-blue-500" />
+                      <span className="font-medium text-gray-900">{item.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4 text-purple-500" />
+                      <span className="font-medium text-gray-900">{item.fullName}</span>
+                    </>
+                  )}
                 </div>
               </td>
               <td className="py-3 px-4 text-gray-600">{item.email}</td>

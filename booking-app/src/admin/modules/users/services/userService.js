@@ -15,6 +15,8 @@ function mapUser(user) {
 
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    deletedAt: user.deletedAt,
+    deletedBy: user.deletedBy,
   };
 }
 

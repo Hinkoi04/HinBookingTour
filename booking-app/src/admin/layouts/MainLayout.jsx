@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MapPin, FolderTree, Calendar, Ticket, BusFront,
-  ShoppingCart, FileText, Users, MessageSquare,
+  ShoppingCart, FileText, Users, UserRound, MessageSquare,
   LogOut, Settings, KeyRound, Search, X, RefreshCw, ChevronLeft, ChevronRight
 } from "lucide-react";
 
@@ -17,7 +17,8 @@ const navigation = [
   { name: "Tổng quan", href: "/admin", icon: LayoutDashboard },
   { name: "Quản lý Tour", href: "/admin/tours", icon: MapPin },
   { name: "Danh mục", href: "/admin/categories", icon: FolderTree },
-  { name: "Người dùng", href: "/admin/users", icon: Users },
+  { name: "Quản lý người dùng", href: "/admin/users", icon: Users },
+  { name: "Quản lý nhân viên", href: "/admin/employees", icon: UserRound },
   { name: "Lịch khởi hành", href: "/admin/departures", icon: Calendar },
   { name: "Phương tiện", href: "/admin/vehicles", icon: BusFront },
   { name: "Mã giảm giá", href: "/admin/discounts", icon: Ticket },
