@@ -238,7 +238,7 @@ export function getFlashSaleItems(allTours = []) {
 
     for (const dep of tour.departures) {
       const discount = Number(dep.discount) || 0;
-      if (discount <= 0) continue;
+      if (discount <= 0 || discount > 100) continue;
 
       if (!dep.startTime) continue;
       const depDate = new Date(dep.startTime);
@@ -246,11 +246,8 @@ export function getFlashSaleItems(allTours = []) {
 
       // Check if departure date is within today to 30 days from now
       if (depDate >= todayStart && depDate <= in30Days) {
-        const salePrice = Number(dep.priceAdult) || tour.price;
-        const originalPrice =
-          discount > 0 && salePrice > 0
-            ? Math.round(salePrice / (1 - discount / 100))
-            : tour.originalPrice;
+        const originalPrice = Number(dep.priceAdult) || Number(tour.price) || 0;
+        const salePrice = Math.round(originalPrice * (1 - discount / 100));
 
         flashItems.push({
           id: tour.id,
@@ -268,7 +265,7 @@ export function getFlashSaleItems(allTours = []) {
           location: tour.location,
           rating: tour.rating,
           tourCode: tour.tourCode,
-          vehicle: dep.vehicleName || tour.vehicle,
+          vehicle: dep.vehicleName || null,
           type: tour.type,
         });
       }

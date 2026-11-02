@@ -2,38 +2,50 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Clock, MapPin, ArrowRight, Search, Calendar, ChevronRight,
-  Send, Phone, Mail, CheckCircle, Filter, X, Plane, Flame,
+  Send, Phone, Mail, CheckCircle, Filter, X, Plane, Flame, ChevronLeft,
   Trophy, CircleDollarSign, ShieldCheck, Star, LockKeyhole
 } from "lucide-react";
 import { homeService } from "../services/homeService";
 import { TourCard, FlashSaleCard, TourSkeleton } from "../components";
 import { toast } from "sonner";
 
-function useCountdown(targetMs) {
-  const [timeLeft, setTimeLeft] = useState(targetMs);
+function getFlashSaleVisibleCount() {
+  if (window.innerWidth >= 1024) return 4;
+  if (window.innerWidth >= 640) return 2;
+  return 1;
+}
+
+function useCountdownToMidnight() {
+  const [now, setNow] = useState(() => Date.now());
+
   useEffect(() => {
-    const t = setInterval(() => setTimeLeft((prev) => Math.max(0, prev - 1000)), 1000);
-    return () => clearInterval(t);
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
   }, []);
-  const h = Math.floor(timeLeft / 3600000);
-  const m = Math.floor((timeLeft % 3600000) / 60000);
-  const s = Math.floor((timeLeft % 60000) / 1000);
+
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  const secondsLeft = Math.max(0, Math.floor((midnight.getTime() - now) / 1000));
+
   return {
-    h: String(h).padStart(2, "0"),
-    m: String(m).padStart(2, "0"),
-    s: String(s).padStart(2, "0"),
+    hours: String(Math.floor(secondsLeft / 3600)).padStart(2, "0"),
+    minutes: String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, "0"),
+    seconds: String(secondsLeft % 60).padStart(2, "0"),
   };
 }
 
 export function HomePage() {
   const navigate = useNavigate();
   const pageRef = useRef(null);
+  const [flashSaleIndex, setFlashSaleIndex] = useState(0);
+  const [flashSaleVisibleCount, setFlashSaleVisibleCount] = useState(getFlashSaleVisibleCount);
+  const [flashSaleTransitionEnabled, setFlashSaleTransitionEnabled] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("q") || "";
   const selectedDate = searchParams.get("date") || "";
   const selectedCategory = searchParams.get("category") || "";
 
-  const countdown = useCountdown(8 * 3600000 + 23 * 60000 + 45000);
+  const countdown = useCountdownToMidnight();
   const [search, setSearch] = useState(searchQuery);
   const [searchDate, setSearchDate] = useState(selectedDate);
   const [contactEmail, setContactEmail] = useState("");
@@ -124,8 +136,53 @@ export function HomePage() {
   };
 
   const flashSaleItems = homeService.getFlashSaleItems(allTours);
+  const flashSaleCarouselItems = flashSaleItems.length > 0
+    ? [...flashSaleItems, ...flashSaleItems, ...flashSaleItems]
+    : [];
+  const flashSaleTrackWidth = flashSaleCarouselItems.length > 0
+    ? `${(flashSaleCarouselItems.length / flashSaleVisibleCount) * 100}%`
+    : "100%";
+  const flashSaleSlideWidth = flashSaleCarouselItems.length > 0
+    ? `${100 / flashSaleCarouselItems.length}%`
+    : "100%";
   const domesticTours = allTours.filter((t) => t.type === "domestic");
   const internationalTours = allTours.filter((t) => t.type === "international");
+
+  useEffect(() => {
+    const updateVisibleCount = () => setFlashSaleVisibleCount(getFlashSaleVisibleCount());
+    window.addEventListener("resize", updateVisibleCount);
+    return () => window.removeEventListener("resize", updateVisibleCount);
+  }, []);
+
+  useEffect(() => {
+    setFlashSaleTransitionEnabled(false);
+    setFlashSaleIndex(flashSaleItems.length);
+    const frame = requestAnimationFrame(() => setFlashSaleTransitionEnabled(true));
+    return () => cancelAnimationFrame(frame);
+  }, [flashSaleItems.length]);
+
+  useEffect(() => {
+    if (flashSaleItems.length < 2) return undefined;
+    const interval = setInterval(() => {
+      setFlashSaleIndex((index) => index + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [flashSaleItems.length]);
+
+  const handleFlashSaleTransitionEnd = (event) => {
+    if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
+    const itemCount = flashSaleItems.length;
+    if (itemCount === 0 || (flashSaleIndex >= itemCount && flashSaleIndex < itemCount * 2)) return;
+
+    setFlashSaleTransitionEnabled(false);
+    setFlashSaleIndex((index) => index >= itemCount * 2 ? index - itemCount : index + itemCount);
+    requestAnimationFrame(() => setFlashSaleTransitionEnabled(true));
+  };
+
+  const moveFlashSale = (direction) => {
+    if (flashSaleItems.length < 2) return;
+    setFlashSaleIndex((index) => index + direction);
+  };
 
   const categoryCards = [
     { label: "Tour Miền Bắc", desc: "Hạ Long, Sapa, Hà Nội", img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=400&q=80" },
@@ -341,25 +398,60 @@ export function HomePage() {
                 </p>
               </div>
               <div className="flex items-center gap-3 bg-black/20 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-                <p className="text-white/90 text-xs sm:text-sm font-bold">Kết thúc sau:</p>
-                {[countdown.h, countdown.m, countdown.s].map((val, i) => (
-                  <span key={i} className="flex items-center">
-                    <span className="bg-white text-red-600 text-xl sm:text-2xl font-black px-3 py-1.5 rounded-xl min-w-[2.8rem] text-center inline-block shadow">
-                      {val}
-                    </span>
-                    {i < 2 && <span className="text-white font-black text-xl mx-1">:</span>}
+              <p className="text-white/90 text-xs sm:text-sm font-bold">Kết thúc ngày trong:</p>
+              {[countdown.hours, countdown.minutes, countdown.seconds].map((value, index) => (
+                <span key={index} className="flex items-center">
+                  <span className="bg-white text-red-600 text-lg sm:text-xl font-black px-2.5 py-1.5 rounded-xl min-w-[2.5rem] text-center inline-block shadow">
+                    {value}
                   </span>
-                ))}
+                  {index < 2 && <span className="text-white font-black text-lg mx-0.5">:</span>}
+                </span>
+              ))}
               </div>
             </div>
 
-            <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-thin">
-              {flashSaleItems.map((item) => (
-                <FlashSaleCard
-                  key={`${item.id}-${item.departureId || item.departureTime}`}
-                  item={item}
-                />
-              ))}
+            <div className="relative px-10 sm:px-12">
+              {flashSaleItems.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => moveFlashSale(-1)}
+                  aria-label="Xem tour Flash Sale trước"
+                  className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-2.5 text-red-600 shadow-lg transition hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-white"
+                >
+                  <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveFlashSale(1)}
+                  aria-label="Xem tour Flash Sale tiếp theo"
+                  className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-2.5 text-red-600 shadow-lg transition hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-white"
+                >
+                  <ChevronRight className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </>
+              )}
+              <div className="overflow-hidden">
+              <div
+                className="flex"
+                onTransitionEnd={handleFlashSaleTransitionEnd}
+                style={{
+                  width: flashSaleTrackWidth,
+                  transform: `translateX(-${(flashSaleIndex * 100) / (flashSaleCarouselItems.length || 1)}%)`,
+                  transition: flashSaleTransitionEnabled ? "transform 500ms ease-in-out" : "none",
+                }}
+              >
+                {flashSaleCarouselItems.map((item, index) => (
+                  <div
+                    key={`${item.id}-${item.departureId || item.departureTime}-${index}`}
+                    className="min-w-0 px-2"
+                    style={{ flex: `0 0 ${flashSaleSlideWidth}` }}
+                  >
+                    <FlashSaleCard item={item} />
+                  </div>
+                ))}
+              </div>
+              </div>
             </div>
           </div>
         </section>

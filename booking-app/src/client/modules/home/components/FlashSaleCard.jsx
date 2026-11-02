@@ -20,10 +20,8 @@ export function FlashSaleCard({ tour, item }) {
   const tourCode = data.tourCode || `${600000 + Number(data.id || 1)}`;
   const departureFrom = data.departureFrom || data.departureLocation || "Chưa cập nhật";
   const duration = data.duration || "Chưa cập nhật";
-  const isPlane =
-    data.type === "international" ||
-    (data.vehicle && data.vehicle.toLowerCase().includes("bay"));
-  const vehicle = data.vehicle || (isPlane ? "Máy bay Vietnam Airlines" : "Xe Limousine 24 chỗ");
+  const isPlane = typeof data.vehicle === "string" && data.vehicle.toLowerCase().includes("bay");
+  const vehicle = data.vehicle || "Chưa cập nhật";
   const availableSlots =
     data.stock !== undefined && data.stock !== null
       ? data.stock
@@ -33,12 +31,12 @@ export function FlashSaleCard({ tour, item }) {
   return (
     <Link
       to={`/tour/${encodeURIComponent(data.slug || data.id)}`}
-      className="home-reveal flex-shrink-0 w-72 sm:w-80 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between border border-gray-200/90 hover:-translate-y-1"
+      className="home-reveal w-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between border border-gray-200/90 hover:-translate-y-1"
     >
       <div className="relative overflow-hidden h-44 sm:h-48 bg-gray-100">
         <img
           src={data.image}
-          alt={data.name}
+          alt={data.name || "Tour du lịch"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
           onError={(e) => {
