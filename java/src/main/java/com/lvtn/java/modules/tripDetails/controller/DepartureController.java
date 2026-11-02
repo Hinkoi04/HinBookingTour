@@ -115,4 +115,15 @@ public class DepartureController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/bulk-create")
+    @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'CREATE_OPERATIONS')")
+    public ResponseEntity<?> createEndOfMonthDepartures() {
+        try {
+            Integer creatorId = securityUtils.getCurrentAccountId();
+            return ResponseEntity.ok(departureService.createEndOfMonthDepartures(creatorId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { Plus, Loader2, Trash2, Zap } from "lucide-react";
+import { Plus, Loader2, Trash2, Zap, CalendarPlus } from "lucide-react";
 import { DepartureTable, DepartureTrashTable } from "../components/DepartureTable";
 import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { DepartureModal } from "../components/DepartureModal";
@@ -47,6 +47,7 @@ export default function DepartureList() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isFlashSaleLoading, setIsFlashSaleLoading] = useState(false);
+  const [isBulkCreateLoading, setIsBulkCreateLoading] = useState(false);
   const itemsPerPage = 9;
 
   const [confirmConfig, setConfirmConfig] = useState({
@@ -89,6 +90,30 @@ export default function DepartureList() {
           toast.error("Lỗi: " + error.message);
         } finally {
           setIsFlashSaleLoading(false);
+        }
+      }
+    });
+  };
+
+  const handleBulkCreate = () => {
+    const now = new Date();
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const formattedDate = lastDayOfMonth.toLocaleDateString("vi-VN");
+    setConfirmConfig({
+      isOpen: true,
+      title: "Xác nhận thêm lịch hàng loạt",
+      message: `Tạo lịch khởi hành cho tất cả tour vào ngày ${formattedDate}?\n\n• Điểm khởi hành: TPHCM\n• Không gán hướng dẫn viên, phương tiện hoặc khuyến mãi\n• Giá và số chỗ lấy từ lịch gần nhất; tour chưa có lịch dùng giá mặc định và số chỗ bằng 0\n• Tour đã có lịch trong ngày này sẽ được bỏ qua`,
+      variant: "info",
+      action: async () => {
+        try {
+          setIsBulkCreateLoading(true);
+          const result = await departureService.createEndOfMonthDepartures();
+          toast.success(result.message || "Đã thêm lịch khởi hành hàng loạt.");
+          fetchData();
+        } catch (error) {
+          toast.error("Lỗi: " + error.message);
+        } finally {
+          setIsBulkCreateLoading(false);
         }
       }
     });
@@ -290,6 +315,16 @@ export default function DepartureList() {
             >
               {isFlashSaleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
               Flash Sale
+            </button>
+          )}
+          {canCreate && (
+            <button
+              onClick={handleBulkCreate}
+              disabled={isBulkCreateLoading}
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm disabled:opacity-60"
+            >
+              {isBulkCreateLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CalendarPlus className="w-4 h-4" />}
+              Thêm lịch hàng loạt
             </button>
           )}
           {canCreate && (

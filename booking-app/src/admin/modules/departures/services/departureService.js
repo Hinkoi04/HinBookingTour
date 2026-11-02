@@ -101,5 +101,17 @@ export const departureService = {
     } catch (error) {
       throw new Error(error.response?.data?.message || error.response?.data || "Áp dụng Flash Sale thất bại");
     }
+  },
+
+  createEndOfMonthDepartures: async () => {
+    try {
+      const response = await apiClient.post('/departure/bulk-create');
+      return response.data;
+    } catch (error) {
+      const responseData = error.response?.data;
+      throw new Error(responseData?.message ||
+        (typeof responseData === "string" ? responseData : null) ||
+        "Thêm lịch hàng loạt thất bại");
+    }
   }
 };

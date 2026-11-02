@@ -19,4 +19,5 @@ public interface DepartureService {
     List<DepartureResponse> findAllTrash();
     List<Map<String, Object>> getAvailableGuides(String startDate, String endDate, Integer excludeDepartureId);
     Map<String, Object> applyFlashSale(Integer updaterId);
+    Map<String, Object> createEndOfMonthDepartures(Integer creatorId);
 }

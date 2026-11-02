@@ -20,7 +20,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -415,6 +421,82 @@ public class DepartureServiceImpl implements DepartureService {
         Map<String, Object> result = new HashMap<>();
         result.put("updated", updated);
         result.put("message", "Đã áp dụng Flash Sale cho " + updated + " lịch khởi hành sắp tới");
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> createEndOfMonthDepartures(Integer creatorId) {
+        LocalDateTime startTime = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"))
+                .with(TemporalAdjusters.lastDayOfMonth())
+                .atTime(8, 0);
+        List<Tour> tours = tourRepository.findAllActiveTours();
+        List<Departure> existingDepartures = departureRepository.findAllActive();
+
+        Map<Integer, Departure> nearestDepartureByTour = new HashMap<>();
+        java.util.Set<Integer> toursAlreadyScheduledForDate = new java.util.HashSet<>();
+        for (Departure departure : existingDepartures) {
+            if (departure.getTourId() == null) {
+                continue;
+            }
+
+            Integer tourId = departure.getTourId().getId();
+            if (departure.getStartTime() != null
+                    && departure.getStartTime().toLocalDate().equals(startTime.toLocalDate())) {
+                toursAlreadyScheduledForDate.add(tourId);
+            }
+
+            if (departure.getStartTime() == null) {
+                continue;
+            }
+            Departure currentNearest = nearestDepartureByTour.get(tourId);
+            if (currentNearest == null
+                    || Duration.between(departure.getStartTime(), startTime).abs()
+                    .compareTo(Duration.between(currentNearest.getStartTime(), startTime).abs()) < 0) {
+                nearestDepartureByTour.put(tourId, departure);
+            }
+        }
+
+        List<Departure> newDepartures = new ArrayList<>();
+        int skipped = 0;
+        for (Tour tour : tours) {
+            if (toursAlreadyScheduledForDate.contains(tour.getId())) {
+                skipped++;
+                continue;
+            }
+
+            Departure nearestDeparture = nearestDepartureByTour.get(tour.getId());
+            Departure departure = new Departure();
+            departure.setTourId(tour);
+            departure.setStartTime(startTime);
+            departure.setEndDate(calculateEndDate(startTime, tour.getTime()));
+            departure.setDepartureFrom("TPHCM");
+            departure.setStatus("active");
+            departure.setDiscount(null);
+            departure.setVehicle(null);
+            departure.setGuide(null);
+            departure.setPriceAdult(nearestDeparture != null
+                    ? nearestDeparture.getPriceAdult() : BigDecimal.valueOf(10_000_000));
+            departure.setPriceChildren(nearestDeparture != null
+                    ? nearestDeparture.getPriceChildren() : BigDecimal.valueOf(7_000_000));
+            departure.setPriceBaby(nearestDeparture != null
+                    ? nearestDeparture.getPriceBaby() : BigDecimal.valueOf(5_000_000));
+            departure.setStockAdult(nearestDeparture != null ? nearestDeparture.getStockAdult() : 0);
+            departure.setStockChildren(nearestDeparture != null ? nearestDeparture.getStockChildren() : 0);
+            departure.setStockBaby(nearestDeparture != null ? nearestDeparture.getStockBaby() : 0);
+            departure.setCreatedBy(creatorId);
+            departure.setUpdatedBy(creatorId);
+            newDepartures.add(departure);
+        }
+
+        departureRepository.saveAll(newDepartures);
+
+        String formattedDate = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        Map<String, Object> result = new HashMap<>();
+        result.put("created", newDepartures.size());
+        result.put("skipped", skipped);
+        result.put("date", formattedDate);
+        result.put("message", "Đã tạo " + newDepartures.size() + " lịch khởi hành ngày " + formattedDate
+                + (skipped > 0 ? "; bỏ qua " + skipped + " tour đã có lịch trong ngày này" : ""));
         return result;
     }
 }
