@@ -40,6 +40,8 @@ export function HomePage() {
   const [flashSaleIndex, setFlashSaleIndex] = useState(0);
   const [flashSaleVisibleCount, setFlashSaleVisibleCount] = useState(getFlashSaleVisibleCount);
   const [flashSaleTransitionEnabled, setFlashSaleTransitionEnabled] = useState(true);
+  const [visibleDomesticTourCount, setVisibleDomesticTourCount] = useState(8);
+  const [visibleInternationalTourCount, setVisibleInternationalTourCount] = useState(8);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("q") || "";
   const selectedDate = searchParams.get("date") || "";
@@ -147,6 +149,8 @@ export function HomePage() {
     : "100%";
   const domesticTours = allTours.filter((t) => t.type === "domestic");
   const internationalTours = allTours.filter((t) => t.type === "international");
+  const domesticToursToShow = domesticTours.length > 0 ? domesticTours : allTours;
+  const internationalToursToShow = internationalTours.length > 0 ? internationalTours : allTours.slice(4);
 
   useEffect(() => {
     const updateVisibleCount = () => setFlashSaleVisibleCount(getFlashSaleVisibleCount());
@@ -247,6 +251,8 @@ export function HomePage() {
     blogsList.length,
     filteredTours.length,
     flashSaleItems.length,
+    visibleDomesticTourCount,
+    visibleInternationalTourCount,
     searchQuery,
     selectedCategory,
     selectedDate,
@@ -512,9 +518,20 @@ export function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {(domesticTours.length > 0 ? domesticTours : allTours).slice(0, 8).map((tour) => (
+              {domesticToursToShow.slice(0, visibleDomesticTourCount).map((tour) => (
                 <TourCard key={tour.id} tour={tour} />
               ))}
+            </div>
+          )}
+          {!loading && visibleDomesticTourCount < domesticToursToShow.length && (
+            <div className="mt-8 text-center">
+              <button
+                type="button"
+                onClick={() => setVisibleDomesticTourCount((count) => count + 8)}
+                className="inline-flex items-center rounded-xl border border-blue-600 bg-transparent px-6 py-3 text-sm font-bold text-blue-600 shadow-sm transition hover:bg-blue-50"
+              >
+                Xem thêm
+              </button>
             </div>
           )}
         </div>
@@ -540,9 +557,20 @@ export function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {(internationalTours.length > 0 ? internationalTours : allTours.slice(4, 12)).slice(0, 8).map((tour) => (
+              {internationalToursToShow.slice(0, visibleInternationalTourCount).map((tour) => (
                 <TourCard key={tour.id} tour={tour} />
               ))}
+            </div>
+          )}
+          {!loading && visibleInternationalTourCount < internationalToursToShow.length && (
+            <div className="mt-8 text-center">
+              <button
+                type="button"
+                onClick={() => setVisibleInternationalTourCount((count) => count + 8)}
+                className="inline-flex items-center rounded-xl border border-purple-600 bg-transparent px-6 py-3 text-sm font-bold text-purple-600 shadow-sm transition hover:bg-purple-50"
+              >
+                Xem thêm
+              </button>
             </div>
           )}
         </div>
