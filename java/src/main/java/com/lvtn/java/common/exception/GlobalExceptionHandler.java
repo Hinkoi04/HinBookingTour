@@ -51,7 +51,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.errorMessage("Username or password is invalid"));
+        String message = ex.getMessage() != null ? ex.getMessage() : "Email hoặc mật khẩu không đúng";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.errorMessage(message));
     }
 
     @ExceptionHandler(AccessDeniedException.class)

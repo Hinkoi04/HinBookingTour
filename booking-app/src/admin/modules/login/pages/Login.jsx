@@ -21,7 +21,7 @@ const LoginPage = () => {
       localStorage.setItem('accessToken', data.accessToken);
       window.location.href = '/admin';
     } catch (err) {
-      toast.error(err.response?.data?.message || "Lỗi đăng nhập tài khoản hoặc mật khẩu không đúng");
+      toast.error(err.message || "Lỗi đăng nhập tài khoản hoặc mật khẩu không đúng");
     } finally {
       setLoading(false);
     }

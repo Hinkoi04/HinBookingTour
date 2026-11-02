@@ -17,7 +17,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 401 && !error.config?.url?.includes('/admin/auth/login')) {
             localStorage.clear();
                         window.location.href = "/admin/login";
         }
@@ -30,7 +30,12 @@ export const loginService = async (email, password) => {
         const response = await apiClient.post('/admin/auth/login', { email, password });
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: "Lỗi kết nối server" };
+        const responseData = error.response?.data;
+        const message = responseData?.message ||
+            (typeof responseData === "string" ? responseData : null) ||
+            error.message ||
+            "Lỗi kết nối server";
+        throw new Error(message);
     }
 };
 
