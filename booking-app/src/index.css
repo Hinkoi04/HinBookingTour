@@ -14,6 +14,14 @@ body {
   min-height: 100vh;
 }
 
+.app-toast-container[data-y-position="top"] {
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 .loading-skeleton {
   position: relative;
   overflow: hidden;
