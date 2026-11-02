@@ -2,10 +2,12 @@ package com.lvtn.java.modules.auth.service.impl;
 
 import com.lvtn.java.config.AppJwtProperties;
 import com.lvtn.java.modules.user.entity.Account;
+import com.lvtn.java.modules.user.entity.User;
 import com.lvtn.java.dto.auth.*;
 import com.lvtn.java.modules.role.entity.Role;
 import com.lvtn.java.modules.role.repository.RoleRepository;
 import com.lvtn.java.modules.user.repository.AccountRepository;
+import com.lvtn.java.modules.user.repository.UserRepository;
 import com.lvtn.java.security.JwtService;
 import com.lvtn.java.modules.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +30,20 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AppJwtProperties jwtProperties;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
+        User customer = userRepository.findByEmail(request.email()).orElse(null);
+        if (customer != null && (!"active".equalsIgnoreCase(customer.getStatus())
+                || Boolean.TRUE.equals(customer.getDeleted()))) {
+            throw new BadCredentialsException("Tài khoản đã bị khóa");
+        }
+
         Account account = accountRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Email hoặc mật khẩu không đúng"));
 
-        if (!"active".equalsIgnoreCase(account.getStatus())) {
+        if (!"active".equalsIgnoreCase(account.getStatus()) || Boolean.TRUE.equals(account.getDeleted())) {
             throw new BadCredentialsException("Tài khoản đã bị khóa");
         }
 
