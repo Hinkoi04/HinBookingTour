@@ -11,6 +11,7 @@ import {
   Mail,
   Search,
   FileSpreadsheet,
+  FileText,
   Download,
   Filter,
   CheckCircle2,
@@ -24,7 +25,11 @@ import {
   Check
 } from 'lucide-react';
 import { departureService } from '../services/departureService';
-import { exportDeparturePassengersToExcel } from '../utils/departureExportUtils';
+import {
+  exportDeparturePassengersToExcel,
+  exportDeparturePassengersToWord,
+  printDeparturePassengersToPdf,
+} from '../utils/departureExportUtils';
 import { toast } from 'sonner';
 
 export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode = false }) {
@@ -83,7 +88,7 @@ export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode 
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleExportExcel = () => {
+  const handleExport = (format) => {
     try {
       setIsExporting(true);
       const depInfo = data?.departure || departure;
@@ -98,10 +103,18 @@ export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode 
         toast.warning('Chuyến đi hiện chưa có hành khách để xuất file!');
       }
 
-      exportDeparturePassengersToExcel(depInfo, passengerList, stats);
-      toast.success('Xuất file Excel thành công!');
+      if (format === 'excel') {
+        exportDeparturePassengersToExcel(depInfo, passengerList, stats);
+        toast.success('Xuất file Excel thành công!');
+      } else if (format === 'word') {
+        exportDeparturePassengersToWord(depInfo, passengerList, stats);
+        toast.success('Đã tải file Word thành công!');
+      } else {
+        printDeparturePassengersToPdf(depInfo, passengerList, stats);
+        toast.info('Chọn “Lưu dưới dạng PDF” trong hộp thoại in để tải file.');
+      }
     } catch (err) {
-      toast.error('Lỗi xuất file Excel: ' + err.message);
+      toast.error('Không thể xuất file: ' + err.message);
     } finally {
       setIsExporting(false);
     }
@@ -140,41 +153,78 @@ export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode 
     <div className={pageMode ? "w-full p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200"}>
       <div className={`bg-white rounded-2xl shadow-2xl border border-gray-200/80 w-full ${pageMode ? "max-w-7xl min-h-[calc(100vh-4rem)] mx-auto" : "max-w-7xl max-h-[94vh] transform transition-all"} flex flex-col overflow-hidden`}>
         {/* Header */}
-        <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-950 text-white flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="px-5 py-4 border-b border-gray-200 bg-white text-gray-900 flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/15 shadow-inner shrink-0">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-300" />
+            <div className="p-2.5 bg-gray-100 rounded-xl border border-gray-200 shrink-0">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-base sm:text-lg md:text-xl font-bold tracking-tight truncate">
                   Danh sách khách hàng chuyến đi
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/30 text-blue-200 border border-blue-400/30 whitespace-nowrap">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 whitespace-nowrap">
                   Mã lịch #{currentDep.id}
                 </span>
               </div>
-              <p className="text-xs text-blue-200/80 mt-0.5 truncate max-w-xl" title={currentDep.tourTitle}>
+              <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xl" title={currentDep.tourTitle}>
                 {currentDep.tourTitle || `Tour #${currentDep.tourId}`}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0 ml-auto">
-            <button
-              onClick={handleExportExcel}
-              disabled={isExporting}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded-xl shadow-sm hover:shadow transition-all border border-emerald-400/40 disabled:opacity-50 whitespace-nowrap"
-              title="Xuất file Excel danh sách khách hàng"
-            >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-100" />
-              <span>{isExporting ? 'Đang xuất...' : 'Xuất Excel'}</span>
-              <Download className="w-3.5 h-3.5 opacity-80 hidden sm:inline" />
-            </button>
+            <details className="relative">
+              <summary
+                aria-label="Chọn định dạng tải xuống"
+                title="Chọn định dạng tải xuống"
+                className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-gray-300 text-gray-700 transition-colors hover:bg-gray-100 [&::-webkit-details-marker]:hidden"
+              >
+                <Download className="h-4 w-4" />
+              </summary>
+              <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
+                <button
+                  type="button"
+                  disabled={isExporting}
+                  onClick={(event) => {
+                    event.currentTarget.closest('details').open = false;
+                    handleExport('excel');
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <FileSpreadsheet className="h-4 w-4 text-gray-500" />
+                  Excel (.xlsx)
+                </button>
+                <button
+                  type="button"
+                  disabled={isExporting}
+                  onClick={(event) => {
+                    event.currentTarget.closest('details').open = false;
+                    handleExport('pdf');
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <FileText className="h-4 w-4 text-gray-500" />
+                  PDF
+                </button>
+                <button
+                  type="button"
+                  disabled={isExporting}
+                  onClick={(event) => {
+                    event.currentTarget.closest('details').open = false;
+                    handleExport('word');
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <FileText className="h-4 w-4 text-gray-500" />
+                  Word (.doc)
+                </button>
+              </div>
+            </details>
 
             <button
               onClick={onClose}
-              className="p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+              className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
               title="Đóng"
             >
               <X className="w-5 h-5" />
@@ -569,14 +619,6 @@ export function DeparturePassengersModal({ isOpen, onClose, departure, pageMode 
             <strong className="text-gray-900">{data?.passengers?.length || 0}</strong> hành khách trong chuyến
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleExportExcel}
-              disabled={isExporting || (data?.passengers?.length || 0) === 0}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 border border-emerald-300 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
-            >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-              <span>Xuất file Excel</span>
-            </button>
             <button
               onClick={onClose}
               className="px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-black transition-colors whitespace-nowrap"

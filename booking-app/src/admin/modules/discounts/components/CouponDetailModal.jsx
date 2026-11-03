@@ -1,7 +1,7 @@
 import React from 'react';
 
-export function CouponDetailModal({ isOpen, onClose, coupon, getAccountName }) {
-  if (!isOpen || !coupon) return null;
+export function CouponDetailModal({ isOpen, onClose, coupon, getAccountName, pageMode = false }) {
+  if ((!isOpen && !pageMode) || !coupon) return null;
 
   const formatDate = (dateString) => {
     if (!dateString) return "Chưa cập nhật";
@@ -11,8 +11,8 @@ export function CouponDetailModal({ isOpen, onClose, coupon, getAccountName }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className={pageMode ? "p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"}>
+      <div className={`bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden ${pageMode ? "mx-auto border border-gray-200" : "animate-in fade-in zoom-in duration-200"}`}>
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-bold text-gray-900">Chi tiết mã giảm giá</h2>
           <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${coupon.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
@@ -20,7 +20,7 @@ export function CouponDetailModal({ isOpen, onClose, coupon, getAccountName }) {
           </span>
         </div>
         
-        <div className="p-6 space-y-4 text-sm text-gray-700 max-h-[75vh] overflow-y-auto">
+        <div className={`p-6 space-y-4 text-sm text-gray-700 overflow-y-auto ${pageMode ? "" : "max-h-[75vh]"}`}>
           <div className="grid grid-cols-3 gap-2 border-b pb-3">
             <span className="text-gray-500 font-medium">Mã Code:</span>
             <span className="col-span-2 font-bold text-gray-900 font-mono tracking-wider uppercase">{coupon.code}</span>
@@ -78,11 +78,9 @@ export function CouponDetailModal({ isOpen, onClose, coupon, getAccountName }) {
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black transition-colors">
-            Đóng
-          </button>
-        </div>
+        {!pageMode && <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black transition-colors">Đóng</button>
+        </div>}
       </div>
     </div>
   );

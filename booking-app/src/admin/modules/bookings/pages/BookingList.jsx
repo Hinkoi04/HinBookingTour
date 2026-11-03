@@ -1,15 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { CalendarCheck2, CheckCheck } from "lucide-react";
 import { toast } from "sonner";
 import { bookingService } from "../services/BookService";
-import { paymentService } from "../services/paymentService";
-import { passengerService } from "../services/passengerService";
 import { BookingTable } from "../components/BookingTable";
-import { BookingDetailModal, getOverallPaymentStatus } from "../components/BookingDetailModal";
+import { getOverallPaymentStatus } from "../components/BookingDetailModal";
 import ConfirmModal from "../../../components/ConfirmModal";
 import Pagination from "../../../components/Pagination";
-import { accountService } from "../../users/services/accountService";
 import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 const STATUS_LABELS = {
@@ -18,21 +15,12 @@ const STATUS_LABELS = {
   completed: "Hoàn thành",
   cancelled: "Đã hủy",
 };
-const PAYMENT_STATUS_LABELS = {
-  pending: "Chờ thanh toán",
-  paid: "Đã thanh toán",
-  failed: "Thất bại",
-  refunded: "Đã hoàn tiền",
-};
-
 export default function BookingList() {
+  const navigate = useNavigate();
   const { searchQuery } = useOutletContext();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
-  const [accountMap, setAccountMap] = useState({});
   const [selectedBookingIds, setSelectedBookingIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
@@ -57,14 +45,8 @@ export default function BookingList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [data, accounts] = await Promise.all([
-        bookingService.getAll(),
-        accountService.getAllActive(),
-      ]);
+      const data = await bookingService.getAll();
       setBookings(data);
-      const map = {};
-      accounts.forEach(acc => { map[acc.id] = acc.fullName; });
-      setAccountMap(map);
     } catch (error) {
       toast.error(error.message || "Lỗi khi tải dữ liệu");
     } finally {
@@ -189,52 +171,8 @@ export default function BookingList() {
     });
   };
 
-  const handleChangePaymentStatus = (paymentId, newStatus) => {
-    if (!canUpdate) return;
-    setConfirmConfig({
-      isOpen: true,
-      title: "Đổi trạng thái thanh toán",
-      message: `Xác nhận đổi trạng thái thanh toán sang "${PAYMENT_STATUS_LABELS[newStatus] || newStatus}"?`,
-      variant: newStatus === "failed" || newStatus === "refunded" ? "danger" : "info",
-      action: async () => {
-        try {
-          if (newStatus === "paid") {
-            await paymentService.confirmPayment(paymentId);
-          } else {
-            await paymentService.updateStatus(paymentId, newStatus);
-          }
-          toast.success("Đã cập nhật trạng thái thanh toán");
-          loadData();
-          if (selectedBooking) {
-            const updatedBooking = await bookingService.getById(selectedBooking.id);
-            setSelectedBooking(updatedBooking);
-            bookingService.notifyStatusChange(updatedBooking.id, updatedBooking.status, newStatus);
-          }
-        } catch (error) {
-          toast.error(error.message || "Thao tác thất bại");
-        }
-      }
-    });
-  };
-
-  const handleUpdatePassenger = async (passengerId, passengerData) => {
-    if (!canUpdate) return;
-    try {
-      await passengerService.update(passengerId, passengerData);
-      toast.success("Cập nhật thông tin hành khách thành công!");
-      loadData();
-      if (selectedBooking) {
-        const updatedBooking = await bookingService.getById(selectedBooking.id);
-        setSelectedBooking(updatedBooking);
-      }
-    } catch (error) {
-      toast.error(error.message || "Lỗi khi cập nhật hành khách");
-    }
-  };
-
   const handleView = (booking) => {
-    setSelectedBooking(booking);
-    setIsDetailOpen(true);
+    navigate(`/admin/bookings/${booking.id}`);
   };
 
   const filteredBookings = bookings.filter(booking => {
@@ -340,17 +278,6 @@ export default function BookingList() {
           </>
         )}
       </div>
-
-      {isDetailOpen && selectedBooking && (
-        <BookingDetailModal 
-          booking={selectedBooking} 
-          onClose={() => setIsDetailOpen(false)} 
-          onChangePaymentStatus={handleChangePaymentStatus}
-          onUpdatePassenger={handleUpdatePassenger}
-          canUpdate={canUpdate}
-          accountMap={accountMap}
-        />
-      )}
 
       <ConfirmModal
         isOpen={confirmConfig.isOpen}

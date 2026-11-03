@@ -19,6 +19,13 @@ import { AuthLayout } from "../layouts";
 
 import PrivateRoute from "./PrivateRoute";
 import { RolePage, RoleForm } from "../modules/roles/pages";
+import TourDetailPage from "../modules/tours/pages/TourDetailPage";
+import CategoryDetailPage from "../modules/categories/pages/CategoryDetailPage";
+import CustomerDetailPage from "../modules/users/pages/CustomerDetailPage";
+import BookingDetailPage from "../modules/bookings/pages/BookingDetailPage";
+import CouponDetailPage from "../modules/discounts/pages/CouponDetailPage";
+import RoleDetailPage from "../modules/roles/pages/RoleDetailPage";
+import BlogDetailPage from "../modules/blogs/pages/BlogDetailPage";
 
 export const adminRoutes = [
   {
@@ -46,6 +53,10 @@ export const adminRoutes = [
             element: <TourList />,
           },
           {
+            path: "/admin/tours/:id",
+            element: <TourDetailPage />,
+          },
+          {
             path: "/admin/tours/new",
             element: <TourForm />,
           },
@@ -58,8 +69,16 @@ export const adminRoutes = [
             element: <CategoryList />,
           },
           {
+            path: "/admin/categories/:id",
+            element: <CategoryDetailPage />,
+          },
+          {
             path: "/admin/users",
             element: <UserList key="customers" listMode="customers" />,
+          },
+          {
+            path: "/admin/users/:id",
+            element: <CustomerDetailPage />,
           },
           {
             path: "/admin/employees",
@@ -76,6 +95,10 @@ export const adminRoutes = [
           {
             path: "/admin/bookings",
             element: <Booking />,
+          },
+          {
+            path: "/admin/bookings/:id",
+            element: <BookingDetailPage />,
           },
           {
             path: "/admin/departures",
@@ -98,8 +121,16 @@ export const adminRoutes = [
             element: <Discount />,
           },
           {
+            path: "/admin/discounts/:id",
+            element: <CouponDetailPage />,
+          },
+          {
             path: "/admin/roles",
             element: <RolePage />,
+          },
+          {
+            path: "/admin/roles/:id",
+            element: <RoleDetailPage />,
           },
           {
             path: "/admin/roles/new",
@@ -112,6 +143,10 @@ export const adminRoutes = [
           {
             path: "/admin/blogs",
             element: <BlogList />,
+          },
+          {
+            path: "/admin/blogs/:id",
+            element: <BlogDetailPage />,
           },
           {
             path: "/admin/blogs/new",

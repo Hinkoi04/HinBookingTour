@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { Plus, Lock } from "lucide-react";
 import { TourTable, TourTrashTable } from "../components/TourTable";
-import { TourDetailModal } from "../components/TourDetailModal"; 
 import { tourService } from "../services/tourService";
 import { accountService } from "../../users/services/accountService";
 
@@ -14,6 +13,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
 
 export function TourList() {
+  const navigate = useNavigate();
   const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
@@ -32,8 +32,6 @@ export function TourList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
-  const [selectedTour, setSelectedTour] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
@@ -127,8 +125,7 @@ export function TourList() {
   const paginatedList = currentList.slice(startIndex, startIndex + itemsPerPage);
 
   const handleViewDetail = (tour) => {
-    setSelectedTour(tour);
-    setIsDetailOpen(true);
+    navigate(`/admin/tours/${tour.id}`);
   };
 
   const handleDelete = (id) => {
@@ -280,13 +277,6 @@ export function TourList() {
 
         </div>
       </div>
-
-      <TourDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        selectedTour={selectedTour}
-        getAccountName={getAccountName}
-      />
 
       <ConfirmModal
         isOpen={confirmConfig.isOpen}

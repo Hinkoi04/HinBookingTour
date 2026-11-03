@@ -24,6 +24,11 @@ public class CouponController {
         return ResponseEntity.ok(couponService.findAllActive());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CouponResponse> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(couponService.findById(id));
+    }
+
     @PostMapping
     @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'CREATE_COUPON')")
     public ResponseEntity<CouponResponse> create(@RequestBody CouponRequest request) {

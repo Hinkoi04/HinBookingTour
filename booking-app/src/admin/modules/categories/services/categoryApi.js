@@ -1,6 +1,15 @@
 import { apiClient } from '../../login/services/authService';
 
 export const categoryService = {
+  getById: async (id) => {
+    try {
+      const response = await apiClient.get(`/category/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || "Không tìm thấy danh mục");
+    }
+  },
+
   getAllActive: async () => {
     try {
       const response = await apiClient.get('/category?status=active');

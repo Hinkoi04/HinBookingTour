@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Plus, Trash2, Lock } from "lucide-react";
 import { CouponTable } from "../components/CouponTable";
 import { CouponTrashTable } from "../components/CouponTrashTable";
@@ -7,7 +7,6 @@ import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { CouponModal } from "../components/DiscountModal";
 import { couponService } from "../services/couponService";
 import { accountService } from "../../users/services/accountService";
-import { CouponDetailModal } from "../components/CouponDetailModal";
 
 import Pagination from "../../../components/Pagination";
 import { usePermission } from "../../../hooks/usePermission";
@@ -26,6 +25,7 @@ const initialFormState = {
 };
 
 export default function CouponList() {
+  const navigate = useNavigate();
   const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("CREATE_COUPON");
@@ -39,7 +39,6 @@ export default function CouponList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
-  const [viewCoupon, setViewCoupon] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editCoupon, setEditCoupon] = useState(null);
   const [formData, setFormData] = useState(initialFormState);
@@ -254,7 +253,7 @@ export default function CouponList() {
                   coupons={paginatedList} 
                   onEdit={handleEdit} 
                   onDelete={handleDelete} 
-                  onView={(coupon) => setViewCoupon(coupon)}
+                  onView={(coupon) => navigate(`/admin/discounts/${coupon.id}`)}
                   canUpdate={canUpdate}
                   canDelete={canDelete}
                 />
@@ -290,13 +289,6 @@ export default function CouponList() {
         formData={formData} 
         setFormData={setFormData} 
         isEdit={!!editCoupon} 
-      />
-
-      <CouponDetailModal
-        isOpen={!!viewCoupon}
-        coupon={viewCoupon}
-        getAccountName={getAccountName}
-        onClose={() => setViewCoupon(null)}
       />
 
       <ConfirmModal

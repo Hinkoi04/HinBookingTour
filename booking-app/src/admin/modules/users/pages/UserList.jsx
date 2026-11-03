@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Plus, Lock } from "lucide-react";
 import { CustomerTable } from "../components/UserTable";
 import { EmployeeTable } from "../components/AccountTable";
 import { TrashTable } from "../components/TrashTable";
-import { UserDetailModal } from "../components/UserDetailModal";
 import { CustomerEditModal } from "../components/CustomerEditModal";
 import { EmployeeFormModal } from "../components/EmployeeFormModal";
 import { accountService } from "../services/accountService";
@@ -18,6 +17,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
 
 export default function UserManagement({ listMode = "customers" }) {
+  const navigate = useNavigate();
   const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
@@ -30,8 +30,6 @@ export default function UserManagement({ listMode = "customers" }) {
   const [roles, setRoles] = useState([]);
   const [activeTab, setActiveTab] = useState(listMode === "employees" ? "employees" : "customers");
   const [loading, setLoading] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [isSavingCustomer, setIsSavingCustomer] = useState(false);
   const [isEmployeeFormOpen, setIsEmployeeFormOpen] = useState(false);
@@ -387,8 +385,7 @@ export default function UserManagement({ listMode = "customers" }) {
   };
 
   const viewDetail = (user, type) => {
-    setSelectedUser({ ...user, role: type });
-    setIsDetailOpen(true);
+    navigate(type === "employee" ? `/admin/employees/${user.id}` : `/admin/users/${user.id}`);
   };
 
   const handleCreateEmployee = async () => {
@@ -513,19 +510,6 @@ export default function UserManagement({ listMode = "customers" }) {
           </div>
         )}
       </div>
-
-      <UserDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        user={selectedUser}
-        accounts={employees}
-        onEdit={(user) => {
-          if (user.role === "employee") {
-            setIsDetailOpen(false);
-            handleEditEmployee(user);
-          }
-        }}
-      />
 
       <CustomerEditModal
         customer={editingCustomer}

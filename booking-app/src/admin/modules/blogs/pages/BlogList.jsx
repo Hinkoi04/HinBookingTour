@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { Plus, Lock } from "lucide-react";
 import { BlogTable } from "../components/BlogTable";
 import { BlogTrashTable } from "../components/BlogTrashTable";
-import { BlogDetailModal } from "../components/BlogDetailModal";
 import ConfirmModal from "../../../components/ConfirmModal";
 import Pagination from "../../../components/Pagination";
 import { blogService } from "../services/blogService";
@@ -13,6 +12,7 @@ import { toastDeleted } from "../../../utils/notifications";
 import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
 export function BlogList() {
+  const navigate = useNavigate();
   const { searchQuery } = useOutletContext();
   const [blogs, setBlogs] = useState([]);
   const [trashedBlogs, setTrashedBlogs] = useState([]);
@@ -21,9 +21,6 @@ export function BlogList() {
   const [activeTab, setActiveTab] = useState("active");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const [confirmState, setConfirmState] = useState({ open: false, type: null, id: null });
 
@@ -175,7 +172,7 @@ export function BlogList() {
         {activeTab === "active" ? (
           <BlogTable
             blogs={paginatedList}
-            onView={(blog) => { setSelectedBlog(blog); setIsDetailOpen(true); }}
+            onView={(blog) => navigate(`/admin/blogs/${blog.id}`)}
             onDelete={handleDelete}
             getAccountName={getAccountName}
             canUpdate={canUpdate}
@@ -202,13 +199,6 @@ export function BlogList() {
           </div>
         )}
       </div>
-
-      <BlogDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        blog={selectedBlog}
-        getAccountName={getAccountName}
-      />
 
       <ConfirmModal
         isOpen={confirmState.open}

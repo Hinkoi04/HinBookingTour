@@ -17,15 +17,15 @@ const formatDateTime = (dateString) => {
   }).format(date);
 };
 
-export const RoleDetailModal = ({ isOpen, onClose, role }) => {
-  if (!isOpen || !role) return null;
+export const RoleDetailModal = ({ isOpen, onClose, role, pageMode = false }) => {
+  if ((!isOpen && !pageMode) || !role) return null;
 
   const isAdmin = role.name?.toUpperCase() === "ADMIN";
   const isDeleted = role.deleted === true;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+    <div className={pageMode ? "p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity"}>
+      <div className={`bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col ${pageMode ? "mx-auto border border-gray-200" : "max-h-[90vh]"}`}>
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
@@ -33,12 +33,12 @@ export const RoleDetailModal = ({ isOpen, onClose, role }) => {
             <Shield className="w-5 h-5 text-blue-600" />
             Chi tiết Vai trò
           </h2>
-          <button 
+          {!pageMode && <button
             onClick={onClose} 
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </button>}
         </div>
         
         <div className="p-6 space-y-6 overflow-y-auto">
@@ -126,14 +126,14 @@ export const RoleDetailModal = ({ isOpen, onClose, role }) => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+        {!pageMode && <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
           <button 
             onClick={onClose} 
             className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
           >
             Đóng
           </button>
-        </div>
+        </div>}
         
       </div>
     </div>

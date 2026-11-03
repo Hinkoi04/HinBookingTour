@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Plus, Lock } from "lucide-react";
 import { CategoryTable, CategoryTrashTable } from "../components/CategoryTable";
 import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 import { CategoryModal } from "../components/CategoryModal";
-import { CategoryDetailModal } from "../components/CategoryDetailModal";
 import { categoryService } from "../services/categoryApi";
 import { accountService } from "../../users/services/accountService"; 
 import Pagination from "../../../components/Pagination";
@@ -15,6 +14,7 @@ import AlertModal from "../../../components/AlertModal";
 const initialFormState = { title: "", description: "", parentId: "" };
 
 export default function CategoryList() {
+  const navigate = useNavigate();
   const { searchQuery } = useOutletContext();
   const { hasPermission } = usePermission();
 
@@ -23,7 +23,6 @@ export default function CategoryList() {
   const [accounts, setAccounts] = useState([]);
   
   const [isLoading, setIsLoading] = useState(true);
-  const [viewCategory, setViewCategory] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
@@ -239,7 +238,7 @@ export default function CategoryList() {
                 <CategoryTable 
                   categories={paginatedList} 
                   startIndex={startIndex} 
-                  onView={setViewCategory} 
+                  onView={(category) => navigate(`/admin/categories/${category.id}`)}
                   onEdit={handleEdit} 
                   onDelete={handleDelete}
                 />
@@ -268,8 +267,6 @@ export default function CategoryList() {
       </div>
 
       <CategoryModal isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} onSubmit={handleSubmit} formData={formData} setFormData={setFormData} isEdit={!!editCategory} categories={categories} currentCategoryId={editCategory?.id} />
-      <CategoryDetailModal isOpen={!!viewCategory} category={viewCategory} categories={categories} accounts={accounts} onClose={() => setViewCategory(null)} />
-      
       <ConfirmModal
         isOpen={confirmConfig.isOpen}
         title={confirmConfig.title}

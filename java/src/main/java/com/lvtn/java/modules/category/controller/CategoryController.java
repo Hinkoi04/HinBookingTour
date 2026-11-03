@@ -26,6 +26,15 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(categoryService.findById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping
     @PreAuthorize("@permissionCheckService.hasPermission(principal.accountId(), 'CREATE_CATEGORY')")
     public ResponseEntity<?> save(@RequestBody CategoryUpsertRequest request) {

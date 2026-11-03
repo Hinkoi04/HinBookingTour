@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 
-export function BlogDetailModal({ isOpen, onClose, blog, getAccountName }) {
-  if (!isOpen || !blog) return null;
+export function BlogDetailModal({ isOpen, onClose, blog, getAccountName, pageMode = false }) {
+  if ((!isOpen && !pageMode) || !blog) return null;
 
   const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -9,16 +9,16 @@ export function BlogDetailModal({ isOpen, onClose, blog, getAccountName }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className={pageMode ? "p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"}>
+      <div className={`bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden ${pageMode ? "mx-auto border border-gray-200" : "animate-in fade-in zoom-in duration-200"}`}>
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <h2 className="text-xl font-bold text-gray-900">Chi tiết bài viết</h2>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-full transition-colors">
+          {!pageMode && <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-full transition-colors">
             <X className="w-5 h-5" />
-          </button>
+          </button>}
         </div>
 
-        <div className="p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+        <div className={`p-6 space-y-6 overflow-y-auto ${pageMode ? "" : "max-h-[85vh]"}`}>
           {blog.thumbnail && (
             <img src={blog.thumbnail} alt={blog.title} className="w-full h-64 object-cover rounded-xl border border-gray-100" />
           )}

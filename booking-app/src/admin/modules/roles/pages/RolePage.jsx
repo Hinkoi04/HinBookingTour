@@ -5,7 +5,6 @@ import { Plus, Lock } from "lucide-react";
 import { roleService, permissionService } from "../services/roleService";
 import PermissionMatrix from "../components/PermissionMatrix";
 import { RoleTable } from "../components/RoleTable"; 
-import { RoleDetailModal } from "../components/RoleDetailModal";
 
 import ConfirmModal from "../../../components/ConfirmModal";
 import AlertModal from "../../../components/AlertModal";
@@ -22,9 +21,6 @@ const RolePage = () => {
   const [rolePermissions, setRolePermissions] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   
-  const [selectedRoleForDetail, setSelectedRoleForDetail] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: "", message: "", variant: "info", action: null });
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, title: "", message: "", variant: "info" });
 
@@ -95,8 +91,7 @@ const RolePage = () => {
   const handleOpenNew = () => navigate("/admin/roles/new");
   const handleOpenEdit = (id) => navigate(`/admin/roles/edit/${id}`);
   const handleOpenDetail = (role) => {
-    setSelectedRoleForDetail(role);
-    setIsDetailOpen(true);
+    navigate(`/admin/roles/${role.id}`);
   };
 
   const handleToggleLock = (role) => {
@@ -197,12 +192,6 @@ const RolePage = () => {
           />
         )}
       </div>
-
-      <RoleDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        role={selectedRoleForDetail}
-      />
 
       <ConfirmModal
         isOpen={confirmConfig.isOpen}

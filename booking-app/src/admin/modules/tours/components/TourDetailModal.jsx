@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { getSchedulesByTourId } from "../services/scheduleService"; 
 import { LoadingSkeleton } from "../../../../components/LoadingSkeleton";
 
-export function TourDetailModal({ isOpen, onClose, selectedTour, getAccountName }) {
+export function TourDetailModal({ isOpen, onClose, selectedTour, getAccountName, pageMode = false }) {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen && selectedTour?.id) {
+    if ((isOpen || pageMode) && selectedTour?.id) {
       setLoading(true);
       getSchedulesByTourId(selectedTour.id)
         .then((res) => {
@@ -25,9 +25,9 @@ export function TourDetailModal({ isOpen, onClose, selectedTour, getAccountName 
     } else {
       setSchedules([]);
     }
-  }, [isOpen, selectedTour]);
+  }, [isOpen, pageMode, selectedTour]);
 
-  if (!isOpen || !selectedTour) return null;
+  if ((!isOpen && !pageMode) || !selectedTour) return null;
 
   const formatDate = (dateString) => {
     if (!dateString) return "Chưa cập nhật";
@@ -37,19 +37,19 @@ export function TourDetailModal({ isOpen, onClose, selectedTour, getAccountName 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className={pageMode ? "p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"}>
+      <div className={`bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden ${pageMode ? "mx-auto border border-gray-200" : "animate-in fade-in zoom-in duration-200"}`}>
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <h2 className="text-xl font-bold text-gray-900">Chi tiết Tour</h2>
-          <button
+          {!pageMode && <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </button>}
         </div>
 
-        <div className="p-6 space-y-8 max-h-[85vh] overflow-y-auto custom-scrollbar">
+        <div className={`p-6 space-y-8 overflow-y-auto custom-scrollbar ${pageMode ? "" : "max-h-[85vh]"}`}>
           <div className="space-y-6">
             <img
               src={selectedTour.thumbnail || selectedTour.image}

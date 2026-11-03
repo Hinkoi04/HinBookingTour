@@ -35,7 +35,7 @@ const getPaidPercent = (payments) => {
   return Math.max(...paidPayments.map(p => Number(p.paymentType) || 0));
 };
 
-export function BookingDetailModal({ booking, onClose, onChangePaymentStatus, onUpdatePassenger, accountMap = {} }) {
+export function BookingDetailModal({ booking, onClose, onChangePaymentStatus, onUpdatePassenger, accountMap = {}, pageMode = false }) {
   if (!booking) return null;
 
   const overallPaymentStatus = getOverallPaymentStatus(booking.payments);
@@ -45,8 +45,8 @@ export function BookingDetailModal({ booking, onClose, onChangePaymentStatus, on
   const remainingAmount = Math.max((booking.total || 0) - paidAmount, 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl w-full max-w-4xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className={pageMode ? "p-6 lg:p-8" : "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"}>
+      <div className={`bg-white rounded-2xl w-full max-w-5xl shadow-xl overflow-hidden ${pageMode ? "mx-auto border border-gray-200" : "animate-in fade-in zoom-in duration-200"}`}>
         
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
@@ -56,13 +56,13 @@ export function BookingDetailModal({ booking, onClose, onChangePaymentStatus, on
               Mã Booking: <span className="font-mono font-semibold text-gray-900">{booking.bookingCode}</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-full transition-colors">
+          {!pageMode && <button onClick={onClose} className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-full transition-colors">
             <X className="w-5 h-5" />
-          </button>
+          </button>}
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+        <div className={`p-6 space-y-6 overflow-y-auto ${pageMode ? "" : "max-h-[75vh]"}`}>
           
           {/* Thông tin Tour & Khách đặt */}
           <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl text-sm">
@@ -215,13 +215,13 @@ export function BookingDetailModal({ booking, onClose, onChangePaymentStatus, on
         </div>
 
         {/* Modal Footer */}
-        <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+        {!pageMode && <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
           <button onClick={onClose} className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
             Đóng
           </button>
           
           
-        </div>
+        </div>}
       </div>
     </div>
   );

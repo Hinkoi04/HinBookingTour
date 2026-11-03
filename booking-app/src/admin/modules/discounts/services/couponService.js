@@ -7,6 +7,15 @@ const getAuthHeaders = () => ({
 });
 
 export const couponService = {
+  getById: async (id) => {
+    try {
+      const response = await apiClient.get(`/coupon/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || "Không tìm thấy mã giảm giá");
+    }
+  },
+
   getAll: async () => {
     try {
       const response = await apiClient.get('/coupon');
