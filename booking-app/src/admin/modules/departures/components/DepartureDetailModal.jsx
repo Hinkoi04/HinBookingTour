@@ -97,7 +97,7 @@ export function DepartureDetailModal({ isOpen, onClose, departure, accountList =
           <div className="grid grid-cols-3 gap-2 border-b pb-3">
             <span className="text-gray-500 font-medium">Giới hạn chỗ:</span>
             <span className="col-span-2">
-              <span className="font-medium text-gray-900">NL:</span> {departure.stockAdult} | <span className="font-medium text-gray-900">TE:</span> {departure.stockChildren} | <span className="font-medium text-gray-900">EB:</span> {departure.stockBaby}
+              <span className="font-medium text-gray-900">Người lớn:</span> {departure.stockAdult} - <span className="font-medium text-gray-900">Trẻ em:</span> {departure.stockChildren} - <span className="font-medium text-gray-900">Em bé:</span> {departure.stockBaby}
             </span>
           </div>
 
