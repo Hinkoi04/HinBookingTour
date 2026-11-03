@@ -37,6 +37,25 @@ const STATUS_OPTIONS = [
   { value: "cancelled", label: "Đã hủy" },
 ];
 
+const STATUS_COLORS = {
+  pending: "bg-yellow-500",
+  confirmed: "bg-blue-600",
+  completed: "bg-green-600",
+  cancelled: "bg-red-600",
+};
+const STATUS_SELECT_COLORS = {
+  pending: "border-yellow-200 bg-yellow-50 text-yellow-800 focus:ring-yellow-200",
+  confirmed: "border-blue-200 bg-blue-50 text-blue-800 focus:ring-blue-200",
+  completed: "border-green-200 bg-green-50 text-green-800 focus:ring-green-200",
+  cancelled: "border-red-200 bg-red-50 text-red-800 focus:ring-red-200",
+};
+const STATUS_LABELS = {
+  pending: "Chờ xác nhận",
+  confirmed: "Đã xác nhận",
+  completed: "Hoàn thành",
+  cancelled: "Đã hủy",
+};
+
 export function BookingTable({
   data,
   onView,
@@ -64,7 +83,7 @@ export function BookingTable({
 
   return (
     <div className="w-full overflow-x-auto">
-      <table className="w-full text-left border-collapse min-w-[950px]">
+      <table className="w-full text-left border-collapse min-w-[1050px]">
         <thead>
           <tr className="border-b bg-gray-50/50">
             {canUpdate && (
@@ -79,10 +98,10 @@ export function BookingTable({
                 />
               </th>
             )}
-            <th className="py-3 px-4 text-sm font-semibold text-gray-600">Mã đơn</th>
+            <th className="w-44 whitespace-nowrap py-3 px-4 text-sm font-semibold text-gray-600">Mã đơn</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Khách hàng</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Tour</th>
-            <th className="py-3 px-4 text-sm font-semibold text-gray-600">Số lượng vé</th>
+            <th className="py-3 px-4 text-sm font-semibold text-gray-600">SL</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600">Tổng tiền</th>
             <th 
               className="py-3 px-4 text-sm font-semibold text-gray-600 cursor-pointer hover:text-gray-900 transition-colors select-none" 
@@ -90,21 +109,23 @@ export function BookingTable({
             >
               <div className="flex items-center gap-1">Ngày đặt {renderSortIcon()}</div> 
             </th>
-            <th className="py-3 px-4 text-sm font-semibold text-gray-600">Trạng thái</th>
+            <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Trạng thái</th>
             <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Thao tác</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
           {data.map((booking) => {
-            const guests = [];
-            if (booking.quantityAdult > 0) guests.push(`${booking.quantityAdult}L`);
-            if (booking.quantityChildren > 0) guests.push(`${booking.quantityChildren}TE`);
-            if (booking.quantityBaby > 0) guests.push(`${booking.quantityBaby}EB`);
+            const ticketCount =
+              (Number(booking.quantityAdult) || 0) +
+              (Number(booking.quantityChildren) || 0) +
+              (Number(booking.quantityBaby) || 0);
+            const statusColor = STATUS_COLORS[booking.status] || "bg-gray-400";
+            const statusLabel = STATUS_LABELS[booking.status] || booking.status || "Không xác định";
 
             return (
               <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
                 {canUpdate && (
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 text-center">
                     {booking.status === "pending" && (
                       <input
                         type="checkbox"
@@ -116,25 +137,32 @@ export function BookingTable({
                     )}
                   </td>
                 )}
-                <td className="py-3 px-4 font-mono text-sm font-medium text-gray-900">{booking.bookingCode}</td>
+                <td className="whitespace-nowrap py-3 px-4 font-mono text-sm font-medium text-gray-900">{booking.bookingCode}</td>
                 <td className="py-3 px-4 text-sm text-gray-700">{booking.fullName}</td>
                 <td className="py-3 px-4 text-sm text-gray-700 max-w-[200px] truncate" title={booking.tourTitle}>{booking.tourTitle}</td>
-                <td className="py-3 px-4 text-sm text-gray-700 font-medium">{guests.join(" - ")}</td>
+                <td className="py-3 px-4 text-sm text-gray-700 font-medium">{ticketCount}</td>
                 <td className="py-3 px-4 text-sm font-semibold text-blue-600">{formatCurrency(booking.total)}</td>
                 <td className="py-3 px-4 text-sm text-gray-500">
                   {new Date(booking.createdAt).toLocaleDateString('vi-VN')}
                 </td>
-                <td className="py-3 px-4">{getStatusBadge(booking.status)}</td>
+                <td className="py-3 px-4 text-center align-middle">
+                  <span
+                    className={`inline-block h-3 w-3 rounded-full ${statusColor}`}
+                    title={statusLabel}
+                    role="img"
+                    aria-label={statusLabel}
+                  />
+                </td>
                 <td className="py-3 px-4 text-right">
-                  <div className="flex justify-end items-center gap-2">
-                    <button onClick={() => onView(booking)} className="p-2 text-gray-600 hover:bg-gray-200 rounded-md transition-colors" title="Xem chi tiết">
+                  <div className="flex justify-end items-center gap-1.5">
+                    <button onClick={() => onView(booking)} className="p-1.5 text-gray-600 hover:bg-gray-200 rounded-md transition-colors" title="Xem chi tiết">
                       <Eye className="w-4 h-4" />
                     </button>
                     {canUpdate && (
                       <select
                         value={booking.status}
                         onChange={(e) => onChangeStatus(booking.id, e.target.value)}
-                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 cursor-pointer"
+                        className={`w-[80px] rounded-md border px-1 py-0.5 text-[9px] font-semibold focus:outline-none focus:ring-2 cursor-pointer ${STATUS_SELECT_COLORS[booking.status] || "border-gray-200 bg-gray-50 text-gray-700 focus:ring-gray-200"}`}
                         title="Đổi trạng thái đơn"
                       >
                         {STATUS_OPTIONS.map(opt => (

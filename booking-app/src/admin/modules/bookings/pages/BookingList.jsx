@@ -285,7 +285,7 @@ export default function BookingList() {
         ) : (
           <>
             {canUpdate && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 mb-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={handleBulkConfirm}
@@ -298,7 +298,19 @@ export default function BookingList() {
                       <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{selectedBookingIds.length}</span>
                     )}
                   </button>
-                  <span className="text-sm text-gray-500">Chọn các đơn chờ xác nhận trong bảng</span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-gray-600">
+                    {[
+                      { color: "bg-red-600", label: "Đã hủy" },
+                      { color: "bg-blue-600", label: "Đã xác nhận" },
+                      { color: "bg-green-600", label: "Hoàn thành" },
+                      { color: "bg-yellow-500", label: "Chờ xác nhận" },
+                    ].map((status) => (
+                      <span key={status.label} className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span className={`h-2.5 w-2.5 rounded-full ${status.color}`} aria-hidden="true" />
+                        {status.label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <button
                   onClick={handleCompleteOverdue}
