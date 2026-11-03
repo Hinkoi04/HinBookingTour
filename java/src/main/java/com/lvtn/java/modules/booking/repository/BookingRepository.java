@@ -30,6 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findByDepartureIdWithDetails(@Param("departureId") Integer departureId);
 
     Optional<Booking> findByBookingCode(String bookingCode);
+    boolean existsByBookingCode(String bookingCode);
 
     long count();
     long countByStatus(String status);

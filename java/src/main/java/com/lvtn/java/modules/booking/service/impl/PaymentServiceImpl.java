@@ -17,10 +17,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -30,6 +33,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     private static final Set<String> ALLOWED_STATUSES = Set.of("pending", "paid", "failed", "refunded");
     private static final Set<String> FINAL_STATUSES = Set.of("refunded");
+    private static final String BOOKING_CODE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final DateTimeFormatter BOOKING_CODE_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("ddMMyy", Locale.ROOT);
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
@@ -80,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         BookingPaymentRequest.Customer customer = request.customer();
         Booking booking = new Booking();
-        booking.setBookingCode("TG" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase());
+        booking.setBookingCode(generateBookingCode());
         booking.setFullName(customer.fullName().trim());
         booking.setEmail(customer.email().trim());
         booking.setPhone(customer.phone().trim());
@@ -137,6 +144,20 @@ public class PaymentServiceImpl implements PaymentService {
 
     private BigDecimal priceOrZero(BigDecimal price) {
         return price == null ? BigDecimal.ZERO : price;
+    }
+
+    private String generateBookingCode() {
+        String date = LocalDate.now().format(BOOKING_CODE_DATE_FORMAT);
+        String bookingCode;
+        do {
+            StringBuilder suffix = new StringBuilder(5);
+            for (int i = 0; i < 5; i++) {
+                suffix.append(BOOKING_CODE_CHARACTERS.charAt(
+                        RANDOM.nextInt(BOOKING_CODE_CHARACTERS.length())));
+            }
+            bookingCode = "DH-" + date + "-" + suffix;
+        } while (bookingRepository.existsByBookingCode(bookingCode));
+        return bookingCode;
     }
 
     private PaymentResponse mapToResponse(Payment payment) {

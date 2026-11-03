@@ -40,6 +40,9 @@ export function HomePage() {
   const [flashSaleIndex, setFlashSaleIndex] = useState(0);
   const [flashSaleVisibleCount, setFlashSaleVisibleCount] = useState(getFlashSaleVisibleCount);
   const [flashSaleTransitionEnabled, setFlashSaleTransitionEnabled] = useState(true);
+  const [categoryIndex, setCategoryIndex] = useState(0);
+  const [categoryVisibleCount, setCategoryVisibleCount] = useState(getFlashSaleVisibleCount);
+  const [categoryTransitionEnabled, setCategoryTransitionEnabled] = useState(true);
   const [visibleDomesticTourCount, setVisibleDomesticTourCount] = useState(8);
   const [visibleInternationalTourCount, setVisibleInternationalTourCount] = useState(8);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -159,6 +162,12 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
+    const updateVisibleCount = () => setCategoryVisibleCount(getFlashSaleVisibleCount());
+    window.addEventListener("resize", updateVisibleCount);
+    return () => window.removeEventListener("resize", updateVisibleCount);
+  }, []);
+
+  useEffect(() => {
     setFlashSaleTransitionEnabled(false);
     setFlashSaleIndex(flashSaleItems.length);
     const frame = requestAnimationFrame(() => setFlashSaleTransitionEnabled(true));
@@ -188,19 +197,76 @@ export function HomePage() {
     setFlashSaleIndex((index) => index + direction);
   };
 
-  const categoryCards = [
+  const fallbackCategoryCards = [
     { label: "Tour Miền Bắc", desc: "Hạ Long, Sapa, Hà Nội", img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=400&q=80" },
     { label: "Tour Miền Nam", desc: "Phú Quốc, Mũi Né, Cần Thơ", img: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=400&q=80" },
     { label: "Tour Miền Trung", desc: "Đà Nẵng, Hội An, Huế", img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&q=80" },
     { label: "Tour Quốc tế", desc: "Nhật, Thái, Hàn, Châu Âu", img: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&q=80" },
-  ].map((cat) => {
-    const count = allTours.filter(
-      (t) =>
-        (t.category || "").toLowerCase().includes(cat.label.toLowerCase().replace("tour ", "")) ||
-        (cat.label === "Tour Quốc tế" && t.type === "international")
-    ).length;
-    return { ...cat, count: count > 0 ? count : (allTours.length > 0 ? Math.ceil(allTours.length / 4) : 10) };
-  });
+  ];
+  const categoryCards = categoriesList.length > 0
+    ? categoriesList.map((category, index) => {
+        const label = category.title || category.name || `Danh mục ${index + 1}`;
+        const fallback = fallbackCategoryCards.find((item) =>
+          label.toLowerCase().includes(item.label.toLowerCase().replace("tour ", ""))
+        );
+        return {
+          label,
+          desc: category.description || fallback?.desc || "Khám phá những hành trình hấp dẫn",
+          img: category.thumbnail || fallback?.img || fallbackCategoryCards[index % fallbackCategoryCards.length].img,
+          count: Number(category.tourCount) || 0,
+        };
+      })
+    : fallbackCategoryCards.map((category) => {
+        const count = allTours.filter(
+          (tour) =>
+            (tour.category || "").toLowerCase().includes(category.label.toLowerCase().replace("tour ", "")) ||
+            (category.label === "Tour Quốc tế" && tour.type === "international")
+        ).length;
+        return {
+          ...category,
+          count: count > 0 ? count : (allTours.length > 0 ? Math.ceil(allTours.length / 4) : 10),
+        };
+      });
+
+  const categoryCarouselItems = categoryCards.length > 0
+    ? [...categoryCards, ...categoryCards, ...categoryCards]
+    : [];
+  const categoryTrackWidth = categoryCarouselItems.length > 0
+    ? `${(categoryCarouselItems.length / categoryVisibleCount) * 100}%`
+    : "100%";
+  const categorySlideWidth = categoryCarouselItems.length > 0
+    ? `${100 / categoryCarouselItems.length}%`
+    : "100%";
+
+  useEffect(() => {
+    setCategoryTransitionEnabled(false);
+    setCategoryIndex(categoryCards.length);
+    const frame = requestAnimationFrame(() => setCategoryTransitionEnabled(true));
+    return () => cancelAnimationFrame(frame);
+  }, [categoryCards.length]);
+
+  useEffect(() => {
+    if (categoryCards.length <= categoryVisibleCount) return undefined;
+    const interval = setInterval(() => {
+      setCategoryIndex((index) => index + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [categoryCards.length, categoryVisibleCount]);
+
+  const handleCategoryTransitionEnd = (event) => {
+    if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
+    const itemCount = categoryCards.length;
+    if (itemCount === 0 || (categoryIndex >= itemCount && categoryIndex < itemCount * 2)) return;
+
+    setCategoryTransitionEnabled(false);
+    setCategoryIndex((index) => index >= itemCount * 2 ? index - itemCount : index + itemCount);
+    requestAnimationFrame(() => setCategoryTransitionEnabled(true));
+  };
+
+  const moveCategory = (direction) => {
+    if (categoryCards.length <= categoryVisibleCount) return;
+    setCategoryIndex((index) => index + direction);
+  };
 
   const filteredTours = (searchQuery || selectedCategory || selectedDate)
     ? allTours.filter((t) => {
@@ -251,6 +317,7 @@ export function HomePage() {
     blogsList.length,
     filteredTours.length,
     flashSaleItems.length,
+    categoryCards.length,
     visibleDomesticTourCount,
     visibleInternationalTourCount,
     searchQuery,
@@ -470,30 +537,65 @@ export function HomePage() {
             <p className="text-blue-600 font-bold text-sm uppercase tracking-wider mb-2">DANH MỤC TOUR</p>
             <h2 className="text-3xl font-black text-gray-900">Khám Phá Theo Sở Thích</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {categoryCards.map((cat, index) => (
+          <div className="relative">
+            {categoryCards.length > categoryVisibleCount && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => moveCategory(-1)}
+                  aria-label="Xem danh mục tour trước"
+                  className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-2.5 text-blue-600 shadow-lg transition hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveCategory(1)}
+                  aria-label="Xem danh mục tour tiếp theo"
+                  className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-2.5 text-blue-600 shadow-lg transition hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <ChevronRight className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </>
+            )}
+            <div className="overflow-hidden">
               <div
-                key={cat.label}
-                onClick={() => setSearchParams({ category: cat.label })}
-                className="home-reveal relative h-56 rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-all"
-                data-home-reveal-delay={index}
+                className="flex"
+                onTransitionEnd={handleCategoryTransitionEnd}
+                style={{
+                  width: categoryTrackWidth,
+                  transform: `translateX(-${(categoryIndex * 100) / (categoryCarouselItems.length || 1)}%)`,
+                  transition: categoryTransitionEnabled ? "transform 500ms ease-in-out" : "none",
+                }}
               >
-                <img
-                  src={cat.img}
-                  alt={cat.label}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <p className="text-white font-bold text-base">{cat.label}</p>
-                  <p className="text-white/70 text-xs mt-0.5">{cat.desc}</p>
-                  <span className="inline-block mt-2 bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-medium">
-                    {cat.count} tour
-                  </span>
+                {categoryCarouselItems.map((cat, index) => (
+              <div
+                key={`${cat.label}-${index}`}
+                onClick={() => setSearchParams({ category: cat.label })}
+                className="home-reveal relative h-56 min-w-0 px-2"
+                data-home-reveal-delay={index}
+                style={{ flex: `0 0 ${categorySlideWidth}` }}
+              >
+                <div className="relative h-full rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-all">
+                  <img
+                    src={cat.img}
+                    alt={cat.label}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-white font-bold text-base">{cat.label}</p>
+                    <p className="text-white/70 text-xs mt-0.5">{cat.desc}</p>
+                    <span className="inline-block mt-2 bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-medium">
+                      {cat.count} tour
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
