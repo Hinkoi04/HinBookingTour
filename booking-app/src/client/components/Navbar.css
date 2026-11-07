@@ -1,0 +1,323 @@
+.client-header.client-header--home {
+  position: fixed;
+  inset: 0 0 auto;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  box-shadow: none;
+  font-family: "DM Sans", sans-serif;
+}
+
+.client-header--home .client-header__topbar {
+  display: none;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(9, 14, 10, 0.2);
+}
+
+.client-header--home .client-header__topbar > div {
+  max-width: 1440px;
+  padding-right: clamp(24px, 5.2vw, 80px);
+  padding-left: clamp(24px, 5.2vw, 80px);
+}
+
+.client-header--home .client-header__topbar a,
+.client-header--home .client-header__topbar span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.client-header--home .client-header__topbar a:hover {
+  color: #d8ff63;
+}
+
+.client-header--home .client-header__topbar svg {
+  color: #d8ff63;
+}
+
+.client-header--home .client-header__main {
+  max-width: 1440px;
+  min-height: 74px;
+  padding: 10px clamp(24px, 5.2vw, 80px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(9, 14, 10, 0.2), transparent);
+  transition:
+    background 250ms ease,
+    border-color 250ms ease;
+}
+
+.client-header--home.is-scrolled {
+  background: rgba(13, 19, 15, 0.94);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.client-header--home.is-scrolled .client-header__topbar {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.client-header--home.is-scrolled .client-header__main {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: transparent;
+}
+
+.client-header--home .client-header__desktop-nav {
+  gap: clamp(2px, 0.45vw, 8px);
+}
+
+.client-header--home .client-header__desktop-nav > a,
+.client-header--home .client-header__desktop-nav > div > a {
+  position: relative;
+  padding: 12px clamp(6px, 0.75vw, 12px);
+  border-radius: 0;
+  color: rgba(255, 255, 255, 0.76);
+  background: transparent;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: color 250ms ease;
+}
+
+.client-header--home .client-header__desktop-nav > a::after,
+.client-header--home .client-header__desktop-nav > div > a::after {
+  position: absolute;
+  right: 10px;
+  bottom: 3px;
+  left: 10px;
+  height: 2px;
+  content: "";
+  background: #d8ff63;
+  transform: scaleX(0);
+  transition: transform 250ms ease;
+}
+
+.client-header--home .client-header__desktop-nav > a:hover,
+.client-header--home .client-header__desktop-nav > div > a:hover,
+.client-header--home .client-header__desktop-nav > a[aria-current],
+.client-header--home .client-header__desktop-nav > div > a[aria-current] {
+  color: #fff;
+  background: transparent;
+}
+
+.client-header--home .client-header__desktop-nav > a:hover::after,
+.client-header--home .client-header__desktop-nav > div > a:hover::after,
+.client-header--home .client-header__desktop-nav > a[aria-current]::after,
+.client-header--home .client-header__desktop-nav > div > a[aria-current]::after {
+  transform: scaleX(1);
+}
+
+.client-header--home .client-header__desktop-nav > a[href="/home#flash-sale"] {
+  color: #d8ff63;
+}
+
+.client-header--home .client-header__desktop-nav > a[href="/home#flash-sale"] svg {
+  width: 15px;
+  height: 15px;
+}
+
+.client-header--home .client-header__desktop-nav > div > a svg {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.client-header--home .client-header__dropdown {
+  top: calc(100% + 2px);
+  width: min(400px, calc(100vw - 32px));
+  padding: 14px;
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 22px 60px rgba(5, 18, 19, 0.24);
+  color: #263345;
+}
+
+.client-header--home .client-header__dropdown-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 6px;
+  padding: 8px 14px 12px;
+  border-color: #edf0f3;
+  color: #9aa4b4;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.client-header--home .client-header__dropdown-heading svg {
+  width: 16px;
+  height: 16px;
+  color: #2563eb;
+}
+
+.client-header--home .client-header__dropdown-item {
+  display: block;
+  padding: 13px 14px;
+  border-radius: 10px;
+  color: #273345;
+  background: transparent;
+  text-align: left;
+  transition: background 180ms ease;
+}
+
+.client-header--home .client-header__dropdown-item:hover {
+  color: #273345;
+  background: #f5f8fc;
+}
+
+.client-header--home .client-header__dropdown-title {
+  margin: 0;
+  color: #273345;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.client-header--home .client-header__dropdown-item:hover .client-header__dropdown-title {
+  color: #1d4ed8;
+}
+
+.client-header--home .client-header__dropdown-description {
+  overflow: hidden;
+  margin: 3px 0 0;
+  color: #98a2b3;
+  font-size: 13px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-header--home .client-header__main > a img {
+  max-width: 190px;
+  max-height: 46px;
+}
+
+.client-header--home .client-header__main > div.hidden.lg\:flex > div > button {
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.client-header--home .client-header__main > div.hidden.lg\:flex > div > button:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.client-header--home .client-header__main > div.hidden.lg\:flex > div > button span,
+.client-header--home .client-header__main > div.hidden.lg\:flex > div > button > svg {
+  color: #fff;
+}
+
+.client-header--home .client-header__main > div.hidden.lg\:flex > div > a {
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 0;
+  color: #fff;
+  background: transparent;
+  box-shadow: none;
+}
+
+.client-header--home .client-header__main > div.hidden.lg\:flex > div > a:hover {
+  border-color: #d8ff63;
+  color: #101611;
+  background: #d8ff63;
+}
+
+.client-header--home .client-header__main > button {
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 0;
+  color: #fff;
+}
+
+.client-header--home .client-header__main > button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.client-header--home .client-header__mobile-menu {
+  max-width: 720px;
+  margin-left: auto;
+  border-color: rgba(255, 255, 255, 0.12);
+  border-radius: 0 0 0 20px;
+  background: rgba(13, 19, 15, 0.97);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.client-header--home .client-header__mobile-menu a,
+.client-header--home .client-header__mobile-menu button {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.client-header--home .client-header__mobile-menu a:hover,
+.client-header--home .client-header__mobile-menu button:hover {
+  color: #d8ff63;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.client-header--home .client-header__mobile-menu p,
+.client-header--home .client-header__mobile-menu span {
+  color: inherit;
+}
+
+.client-header--home .client-header__mobile-menu > div {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.client-header--home .client-header__mobile-menu .bg-gray-50 {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.client-header--home .client-header__mobile-menu .bg-white {
+  color: #17211b;
+}
+
+.client-header--home .client-header__mobile-menu button.bg-white {
+  color: #17211b;
+}
+
+.client-header--home .client-header__mobile-menu button.text-red-600 {
+  color: #f87171;
+}
+
+.client-header--home .client-header__mobile-menu button.text-red-600:hover {
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.12);
+}
+
+@media (max-width: 1199px) {
+  .client-header--home .client-header__main > a img {
+    max-width: 160px;
+  }
+
+  .client-header--home .client-header__desktop-nav > a,
+  .client-header--home .client-header__desktop-nav > div > a {
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .client-header--home .client-header__main {
+    min-height: 68px;
+  }
+}
+
+@media (max-width: 640px) {
+  .client-header--home .client-header__topbar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .client-header--home .client-header__topbar > div {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .client-header--home .client-header__main {
+    min-height: 64px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .client-header--home .client-header__main > a img {
+    max-width: 150px;
+    max-height: 40px;
+  }
+}

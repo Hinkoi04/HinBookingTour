@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 import {
   ChevronDown, Phone, Menu, X, Shield, Sparkles, User, LogIn, LogOut,
   MapPin, Globe, Award, Flame, Settings, KeyRound, ClipboardList
@@ -18,9 +19,22 @@ export function Navbar() {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const isHomePage = location.pathname === "/" || location.pathname === "/home";
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const isHomePage = location.pathname === "/" || location.pathname === "/home";
+    if (!isHomePage) {
+      setIsScrolled(false);
+      return undefined;
+    }
+
+    const updateScrollState = () => setIsScrolled(window.scrollY > 24);
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, [isHomePage]);
+
+  useEffect(() => {
     if (!isHomePage) {
       setActiveNavItem("");
       return;
@@ -114,9 +128,9 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-all">
+    <header className={`client-header sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-all${isHomePage ? ` client-header--home${isScrolled ? " is-scrolled" : ""}` : ""}`}>
       {/* Top bar */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4">
+      <div className="client-header__topbar bg-slate-900 text-slate-300 text-xs py-2 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-yellow-400 font-medium">
@@ -140,7 +154,7 @@ export function Navbar() {
       </div>
 
       {/* Main navigation */}
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="client-header__main max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo with image */}
         <Link to="/home" className="flex items-center gap-3 group">
           <img
@@ -151,7 +165,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="client-header__desktop-nav hidden lg:flex items-center gap-1">
           <Link
             to="/home"
             aria-current={activeNavItem === "home" ? "page" : undefined}
@@ -196,8 +210,8 @@ export function Navbar() {
             </Link>
 
             {activeDropdown === "domestic" && (
-              <div className="absolute top-full left-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 space-y-1 animate-fadeIn z-50">
-                <div className="px-3 py-1.5 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="client-header__dropdown absolute top-full left-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 space-y-1 animate-fadeIn z-50">
+                <div className="client-header__dropdown-heading px-3 py-1.5 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-blue-600" /> Điểm đến Việt Nam
                 </div>
                 {domesticSubmenu.map((sub) => (
@@ -205,12 +219,12 @@ export function Navbar() {
                     key={sub.title}
                     type="button"
                     onClick={() => handleSelectCategory(sub.query)}
-                    className="w-full text-left p-2.5 rounded-xl hover:bg-blue-50 transition-colors group cursor-pointer"
+                    className="client-header__dropdown-item w-full text-left p-2.5 rounded-xl hover:bg-blue-50 transition-colors group cursor-pointer"
                   >
-                    <p className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
+                    <p className="client-header__dropdown-title text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
                       {sub.title}
                     </p>
-                    <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+                    <p className="client-header__dropdown-description text-xs text-gray-400 line-clamp-1 mt-0.5">
                       {sub.desc}
                     </p>
                   </button>
@@ -239,8 +253,8 @@ export function Navbar() {
             </Link>
 
             {activeDropdown === "international" && (
-              <div className="absolute top-full left-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 space-y-1 animate-fadeIn z-50">
-                <div className="px-3 py-1.5 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="client-header__dropdown absolute top-full left-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 space-y-1 animate-fadeIn z-50">
+                <div className="client-header__dropdown-heading px-3 py-1.5 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Globe className="w-3.5 h-3.5 text-purple-600" /> Khám phá thế giới
                 </div>
                 {internationalSubmenu.map((sub) => (
@@ -248,12 +262,12 @@ export function Navbar() {
                     key={sub.title}
                     type="button"
                     onClick={() => handleSelectCategory(sub.query)}
-                    className="w-full text-left p-2.5 rounded-xl hover:bg-purple-50 transition-colors group cursor-pointer"
+                    className="client-header__dropdown-item w-full text-left p-2.5 rounded-xl hover:bg-purple-50 transition-colors group cursor-pointer"
                   >
-                    <p className="text-sm font-bold text-gray-800 group-hover:text-purple-600 transition-colors">
+                    <p className="client-header__dropdown-title text-sm font-bold text-gray-800 group-hover:text-purple-600 transition-colors">
                       {sub.title}
                     </p>
-                    <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+                    <p className="client-header__dropdown-description text-xs text-gray-400 line-clamp-1 mt-0.5">
                       {sub.desc}
                     </p>
                   </button>
@@ -350,6 +364,8 @@ export function Navbar() {
         {/* Mobile menu button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
+          type="button"
+          aria-expanded={isOpen}
           className="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
           aria-label="Toggle Menu"
         >
@@ -359,7 +375,7 @@ export function Navbar() {
 
       {/* Mobile dropdown */}
       {isOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-2 animate-fadeIn max-h-[85vh] overflow-y-auto">
+        <div className="client-header__mobile-menu lg:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-2 animate-fadeIn max-h-[85vh] overflow-y-auto">
           <Link
             to="/home"
             onClick={() => setIsOpen(false)}

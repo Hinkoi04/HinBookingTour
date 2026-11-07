@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Clock, MapPin, ArrowRight, Search, Calendar, ChevronRight,
-  Send, Phone, Mail, CheckCircle, Filter, X, Plane, Flame, ChevronLeft,
+  Send, Phone, Mail, CheckCircle, Filter, X, Flame, ChevronLeft,
   Trophy, CircleDollarSign, ShieldCheck, Star, LockKeyhole
 } from "lucide-react";
 import { homeService } from "../services/homeService";
-import { TourCard, FlashSaleCard, TourSkeleton } from "../components";
+import { TourCard, FlashSaleCard, TourSkeleton, HomeHero } from "../components";
 import { toast } from "sonner";
 
 function getFlashSaleVisibleCount() {
@@ -327,77 +327,13 @@ export function HomePage() {
 
   return (
     <div ref={pageRef} className="home-page">
-      {/* Hero Banner */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-24">
-        <img
-          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80"
-          alt="Hero"
-          className="home-hero-image absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-900/75 to-blue-950/80" />
-
-        <div className="relative z-10 max-w-5xl mx-auto px-4 w-full flex flex-col items-center justify-center text-center">
-          <span className="home-reveal inline-flex items-center gap-2 bg-blue-500/20 backdrop-blur-md text-blue-200 text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full border border-blue-400/30 mb-6 shadow-sm" data-home-reveal-delay="1">
-            <Plane className="w-4 h-4" aria-hidden="true" /> Khám phá thế giới cùng TravelGo
-          </span>
-
-          <h1 className="home-reveal text-4xl sm:text-6xl md:text-7xl font-black text-white leading-tight mb-6 tracking-tight" data-home-reveal-delay="2">
-            Hành Trình <span className="text-yellow-400 drop-shadow-md">Đáng Nhớ</span> Của Bạn
-          </h1>
-
-          <p className="home-reveal text-base sm:text-lg md:text-xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto font-medium" data-home-reveal-delay="3">
-            Khám phá hơn 500+ tour du lịch trong nước và quốc tế với giá ưu đãi nhất. Đặt chỗ linh hoạt, dịch vụ tận tâm 24/7.
-          </p>
-
-          {/* Search box */}
-          <div className="home-reveal w-full max-w-4xl bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-5 shadow-2xl border border-white/40" data-home-reveal-delay="4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="md:col-span-2 relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Bạn muốn đi đâu? (Hạ Long, Đà Nẵng, Tokyo...)"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-left transition-all"
-                />
-              </div>
-              <div className="relative">
-                <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="date"
-                  value={searchDate}
-                  onChange={(e) => setSearchDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-700 transition-all"
-                />
-              </div>
-              <button
-                onClick={handleSearch}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-6 rounded-2xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-95 cursor-pointer text-sm"
-              >
-                <Search className="w-4 h-4" /> Tìm kiếm tour
-              </button>
-            </div>
-          </div>
-
-          {/* Quick stats */}
-          <div className="home-reveal flex flex-wrap justify-center gap-8 sm:gap-16 mt-12 pt-8 border-t border-white/10 w-full max-w-3xl" data-home-reveal-delay="5">
-            {[
-              { num: allTours.length > 0 ? `${allTours.length}+` : "500+", label: "Tour du lịch" },
-              { num: "50K+", label: "Khách hàng" },
-              { num: "98%", label: "Hài lòng" },
-              { num: "24/7", label: "Hỗ trợ tận tâm" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <p className="text-2xl sm:text-3xl font-black text-yellow-400">{s.num}</p>
-                <p className="text-xs sm:text-sm text-blue-200 font-semibold mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HomeHero
+        search={search}
+        setSearch={setSearch}
+        searchDate={searchDate}
+        setSearchDate={setSearchDate}
+        onSearch={handleSearch}
+      />
 
       {/* Filtered Search Results Section */}
       {(searchQuery || selectedCategory || selectedDate) && (
