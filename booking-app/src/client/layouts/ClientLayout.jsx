@@ -1,13 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { ScrollToTop } from "../components/ScrollToTop";
 
 export function ClientLayout() {
+  const { pathname } = useLocation();
+  const headerVariant = pathname === "/" || pathname === "/home" ? "home" : "interior";
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 font-sans antialiased selection:bg-blue-500 selection:text-white">
       <ScrollToTop />
-      <Navbar />
+      <Navbar variant={headerVariant} />
       <main className="flex-grow">
         <Outlet />
       </main>

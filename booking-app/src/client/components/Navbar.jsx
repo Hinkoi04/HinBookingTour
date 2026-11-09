@@ -10,7 +10,7 @@ import { authService } from "../modules/auth/services/authService";
 import ConfirmModal from "./ConfirmModal";
 import { toast } from "sonner";
 
-export function Navbar() {
+export function Navbar({ variant = "interior" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
   const [userDropdown, setUserDropdown] = useState(false);
@@ -19,7 +19,7 @@ export function Navbar() {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const isHomePage = location.pathname === "/" || location.pathname === "/home";
+  const isHomePage = variant === "home";
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export function Navbar() {
   };
 
   return (
-    <header className={`client-header sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-all${isHomePage ? ` client-header--home${isScrolled ? " is-scrolled" : ""}` : ""}`}>
+    <header className={`client-header sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-all client-header--modern client-header--${variant}${isHomePage && isScrolled ? " is-scrolled" : ""}`}>
       {/* Top bar */}
       <div className="client-header__topbar bg-slate-900 text-slate-300 text-xs py-2 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
