@@ -8,6 +8,7 @@ import {
 import { homeService } from "../services/homeService";
 import { TourCard, FlashSaleCard, TourSkeleton, HomeHero } from "../components";
 import { toast } from "sonner";
+import "./HomeContact.css";
 
 function getFlashSaleVisibleCount() {
   if (window.innerWidth >= 1024) return 4;
@@ -698,56 +699,56 @@ export function HomePage() {
       </section>
 
       {/* Contact */}
-      <section id="contact" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="text-blue-600 font-bold text-sm uppercase tracking-wider mb-2">HỖ TRỢ KHÁCH HÀNG</p>
-            <h2 className="text-3xl font-black text-gray-900">Liên Hệ Với Chúng Tôi</h2>
-            <p className="text-gray-500 mt-2 text-sm sm:text-base">Đội ngũ chuyên viên tư vấn giàu kinh nghiệm luôn sẵn sàng giải đáp 24/7</p>
+      <section id="contact" className="home-contact">
+        <div className="home-contact__inner">
+          <div className="home-contact__heading">
+            <p className="home-contact__eyebrow">Hỗ trợ khách hàng</p>
+            <h2>Liên hệ với chúng tôi</h2>
+            <p>Đội ngũ chuyên viên tư vấn giàu kinh nghiệm luôn sẵn sàng giải đáp 24/7.</p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Form (Chỉ lấy Email) */}
-            <div className="bg-gray-50 p-6 sm:p-8 rounded-3xl border border-gray-100 flex flex-col justify-center">
+          <div className="home-contact__grid">
+            <div className="home-contact__form-panel">
               {contactSent ? (
-                <div className="flex flex-col items-center justify-center h-full gap-4 py-8">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="home-contact__success">
+                  <div className="home-contact__success-icon">
+                    <CheckCircle aria-hidden="true" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800">Đăng ký thành công!</h3>
-                  <p className="text-gray-500 text-center text-sm max-w-sm">
+                  <h3>Đăng ký thành công!</h3>
+                  <p>
                     Cảm ơn bạn đã quan tâm. TravelGo sẽ gửi thông tin tour và các mã ưu đãi độc quyền qua email của bạn sớm nhất!
                   </p>
                   <button
                     type="button"
                     onClick={() => setContactSent(false)}
-                    className="mt-2 text-blue-600 font-bold text-sm hover:underline cursor-pointer"
+                    className="home-contact__resend"
                   >
                     Gửi email khác
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleContact} className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-black text-gray-800 mb-1">
+                <form onSubmit={handleContact} className="home-contact__form">
+                  <div className="home-contact__form-heading">
+                    <span>TravelGo / Bản tin</span>
+                    <h3>
                       Đăng ký để nhận thông báo nhận ưu đãi
                     </h3>
-                    <p className="text-xs text-gray-500 mb-4">
+                    <p>
                       Để lại email để nhận thông báo sớm nhất về các đợt Flash Sale và voucher giảm giá đến 500.000đ
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase">
+                    <label className="home-contact__label" htmlFor="contact-email">
                       Địa chỉ Email của bạn *
                     </label>
-                    <div className="relative">
-                      <Mail className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <div className="home-contact__input-wrap">
+                      <Mail aria-hidden="true" />
                       <input
+                        id="contact-email"
                         type="email"
                         placeholder="email@example.com"
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                         required
                       />
                     </div>
@@ -756,35 +757,38 @@ export function HomePage() {
                   <button
                     disabled={contactLoading}
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-black py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 active:scale-98 cursor-pointer text-sm"
+                    className="home-contact__submit"
                   >
-                    <Send className="w-4 h-4" /> {contactLoading ? "Đang gửi..." : "Đăng ký nhận ưu đãi ngay"}
+                    <Send aria-hidden="true" /> {contactLoading ? "Đang gửi..." : "Đăng ký nhận ưu đãi ngay"}
                   </button>
 
-                  <p className="text-[11px] text-gray-400 text-center">
-                    <LockKeyhole className="inline w-3 h-3 mr-1" aria-hidden="true" />
+                  <p className="home-contact__privacy">
+                    <LockKeyhole aria-hidden="true" />
                     Chúng tôi tôn trọng quyền riêng tư và cam kết không gửi thư rác.
                   </p>
                 </form>
               )}
             </div>
 
-            {/* Info cards */}
-            <div className="space-y-4">
+            <div className="home-contact__details">
+              <div className="home-contact__details-heading">
+                <span>Luôn sẵn sàng hỗ trợ</span>
+                <h3>Hành trình của bạn bắt đầu từ một lời hỏi thăm.</h3>
+              </div>
               {[
-                { icon: Phone, color: "bg-blue-100 text-blue-600", title: "Hotline hỗ trợ 24/7", lines: ["1800 1234 (Miễn phí cước gọi)", "Thứ 2 – Chủ nhật: 08:00 – 22:00"] },
-                { icon: Mail, color: "bg-green-100 text-green-600", title: "Email tư vấn & CSKH", lines: ["hotro@travelgo.vn", "Phản hồi trong vòng 2 giờ làm việc"] },
-                { icon: MapPin, color: "bg-orange-100 text-orange-600", title: "Trụ sở chính", lines: ["123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM", "Thứ 2 – Thứ 7: 08:00 – 18:00"] },
+                { icon: Phone, title: "Hotline hỗ trợ 24/7", lines: [{ text: "1800 1234 (Miễn phí cước gọi)", href: "tel:18001234" }, { text: "Thứ 2 – Chủ nhật: 08:00 – 22:00" }] },
+                { icon: Mail, title: "Email tư vấn & CSKH", lines: [{ text: "hotro@travelgo.vn", href: "mailto:hotro@travelgo.vn" }, { text: "Phản hồi trong vòng 2 giờ làm việc" }] },
+                { icon: MapPin, title: "Trụ sở chính", lines: [{ text: "123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM" }, { text: "Thứ 2 – Thứ 7: 08:00 – 18:00" }] },
               ].map((item, index) => (
-                <div key={item.title} className="home-reveal flex gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100" data-home-reveal-delay={index}>
-                  <div className={`w-12 h-12 ${item.color} rounded-2xl flex items-center justify-center shrink-0`}>
-                    <item.icon className="w-6 h-6" />
+                <div key={item.title} className="home-contact__detail home-reveal" data-home-reveal-delay={index}>
+                  <div className="home-contact__detail-icon">
+                    <item.icon aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="font-bold text-gray-800 text-base mb-1">{item.title}</p>
-                    {item.lines.map((l) => (
-                      <p key={l} className="text-sm text-gray-600 leading-snug">
-                        {l}
+                    <p className="home-contact__detail-title">{item.title}</p>
+                    {item.lines.map((line) => (
+                      <p key={line.text}>
+                        {line.href ? <a href={line.href}>{line.text}</a> : line.text}
                       </p>
                     ))}
                   </div>
