@@ -266,16 +266,6 @@ export function HomeHero({ search, setSearch, searchDate, setSearchDate, onSearc
       </section>
 
       <section className="after-hero" id="hanh-trinh">
-        <span>Đi xa để thấy mình gần hơn</span>
-        <h2>
-          Những hành trình
-          <br />
-          được tuyển chọn.
-        </h2>
-        <p>
-          Chúng tôi không chỉ đưa bạn đến một nơi mới. Mỗi chuyến đi được thiết kế để bạn sống trọn
-          vẹn trong từng khoảnh khắc.
-        </p>
         <div className="after-hero__search">
           <label>
             <span>Điểm đến</span>

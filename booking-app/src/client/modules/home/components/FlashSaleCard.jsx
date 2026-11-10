@@ -31,7 +31,7 @@ export function FlashSaleCard({ tour, item }) {
   return (
     <Link
       to={`/tour/${encodeURIComponent(data.slug || data.id)}`}
-      className="home-reveal w-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between border border-gray-200/90 hover:-translate-y-1"
+      className="home-reveal home-flash-sale-card w-full bg-white overflow-hidden transition-all duration-300 group flex flex-col justify-between"
     >
       <div className="relative overflow-hidden h-44 sm:h-48 bg-gray-100">
         <img
@@ -46,7 +46,7 @@ export function FlashSaleCard({ tour, item }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
         {data.discount > 0 && (
-          <span className="absolute top-2.5 right-2.5 bg-red-600 text-white text-[11px] font-black px-2 py-0.5 rounded-md shadow-md animate-pulse">
+          <span className="home-flash-sale-card__discount absolute top-2.5 right-2.5 text-[11px] font-black px-2 py-0.5 animate-pulse">
             -{data.discount}%
           </span>
         )}
@@ -54,7 +54,7 @@ export function FlashSaleCard({ tour, item }) {
 
       <div className="p-4 flex flex-col flex-1 justify-between space-y-3">
         <div>
-          <h3 className="font-bold text-gray-900 text-[14px] leading-snug line-clamp-2 min-h-10 group-hover:text-blue-600 transition-colors">
+          <h3 className="home-flash-sale-card__title font-bold text-[14px] leading-snug line-clamp-2 min-h-10 transition-colors">
             {data.name}
           </h3>
 
@@ -64,7 +64,7 @@ export function FlashSaleCard({ tour, item }) {
                 {formatMoney(data.originalPrice)}
               </p>
             )}
-            <p className="text-red-600 font-black text-lg tracking-tight">
+            <p className="home-flash-sale-card__price font-black text-lg tracking-tight">
               {formatMoney(data.price)}
             </p>
           </div>
@@ -113,7 +113,7 @@ export function FlashSaleCard({ tour, item }) {
           </div>
           <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
             <span>Số chỗ còn:</span>
-            <span className="bg-red-600 text-white font-black text-xs px-2 py-0.5 rounded-md min-w-[22px] text-center shadow-xs">
+            <span className="home-flash-sale-card__slots font-black text-xs px-2 py-0.5 min-w-[22px] text-center">
               {availableSlots}
             </span>
           </div>

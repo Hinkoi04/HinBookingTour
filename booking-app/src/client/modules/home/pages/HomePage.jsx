@@ -9,6 +9,7 @@ import { homeService } from "../services/homeService";
 import { TourCard, FlashSaleCard, TourSkeleton, HomeHero } from "../components";
 import { toast } from "sonner";
 import "./HomeContact.css";
+import "./HomeFlashSale.css";
 
 function getFlashSaleVisibleCount() {
   if (window.innerWidth >= 1024) return 4;
@@ -393,41 +394,41 @@ export function HomePage() {
 
       {/* Flash Sale (Chỉ hiển thị khi có lịch khởi hành giảm giá trong 30 ngày tới) */}
       {!loading && flashSaleItems.length > 0 && (
-        <section id="flash-sale" className="py-16 bg-gradient-to-r from-red-600 via-rose-600 to-orange-500 shadow-inner">
-          <div className="home-reveal max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <section id="flash-sale" className="home-flash-sale">
+          <div className="home-flash-sale__inner home-reveal">
+            <div className="home-flash-sale__header">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="p-2 bg-white/20 rounded-xl">
+                <div className="home-flash-sale__title-row">
+                  <span className="home-flash-sale__icon">
                     <Flame className="w-6 h-6" aria-hidden="true" />
                   </span>
-                  <h2 className="text-3xl font-black text-white">Flash Sale Giờ Vàng</h2>
+                  <h2>Flash Sale Giờ Vàng</h2>
                 </div>
-                <p className="text-red-100 text-sm sm:text-base">
+                <p className="home-flash-sale__description">
                   Ưu đãi giảm sốc trong 30 ngày tới ({flashSaleItems.length} chuyến) – Đặt ngay kẻo lỡ!
                 </p>
               </div>
-              <div className="flex items-center gap-3 bg-black/20 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-              <p className="text-white/90 text-xs sm:text-sm font-bold">Kết thúc ngày trong:</p>
-              {[countdown.hours, countdown.minutes, countdown.seconds].map((value, index) => (
-                <span key={index} className="flex items-center">
-                  <span className="bg-white text-red-600 text-lg sm:text-xl font-black px-2.5 py-1.5 rounded-xl min-w-[2.5rem] text-center inline-block shadow">
-                    {value}
-                  </span>
-                  {index < 2 && <span className="text-white font-black text-lg mx-0.5">:</span>}
-                </span>
-              ))}
+              <div className="home-flash-sale__countdown">
+                <p>Kết thúc ngày trong:</p>
+                <div>
+                  {[countdown.hours, countdown.minutes, countdown.seconds].map((value, index) => (
+                    <span key={index}>
+                      <span className="home-flash-sale__count">{value}</span>
+                      {index < 2 && <span className="home-flash-sale__separator">:</span>}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="relative px-10 sm:px-12">
+            <div className="home-flash-sale__carousel">
               {flashSaleItems.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={() => moveFlashSale(-1)}
                   aria-label="Xem tour Flash Sale trước"
-                  className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-2.5 text-red-600 shadow-lg transition hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-white"
+                  className="home-flash-sale__arrow home-flash-sale__arrow--previous"
                 >
                   <ChevronLeft className="h-6 w-6" aria-hidden="true" />
                 </button>
@@ -435,7 +436,7 @@ export function HomePage() {
                   type="button"
                   onClick={() => moveFlashSale(1)}
                   aria-label="Xem tour Flash Sale tiếp theo"
-                  className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-2.5 text-red-600 shadow-lg transition hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-white"
+                  className="home-flash-sale__arrow home-flash-sale__arrow--next"
                 >
                   <ChevronRight className="h-6 w-6" aria-hidden="true" />
                 </button>
